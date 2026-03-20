@@ -25,3 +25,7 @@ layer = "adapters"
 [rust.apps.prosesmasher-adapters-outbound-fs]
 type = "library"
 layer = "adapters"
+
+[rust.apps.prosesmasher-adapters-outbound-parser]
+type = "library"
+layer = "adapters"
