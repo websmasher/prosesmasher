@@ -1,14 +1,18 @@
-# Build
-/apps/prosesmasher/target/
+# Rust
+target/
+**/*.rs.bk
+
+# OS
+.DS_Store
+Thumbs.db
 
 # IDE
 .idea/
 .vscode/
 *.swp
 *.swo
-*~
-.DS_Store
 
 # Environment
 .env
 .env.*
+!.env.example
