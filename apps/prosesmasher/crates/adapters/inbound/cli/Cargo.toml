@@ -1,0 +1,14 @@
+[package]
+name = "prosesmasher-adapters-inbound-cli"
+version.workspace = true
+edition.workspace = true
+publish = false
+
+[dependencies]
+garde = { workspace = true }
+prosesmasher-domain-types = { path = "../../../domain/types" }
+prosesmasher-ports-outbound-traits = { path = "../../../ports/outbound/traits" }
+prosesmasher-app-core = { path = "../../../app/core" }
+
+[lints]
+workspace = true

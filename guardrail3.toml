@@ -1,0 +1,27 @@
+version = "0.1"
+
+[profile]
+name = "service"
+
+[rust]
+workspace_root = "apps/prosesmasher"
+
+[rust.apps.prosesmasher-domain-types]
+type = "library"
+layer = "domain"
+
+[rust.apps.prosesmasher-ports-outbound-traits]
+type = "library"
+layer = "ports"
+
+[rust.apps.prosesmasher-app-core]
+type = "library"
+layer = "app"
+
+[rust.apps.prosesmasher-adapters-inbound-cli]
+type = "service"
+layer = "adapters"
+
+[rust.apps.prosesmasher-adapters-outbound-fs]
+type = "library"
+layer = "adapters"

@@ -1,0 +1,11 @@
+[package]
+name = "prosesmasher-adapters-outbound-fs"
+version.workspace = true
+edition.workspace = true
+publish = false
+
+[dependencies]
+prosesmasher-ports-outbound-traits = { path = "../../../ports/outbound/traits" }
+
+[lints]
+workspace = true
