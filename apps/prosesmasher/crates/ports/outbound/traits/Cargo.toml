@@ -1,0 +1,11 @@
+[package]
+name = "prosesmasher-ports-outbound-traits"
+version.workspace = true
+edition.workspace = true
+publish = false
+
+[dependencies]
+prosesmasher-domain-types = { path = "../../../domain/types" }
+
+[lints]
+workspace = true
