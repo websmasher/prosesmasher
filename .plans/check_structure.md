@@ -30,6 +30,25 @@ All text parsing (word boundaries, sentence segmentation) must work correctly fo
 - No `rust_readability` (GPL-3.0).
 - No `unicode-segmentation` (ICU4X is strictly better for multilingual).
 
+## Result Types: low-expectations
+
+We use `low-expectations` (from `steady-parent/packages/low-expectations`) for result types and the suite runner pattern. No custom `CheckResult` or `Severity` types.
+
+**What low-expectations provides:**
+- `ExpectationSuite` — builder that accumulates check results
+- `ValidationResult` — individual check result with severity, observed value, config
+- `SuiteValidationResult` — aggregate results with statistics (pass count, fail count, percentages)
+- `Severity` — Error / Warning
+- Expectations: `expect_value_to_be_between`, `expect_value_to_not_be_null`, `expect_text_to_not_contain`, `expect_word_count_to_be_between`, etc.
+
+**What low-expectations needs (changes required):**
+- Currently uses `regex` for term matching (`compile_term_regexes`, `expect_text_to_not_contain`). Prosesmasher uses ICU4X word segmentation instead.
+- Add non-regex alternatives: `expect_text_to_not_contain_terms(&mut self, column: &str, text_words: &[&str], banned: &BTreeSet<String>)` that takes pre-segmented words and does case-folded BTreeSet lookup.
+- Keep existing regex methods for backward compat (steady-parent validator uses them).
+- Long-term: feature-gate regex behind `features = ["regex"]`.
+
+**Dependency:** prosesmasher depends on `low-expectations` via git or path. The `regex` crate is pulled transitively but prosesmasher never calls regex-based methods.
+
 ## Domain Types (`domain/types`)
 
 ```rust
@@ -70,8 +89,12 @@ pub struct Paragraph {
 
 pub struct Sentence {
     pub text: String,
-    pub words: Vec<String>,   // ICU4X word-segmented
+    pub words: Vec<Word>,     // ICU4X word-segmented, each with syllable count
     pub word_count: usize,
+}
+
+pub struct Word {
+    pub text: String,
     pub syllable_count: usize, // via hyphenation crate
 }
 
@@ -103,19 +126,8 @@ pub struct HeadingCounts {
     pub h4_plus: usize,
 }
 
-pub struct CheckResult {
-    pub id: String,
-    pub label: String,
-    pub pass: bool,
-    pub expected: String,
-    pub found: String,
-    pub severity: Severity,
-}
-
-pub enum Severity {
-    Error,
-    Warning,
-}
+/// Check config loaded from JSON. No custom result types — we use low-expectations.
+pub struct CheckConfig { ... } // term lists + thresholds (see Config Format section)
 
 pub struct Range {
     pub min: usize,
@@ -130,11 +142,11 @@ pub trait Check {
     fn id(&self) -> &str;
     fn label(&self) -> &str;
     fn supported_locales(&self) -> Option<&[Locale]>; // None = all locales
-    fn run(&self, doc: &Document, config: &CheckConfig) -> CheckResult;
+    fn run(&self, doc: &Document, config: &CheckConfig, suite: &mut ExpectationSuite);
 }
 ```
 
-Runner calls `supported_locales()` and skips checks that don't match the document's locale.
+Each check adds expectations to a shared `ExpectationSuite` instead of returning a result. The runner iterates checks, passes the suite through, and calls `suite.into_suite_result()` at the end to get `SuiteValidationResult` with aggregate statistics.
 
 ## Complete Check Inventory
 
@@ -288,29 +300,60 @@ prosesmasher check dir/                            # all .md files in directory
 4. Per sentence → `hyphenation` → syllable count
 5. Assemble `Document` with all metadata pre-computed
 
-## Dependencies Summary
-
-| Crate | External deps |
-|---|---|
-| domain/types | none |
-| ports/outbound/traits | domain/types |
-| app/core | domain/types, ports |
-| adapters/outbound/fs | ports, serde, serde_json |
-| adapters/outbound/parser (new) | ports, domain/types, pulldown-cmark, icu_segmenter, icu_casemap, hyphenation |
-| adapters/inbound/cli | all + clap |
-
-**Total external dependencies: 6** (pulldown-cmark, icu_segmenter, icu_casemap, hyphenation, serde/serde_json, clap). Plus garde already in workspace.
-
-## File Tree
+## Crate Layout
 
 ```
+apps/prosesmasher/crates/
+├── domain/types/                    # Pure types. No deps.
+├── ports/outbound/traits/           # Port traits. Deps: domain.
+├── app/core/                        # Check trait + 33 checks + runner. Deps: domain, low-expectations.
+├── adapters/
+│   ├── inbound/cli/                 # Clap CLI + composition root. Deps: everything.
+│   ├── outbound/fs/                 # FileReader + ConfigLoader impls. Deps: ports, serde, serde_json, garde.
+│   └── outbound/parser/  (NEW)      # pulldown-cmark + ICU4X + hyphenation → Document. Deps: ports, domain.
+```
+
+Note: `app/core` does NOT depend on `ports`. Checks receive an already-parsed `Document` and inspect it. The CLI adapter calls the parser port, then passes the result to the runner.
+
+## Dependencies Summary
+
+| Crate | Internal deps | External deps |
+|---|---|---|
+| domain/types | none | none |
+| ports/outbound/traits | domain/types | none |
+| app/core | domain/types | low-expectations |
+| adapters/outbound/fs | ports/outbound/traits | serde, serde_json, garde |
+| adapters/outbound/parser (NEW) | ports/outbound/traits, domain/types | pulldown-cmark, icu_segmenter, icu_casemap, hyphenation |
+| adapters/inbound/cli | all crates | clap |
+
+**Total external dependencies: 8** (low-expectations, pulldown-cmark, icu_segmenter, icu_casemap, hyphenation, serde/serde_json, clap). Plus garde already in workspace.
+
+## Complete File Tree
+
+```
+apps/prosesmasher/crates/
+
+domain/types/src/
+├── lib.rs                      # re-exports all modules
+├── locale.rs                   # Locale enum (En, Ru, De, Es, Pt, Fr, Id)
+├── document.rs                 # Document, Section, Heading, Block, Paragraph, Sentence, Link, ListBlock
+├── metadata.rs                 # DocumentMetadata, HeadingCounts
+├── config.rs                   # CheckConfig, Range, term lists, thresholds
+└── error.rs                    # ReadError, ParseError, ConfigError
+
+ports/outbound/traits/src/
+├── lib.rs                      # re-exports
+├── file_reader.rs              # trait FileReader
+├── document_parser.rs          # trait DocumentParser
+└── config_loader.rs            # trait ConfigLoader
+
 app/core/src/
-├── lib.rs
-├── check.rs                    # Check trait
-├── runner.rs                   # Vec<Box<dyn Check>> → Vec<CheckResult>
+├── lib.rs                      # re-exports check trait, runner, all check groups
+├── check.rs                    # pub trait Check { id, label, supported_locales, run }
+├── runner.rs                   # pub fn run_checks(..., suite: &mut ExpectationSuite)
 │
 ├── terms/
-│   ├── mod.rs
+│   ├── mod.rs                  # pub fn all_checks() -> Vec<Box<dyn Check>>
 │   ├── banned_words.rs
 │   ├── banned_phrases.rs
 │   ├── gendered_terms.rs
@@ -320,7 +363,7 @@ app/core/src/
 │   └── simplicity.rs
 │
 ├── patterns/
-│   ├── mod.rs
+│   ├── mod.rs                  # pub fn all_checks() -> Vec<Box<dyn Check>>
 │   ├── em_dashes.rs
 │   ├── smart_quotes.rs
 │   ├── exclamation_density.rs
@@ -336,7 +379,7 @@ app/core/src/
 │   └── jargon_faker.rs
 │
 ├── structure/
-│   ├── mod.rs
+│   ├── mod.rs                  # pub fn all_checks() -> Vec<Box<dyn Check>>
 │   ├── word_count.rs
 │   ├── heading_hierarchy.rs
 │   ├── heading_counts.rs
@@ -347,14 +390,30 @@ app/core/src/
 │   └── word_repetition.rs
 │
 └── readability/
-    ├── mod.rs
+    ├── mod.rs                  # pub fn all_checks() -> Vec<Box<dyn Check>>
     ├── flesch_kincaid.rs
     ├── gunning_fog.rs
     ├── coleman_liau.rs
     └── avg_sentence_length.rs
+
+adapters/outbound/fs/src/
+├── lib.rs                      # FsFileReader, FsConfigLoader impls
+
+adapters/outbound/parser/src/   (NEW CRATE)
+├── lib.rs                      # MarkdownParser impl of DocumentParser
+├── markdown.rs                 # pulldown-cmark event walking → sections, headings, paragraphs, bold/italic, links
+├── segmenter.rs                # ICU4X sentence + word segmentation per locale
+└── syllables.rs                # hyphenation crate → syllable count per word
+
+adapters/inbound/cli/src/
+├── lib.rs                      # shared CLI types (if any)
+├── main.rs                     # composition root: construct adapters, parse args, run checks, print
+├── args.rs                     # clap argument definitions
+└── output.rs                   # format SuiteValidationResult into terminal output (colored PASS/FAIL/WARN)
 ```
 
-**33 checks total** across 4 groups (7 terms + 13 patterns + 8 structure + 4 readability + 1 word-repetition).
+**33 checks** across 4 groups (7 terms + 13 patterns + 8 structure + 4 readability).
+**~50 source files** across 6 crates.
 
 ## Output Format
 
@@ -377,13 +436,34 @@ essay.md
 
 ## Implementation Order
 
-1. Domain types (Document, Locale, Sentence with words/syllables, CheckResult, Severity)
-2. Check trait + runner in app/core
-3. DocumentParser port + pulldown-cmark + ICU4X + hyphenation adapter
-4. FileReader + ConfigLoader ports + fs adapter
-5. First 3 checks: word-count, em-dashes, banned-words
-6. CLI adapter with clap (end-to-end working)
-7. Remaining term checks (banned-phrases, gendered, forbidden, race, hedge, simplicity)
-8. Pattern checks (negation-reframe, triple-repeat, fake-timestamps, colon-dramatic, llm-openers, affirmation-closers, summative-closer, false-question, smart-quotes, exclamation-density)
-9. Structure checks (heading-hierarchy, heading-counts, bold-density, paragraph-length, sentence-case, code-fences)
-10. Readability checks (flesch-kincaid, gunning-fog, coleman-liau, avg-sentence-length)
+1. **low-expectations changes** — add non-regex term matching methods (`expect_text_to_not_contain_terms` taking `&[&str]` words + `&BTreeSet<String>` banned set). Keep regex methods for backward compat.
+2. **Domain types** — Document, Locale, Section, Paragraph, Sentence (with words/syllables), Heading, Block, CheckConfig, error types
+3. **Ports** — FileReader, DocumentParser, ConfigLoader traits
+4. **Parser adapter** — pulldown-cmark + ICU4X + hyphenation → Document
+5. **FS adapter** — file reading + JSON config loading with garde validation
+6. **Check trait + runner** in app/core using `ExpectationSuite`
+7. **First 3 checks** — word-count, em-dashes, banned-words (end-to-end proof)
+8. **CLI adapter** with clap (end-to-end working: file → parse → check → print)
+9. **Remaining term checks** — banned-phrases, gendered, forbidden, race, hedge, simplicity
+10. **Pattern checks** — negation-reframe, triple-repeat, fake-timestamps, colon-dramatic, llm-openers, affirmation-closers, summative-closer, false-question, smart-quotes, exclamation-density, humble-bragger, jargon-faker
+11. **Structure checks** — heading-hierarchy, heading-counts, bold-density, paragraph-length, sentence-case, code-fences, word-repetition
+12. **Readability checks** — flesch-kincaid, gunning-fog, coleman-liau, avg-sentence-length
+
+## Changes Required in low-expectations
+
+**Location:** `steady-parent/packages/low-expectations/`
+
+1. Add `expect_text_to_not_contain_terms()` to `ExpectationSuite`:
+   - Takes pre-segmented words (`&[&str]`) and a `BTreeSet<String>` of banned terms
+   - Case-folded comparison (lowercase both sides)
+   - Returns matched terms in `partial_unexpected_list`
+   - No regex involved
+
+2. Add `expect_text_to_not_contain_phrases()`:
+   - Takes pre-segmented words and a list of multi-word phrases
+   - Sliding window match on word tokens
+   - No regex
+
+3. Keep all existing regex-based methods unchanged (steady-parent validator depends on them)
+
+4. Future: feature-gate `regex` dependency behind `features = ["regex"]`
