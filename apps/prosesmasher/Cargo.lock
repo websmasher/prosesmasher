@@ -382,6 +382,8 @@ dependencies = [
  "prosesmasher-app-core",
  "prosesmasher-domain-types",
  "prosesmasher-ports-outbound-traits",
+ "serde",
+ "serde_json",
  "walkdir",
 ]
 
