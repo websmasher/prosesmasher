@@ -1,4 +1,8 @@
 //! Filesystem adapter — `FileReader` and `ConfigLoader` implementations.
 
-use prosesmasher_domain_types as _;
-use prosesmasher_ports_outbound_traits as _;
+mod config_dto;
+pub mod config_loader;
+pub mod file_reader;
+
+pub use config_loader::FsConfigLoader;
+pub use file_reader::FsFileReader;
