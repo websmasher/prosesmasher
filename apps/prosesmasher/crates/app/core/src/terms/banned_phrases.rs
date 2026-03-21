@@ -1,24 +1,24 @@
-//! Banned words check — flags configured banned words found in prose.
+//! Banned phrases check — flags configured multi-word phrases found in prose.
 
 use low_expectations::ExpectationSuite;
 use prosesmasher_domain_types::{CheckConfig, Document, Locale};
 
 use crate::check::Check;
 
-/// Checks that none of the configured banned words appear in the document.
+/// Checks that none of the configured banned phrases appear in the document.
 ///
-/// Words are matched case-insensitively against the `banned_words` list
-/// from the config. Matches in code blocks and list items are ignored.
+/// Phrases are matched via sliding-window over contiguous words,
+/// case-insensitively. Matches in code blocks and list items are ignored.
 #[derive(Debug)]
-pub struct BannedWordsCheck;
+pub struct BannedPhrasesCheck;
 
-impl Check for BannedWordsCheck {
+impl Check for BannedPhrasesCheck {
     fn id(&self) -> &'static str {
-        "banned-words"
+        "banned-phrases"
     }
 
     fn label(&self) -> &'static str {
-        "Banned Words"
+        "Banned Phrases"
     }
 
     fn supported_locales(&self) -> Option<&'static [Locale]> {
@@ -26,7 +26,7 @@ impl Check for BannedWordsCheck {
     }
 
     fn run(&self, doc: &Document, config: &CheckConfig, suite: &mut ExpectationSuite) {
-        if config.terms.banned_words.is_empty() {
+        if config.terms.banned_phrases.is_empty() {
             return;
         }
 
@@ -37,14 +37,14 @@ impl Check for BannedWordsCheck {
             .flat_map(|b| super::collect_paragraph_words(b))
             .collect();
 
-        let banned = low_expectations::text::build_term_set(&config.terms.banned_words);
+        let phrases = low_expectations::text::build_phrase_list(&config.terms.banned_phrases);
         let _result = suite
-            .expect_terms_absent("banned-words", &all_words, &banned)
-            .label("Banned Words")
+            .expect_phrases_absent("banned-phrases", &all_words, &phrases)
+            .label("Banned Phrases")
             .checking("AI writing tells");
     }
 }
 
 #[cfg(test)]
-#[path = "banned_words_tests.rs"]
+#[path = "banned_phrases_tests.rs"]
 mod tests;
