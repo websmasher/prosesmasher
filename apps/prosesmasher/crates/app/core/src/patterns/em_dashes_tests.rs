@@ -61,3 +61,43 @@ fn check_id_and_label() {
     assert_eq!(check.label(), "No Em-Dashes", "label");
     assert!(check.supported_locales().is_none(), "supports all locales");
 }
+
+#[test]
+fn em_dash_inside_blockquote_detected() {
+    let doc = crate::test_helpers::make_doc_in_blockquote(
+        "Hello \u{2014} world.", Locale::En,
+    );
+    let config = CheckConfig::default();
+    let mut suite = ExpectationSuite::new("test");
+    super::EmDashCheck.run(&doc, &config, &mut suite);
+    let result = suite.into_suite_result();
+    assert_eq!(result.statistics.unsuccessful_expectations, 1,
+        "em-dash inside blockquote must be detected");
+}
+
+#[test]
+fn em_dash_in_code_block_not_detected() {
+    let doc = crate::test_helpers::make_doc_code_only(
+        "let dash = '\u{2014}';", Locale::En,
+    );
+    let config = CheckConfig::default();
+    let mut suite = ExpectationSuite::new("test");
+    super::EmDashCheck.run(&doc, &config, &mut suite);
+    let result = suite.into_suite_result();
+    assert_eq!(result.statistics.successful_expectations, 1,
+        "em-dash inside code block must NOT be detected");
+}
+
+#[test]
+fn em_dash_across_multiple_sections() {
+    let doc = crate::test_helpers::make_doc_multi_section(
+        &["No dashes here.", "Hello \u{2014} world.", "Clean text."],
+        Locale::En,
+    );
+    let config = CheckConfig::default();
+    let mut suite = ExpectationSuite::new("test");
+    super::EmDashCheck.run(&doc, &config, &mut suite);
+    let result = suite.into_suite_result();
+    assert_eq!(result.statistics.unsuccessful_expectations, 1,
+        "em-dash in second section must be detected");
+}

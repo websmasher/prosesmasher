@@ -21,7 +21,7 @@ fn runner_all_checks_pass() {
     let checks: Vec<&dyn Check> = vec![&WordCountCheck, &EmDashCheck];
     let result = run_checks(&checks, &doc, &config);
     assert_eq!(result.statistics.unsuccessful_expectations, 0, "all should pass");
-    assert!(result.statistics.successful_expectations >= 2, "at least 2 expectations — got {}", result.statistics.successful_expectations);
+    assert_eq!(result.statistics.successful_expectations, 2, "exactly 2 expectations (word-count + em-dashes)");
 }
 
 #[test]
@@ -38,8 +38,8 @@ fn runner_mixed_pass_fail() {
     };
     let checks: Vec<&dyn Check> = vec![&EmDashCheck, &BannedWordsCheck];
     let result = run_checks(&checks, &doc, &config);
-    assert!(result.statistics.successful_expectations >= 1, "em-dash should pass");
-    assert!(result.statistics.unsuccessful_expectations >= 1, "banned words should fail");
+    assert_eq!(result.statistics.successful_expectations, 1, "em-dash should pass");
+    assert_eq!(result.statistics.unsuccessful_expectations, 1, "banned words should fail");
 }
 
 #[test]
