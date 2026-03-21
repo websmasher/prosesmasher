@@ -1,0 +1,10 @@
+{
+  "locale": "en",
+  "terms": {
+    "bannedWords": ["present"],
+    "hedgeWords": ["also_present"]
+  },
+  "thresholds": {
+    "boldMin": 5
+  }
+}
