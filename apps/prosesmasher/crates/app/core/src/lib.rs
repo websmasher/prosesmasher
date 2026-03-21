@@ -1,6 +1,13 @@
-//! Application core — use cases and orchestration.
+//! Application core — check trait, runner, and all checks.
 
-use prosesmasher_domain_types as _;
+pub mod check;
+pub mod patterns;
+pub mod readability;
+pub mod runner;
+pub mod structure;
+pub mod terms;
+
+#[cfg(test)]
+pub(crate) mod test_helpers;
+
 use prosesmasher_ports_outbound_traits as _;
-
-// Check trait, runner, and check implementations will be added in Plan 04.
