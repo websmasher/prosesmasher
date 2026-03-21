@@ -1,0 +1,16 @@
+{
+  "locale": "en",
+  "terms": {
+    "bannedWords": ["actually", "leverage"],
+    "bannedPhrases": [],
+    "hedgeWords": ["might", "perhaps"],
+    "simplicityPairs": [],
+    "stopWords": ["the", "a", "is", "in", "to", "and", "of", "for"]
+  },
+  "thresholds": {
+    "wordCount": { "min": 10, "max": 500 },
+    "maxParagraphSentences": 5,
+    "maxExclamationsPerParagraph": 1,
+    "avgSentenceLengthMax": 30
+  }
+}

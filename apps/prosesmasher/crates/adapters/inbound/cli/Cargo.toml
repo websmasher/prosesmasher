@@ -5,10 +5,14 @@ edition.workspace = true
 publish = false
 
 [dependencies]
-garde = { workspace = true }
 prosesmasher-domain-types = { path = "../../../domain/types" }
 prosesmasher-ports-outbound-traits = { path = "../../../ports/outbound/traits" }
 prosesmasher-app-core = { path = "../../../app/core" }
+prosesmasher-adapters-outbound-fs = { path = "../../outbound/fs" }
+prosesmasher-adapters-outbound-parser = { path = "../../outbound/parser" }
+clap = { workspace = true }
+walkdir = { workspace = true }
+low-expectations = { path = "../../../../../../../low-expectations/crates/low-expectations" }
 
 [lints]
 workspace = true
