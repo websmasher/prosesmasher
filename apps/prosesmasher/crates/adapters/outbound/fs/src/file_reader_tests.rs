@@ -40,7 +40,10 @@ fn not_found_error_contains_path() {
 #[test]
 #[allow(clippy::panic)] // test assertion
 fn read_empty_file_returns_empty_string() {
-    let path = std::env::temp_dir().join("prosesmasher-test-empty-file-reader");
+    use std::sync::atomic::{AtomicU64, Ordering};
+    static CTR: AtomicU64 = AtomicU64::new(0);
+    let id = CTR.fetch_add(1, Ordering::Relaxed);
+    let path = std::env::temp_dir().join(format!("prosesmasher-test-empty-file-{id}"));
     #[allow(clippy::disallowed_methods)]
     std::fs::write(&path, "").unwrap_or_else(|e| panic!("failed to write: {e}"));
     let reader = FsFileReader;
