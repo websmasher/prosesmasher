@@ -523,3 +523,84 @@ fn trait_object_works() {
         Err(e) => panic!("trait object should work — got {e:?}"),
     }
 }
+
+// ═══════════════════════════════════════════════════════════════
+// 4-angle attack findings
+// ═══════════════════════════════════════════════════════════════
+
+#[test]
+fn locale_3_to_5_chars_passes_garde_but_fails_parse() {
+    // Garde allows 2-5 chars, but parse_locale only knows 2-char codes.
+    // "pt-br" is 5 chars → passes garde, fails parse_locale.
+    // Documents the gap between validation layers.
+    let err = load_json_err(r#"{"locale":"pt-br","terms":{},"thresholds":{}}"#);
+    assert!(matches!(err, ConfigError::ValidationFailed(ref msg) if msg.contains("unknown locale")),
+        "3-5 char locale passes garde but fails parse — got {err:?}");
+}
+
+#[test]
+fn infinity_threshold_rejected_by_serde() {
+    // JSON 1e999 is rejected by serde_json as "number out of range"
+    let err = load_json_err(r#"{"locale":"en","terms":{},"thresholds":{"fleschKincaidMin":1e999}}"#);
+    assert!(matches!(err, ConfigError::InvalidJson(_)),
+        "infinity should be rejected by serde — got {err:?}");
+}
+
+#[test]
+fn non_utf8_file_fails() {
+    // Non-UTF-8 bytes cause read_to_string to fail with InvalidData
+    // which maps to ReadError::Io → ConfigError::NotFound (known semantic gap:
+    // IO errors are mapped to NotFound because ConfigError has no Io variant)
+    let path = write_temp("nonutf8", "");
+    // Overwrite with raw bytes
+    #[allow(clippy::disallowed_methods)]
+    std::fs::write(&path, b"\xff\xfe\x00\x01").unwrap_or_default();
+    let result = FsConfigLoader.load_config(&path);
+    assert!(matches!(result, Err(ConfigError::NotFound(_))),
+        "non-UTF-8 → NotFound (IO mapped to NotFound) — got {result:?}");
+    cleanup(&path);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 4-angle attack: round 2 fixes
+// ═══════════════════════════════════════════════════════════════
+
+#[test]
+fn negative_gunning_fog_accepted() {
+    let c = load_json_ok(r#"{"locale":"en","terms":{},"thresholds":{"gunningFogMax":-5.0}}"#);
+    assert_eq!(c.thresholds.gunning_fog_max, Some(-5.0), "negative gunning fog");
+}
+
+#[test]
+fn negative_coleman_liau_accepted() {
+    let c = load_json_ok(r#"{"locale":"en","terms":{},"thresholds":{"colemanLiauMax":-3.5}}"#);
+    assert_eq!(c.thresholds.coleman_liau_max, Some(-3.5), "negative coleman liau");
+}
+
+#[test]
+fn duplicate_json_keys_rejected() {
+    // serde_json rejects duplicate keys
+    let err = load_json_err(r#"{"locale":"en","locale":"ru","terms":{},"thresholds":{}}"#);
+    assert!(matches!(err, ConfigError::InvalidJson(ref msg) if msg.contains("duplicate")),
+        "duplicate keys → InvalidJson — got {err:?}");
+}
+
+#[test]
+fn nested_unknown_fields_in_terms_ignored() {
+    let c = load_json_ok(r#"{"locale":"en","terms":{"bannedWords":["a"],"unknownNested":{"deep":true}},"thresholds":{}}"#);
+    assert_eq!(c.terms.banned_words.len(), 1, "known field works despite nested unknown");
+}
+
+#[test]
+fn utf8_bom_causes_parse_error() {
+    // UTF-8 BOM (EF BB BF) before valid JSON — serde_json rejects
+    let mut content = vec![0xEF, 0xBB, 0xBF];
+    content.extend_from_slice(br#"{"locale":"en","terms":{},"thresholds":{}}"#);
+    let path = write_temp("bom", "");
+    #[allow(clippy::disallowed_methods)]
+    std::fs::write(&path, &content).unwrap_or_default();
+    let result = FsConfigLoader.load_config(&path);
+    assert!(matches!(result, Err(ConfigError::InvalidJson(_))),
+        "BOM should cause parse error — got {result:?}");
+    cleanup(&path);
+}
