@@ -26,3 +26,7 @@ pub fn collect_checks(group: Option<&str>) -> CheckResult {
         Some(unknown) => Err(format!("Unknown check group: {unknown}. Valid groups: terms, patterns, structure, readability")),
     }
 }
+
+#[cfg(test)]
+#[path = "checks_tests.rs"]
+mod tests;

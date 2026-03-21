@@ -4,13 +4,21 @@ use std::path::Path;
 
 use low_expectations::types::SuiteValidationResult;
 
+/// Format a single check result line.
+///
+/// Returns a string like `"  PASS   Some Label                    42"`.
+#[must_use]
+pub fn format_line(success: bool, label: &str, observed: &str) -> String {
+    let status = if success { "PASS" } else { "FAIL" };
+    format!("  {status:6} {label:<30} {observed}")
+}
+
 /// Print check results for a single file to stdout.
 #[allow(clippy::print_stdout)] // reason: CLI output is the product
 pub fn print_result(file: &Path, result: &SuiteValidationResult) {
     println!("{}", file.display());
 
     for (column, vr) in &result.results {
-        let status = if vr.success { "PASS" } else { "FAIL" };
         let label = vr
             .expectation_config
             .meta
@@ -24,7 +32,7 @@ pub fn print_result(file: &Path, result: &SuiteValidationResult) {
             .map(ToString::to_string)
             .unwrap_or_default();
 
-        println!("  {status:6} {label:<30} {observed}");
+        println!("{}", format_line(vr.success, label, &observed));
     }
 
     let stats = &result.statistics;
@@ -35,3 +43,7 @@ pub fn print_result(file: &Path, result: &SuiteValidationResult) {
         stats.unsuccessful_expectations,
     );
 }
+
+#[cfg(test)]
+#[path = "output_tests.rs"]
+mod tests;
