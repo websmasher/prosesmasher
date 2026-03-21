@@ -70,3 +70,29 @@ fn check_id_and_label() {
     assert_eq!(check.label(), "Simplicity", "label");
     assert!(check.supported_locales().is_none(), "supports all locales");
 }
+
+#[test]
+fn complex_word_in_blockquote_detected() {
+    let doc = crate::test_helpers::make_doc_in_blockquote(
+        "We utilize this tool.",
+        Locale::En,
+    );
+    let config = config_with_pairs(&[("utilize", "use")]);
+    let mut suite = ExpectationSuite::new("test");
+    super::SimplicityCheck.run(&doc, &config, &mut suite);
+    let result = suite.into_suite_result();
+    assert_eq!(result.statistics.unsuccessful_expectations, 1, "complex word in blockquote → fail");
+}
+
+#[test]
+fn complex_word_in_code_block_not_detected() {
+    let doc = crate::test_helpers::make_doc_code_only(
+        "We utilize this tool.",
+        Locale::En,
+    );
+    let config = config_with_pairs(&[("utilize", "use")]);
+    let mut suite = ExpectationSuite::new("test");
+    super::SimplicityCheck.run(&doc, &config, &mut suite);
+    let result = suite.into_suite_result();
+    assert_eq!(result.statistics.successful_expectations, 1, "complex word in code block → pass");
+}

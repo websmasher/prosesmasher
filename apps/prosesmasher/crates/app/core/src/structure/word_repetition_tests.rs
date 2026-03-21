@@ -125,3 +125,24 @@ fn check_id_and_label() {
     assert_eq!(check.label(), "Word Repetition", "label");
     assert!(check.supported_locales().is_none(), "supports all locales");
 }
+
+#[test]
+fn multi_section_aggregation_exceeds_max() {
+    // "actually" appears 3 times in section 1 and 3 times in section 2 (6 total).
+    // With max=5, aggregated count should fail.
+    let doc = crate::test_helpers::make_doc_multi_section(
+        &[
+            "actually actually actually filler words here",
+            "actually actually actually other words here",
+        ],
+        Locale::En,
+    );
+    let config = config_with_repetition_max(5);
+    let mut suite = ExpectationSuite::new("test");
+    super::WordRepetitionCheck.run(&doc, &config, &mut suite);
+    let result = suite.into_suite_result();
+    assert!(
+        result.statistics.unsuccessful_expectations >= 1,
+        "actually x6 across sections with max=5 should fail"
+    );
+}

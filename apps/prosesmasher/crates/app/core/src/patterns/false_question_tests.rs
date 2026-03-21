@@ -75,3 +75,23 @@ fn check_id_and_label() {
     assert_eq!(check.label(), "False Question");
     assert!(check.supported_locales().is_none());
 }
+
+#[test]
+fn false_question_in_middle_section_detected() {
+    let doc = crate::test_helpers::make_doc_multi_section(
+        &[
+            "First section with normal text.",
+            "And isn't that what we all want?",
+            "Final section with normal text.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_patterns();
+    let mut suite = ExpectationSuite::new("test");
+    super::FalseQuestionCheck.run(&doc, &config, &mut suite);
+    let result = suite.into_suite_result();
+    assert_eq!(
+        result.statistics.unsuccessful_expectations, 1,
+        "false question in section 2 of 3 should fail"
+    );
+}

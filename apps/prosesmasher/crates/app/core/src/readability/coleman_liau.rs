@@ -34,7 +34,7 @@ impl Check for ColemanLiauCheck {
         let total_words = doc.metadata.total_words;
         let total_sentences = doc.metadata.total_sentences;
 
-        if total_words == 0 {
+        if total_words == 0 || total_sentences == 0 {
             return;
         }
 

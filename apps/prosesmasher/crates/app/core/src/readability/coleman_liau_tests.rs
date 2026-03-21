@@ -115,3 +115,17 @@ fn check_id_and_label() {
     assert_eq!(check.label(), "Coleman-Liau Index");
     assert!(check.supported_locales().is_none());
 }
+
+#[test]
+fn zero_sentences_with_words_skips() {
+    // Words present but zero sentences → guard should skip (no expectation).
+    let doc = make_coleman_doc(50, 4, 0);
+    let config = config_with_cl_max(10.0);
+    let mut suite = ExpectationSuite::new("test");
+    super::ColemanLiauCheck.run(&doc, &config, &mut suite);
+    let result = suite.into_suite_result();
+    assert_eq!(
+        result.statistics.evaluated_expectations, 0,
+        "zero sentences with words present → should skip"
+    );
+}

@@ -68,3 +68,23 @@ fn check_id_and_label() {
     assert_eq!(check.label(), "LLM Openers");
     assert!(check.supported_locales().is_none());
 }
+
+#[test]
+fn llm_opener_in_middle_section_detected() {
+    let doc = crate::test_helpers::make_doc_multi_section(
+        &[
+            "Nothing special here.",
+            "The interesting part is that nobody noticed.",
+            "Final section with normal text.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_openers();
+    let mut suite = ExpectationSuite::new("test");
+    super::LlmOpenersCheck.run(&doc, &config, &mut suite);
+    let result = suite.into_suite_result();
+    assert_eq!(
+        result.statistics.unsuccessful_expectations, 1,
+        "LLM opener in section 2 of 3 should fail"
+    );
+}
