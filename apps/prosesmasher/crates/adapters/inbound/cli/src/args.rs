@@ -28,6 +28,11 @@ pub enum Command {
         #[arg(long)]
         group: Option<String>,
 
+        /// Only run specific checks by ID (comma-separated).
+        /// Example: --check banned-words,em-dashes,word-count
+        #[arg(long)]
+        check: Option<String>,
+
         /// Output format: text (human-readable) or json (machine-readable).
         #[arg(long, default_value = "text")]
         format: OutputFormat,
