@@ -273,3 +273,36 @@ fn word_count_method_equals_words_len() {
         assert_eq!(sentence.word_count(), sentence.words.len(), "word_count() == words.len()");
     }
 }
+
+// ═══════════════════════════════════════════════════════════════
+// 4-angle attack findings
+// ═══════════════════════════════════════════════════════════════
+
+#[test]
+fn multi_sentence_last_without_period() {
+    // Second sentence has no terminal punctuation — final segment must be captured
+    let result = assert_sentences("Hello world. How are you", Locale::En, 2);
+    assert_eq!(result.get(1).map(Sentence::word_count), Some(3),
+        "second sentence without period should have 3 words");
+}
+
+#[test]
+fn code_like_text_extracts_identifiers() {
+    // Operators and braces should be filtered, alphabetic tokens kept
+    let result = assert_sentences("x = a + b.", Locale::En, 1);
+    let words = result.first().map(|s| &s.words);
+    assert!(words.is_some_and(|ws| ws.iter().any(|w| w.text == "x")),
+        "identifier 'x' should be a word");
+    assert!(words.is_some_and(|ws| ws.iter().any(|w| w.text == "a")),
+        "identifier 'a' should be a word");
+}
+
+#[test]
+fn long_text_100_words() {
+    // Stress test: 100 words in one sentence should not panic or lose words
+    let words: Vec<&str> = (0..100).map(|_| "word").collect();
+    let text = format!("{}.", words.join(" "));
+    let result = assert_sentences(&text, Locale::En, 1);
+    assert!(result.first().is_some_and(|s| s.word_count() >= 90),
+        "100-word sentence should retain most words");
+}

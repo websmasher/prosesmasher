@@ -1,5 +1,17 @@
 use super::*;
-use prosesmasher_domain_types::{Block, Locale};
+use prosesmasher_domain_types::{Block, Locale, Paragraph};
+
+/// Helper: assert document has at least N paragraphs, return the nth one.
+/// Eliminates silent-pass risk from `if let Some(p) = ...` patterns.
+#[allow(clippy::panic)]
+fn assert_first_paragraph(doc: &Document) -> &Paragraph {
+    let block = doc.sections.first()
+        .and_then(|s| s.blocks.first());
+    match block {
+        Some(Block::Paragraph(p)) => p,
+        other => panic!("expected Block::Paragraph, got {other:?}"),
+    }
+}
 
 #[allow(clippy::disallowed_methods, clippy::panic)] // test fixture loading
 fn load_fixture(name: &str) -> String {
@@ -723,4 +735,235 @@ fn h1_then_h2_creates_two_sections() {
     assert_eq!(doc.sections.len(), 2, "H1 + H2 = 2 sections — got {}", doc.sections.len());
     assert_eq!(doc.metadata.heading_counts.h1, 1, "h1 count");
     assert_eq!(doc.metadata.heading_counts.h2, 1, "h2 count");
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 4-angle attack: round 1 fixes
+// ═══════════════════════════════════════════════════════════════
+
+// --- ANGLE 1: strengthen weak kill tests ---
+
+#[test]
+fn image_alt_text_not_in_paragraph_strong() {
+    // Strengthened: assert paragraph EXISTS, then assert alt text absent
+    let doc = parse_markdown("Before ![alt text here](https://img.png) after.", Locale::En);
+    assert_eq!(doc.metadata.paragraph_count, 1, "should produce 1 paragraph");
+    let para = doc.sections.first()
+        .and_then(|s| s.blocks.first())
+        .and_then(|b| if let Block::Paragraph(p) = b { Some(p) } else { None });
+    assert!(para.is_some(), "paragraph must exist");
+    if let Some(p) = para {
+        let text: String = p.sentences.iter().map(|s| s.text.clone()).collect();
+        assert!(!text.contains("alt text here"),
+            "image alt text must NOT appear in paragraph text — got: {text}");
+    }
+}
+
+// --- ANGLE 2: handle_code for list items ---
+
+#[test]
+fn inline_code_in_list_item() {
+    let doc = parse_markdown("- Use `Config` here\n- Normal item", Locale::En);
+    let block = doc.sections.first().and_then(|s| s.blocks.first());
+    if let Some(Block::List(list)) = block {
+        let first = list.items.first().map(String::as_str);
+        assert!(first.is_some_and(|s| s.contains("Config")),
+            "list item should contain inline code text 'Config' — got: {first:?}");
+    }
+}
+
+// --- ANGLE 2: tables don't leak content ---
+
+#[test]
+fn table_content_not_in_paragraphs() {
+    let md = "| A | B |\n|---|---|\n| cell1 | cell2 |\n\nAfter table.";
+    let doc = parse_markdown(md, Locale::En);
+    // Paragraph text should NOT contain table cell content
+    let all_text: String = doc.sections.iter()
+        .flat_map(|s| &s.blocks)
+        .filter_map(|b| if let Block::Paragraph(p) = b { Some(p) } else { None })
+        .flat_map(|p| &p.sentences)
+        .map(|s| s.text.clone())
+        .collect();
+    assert!(!all_text.contains("cell1"), "table cell content should not leak — got: {all_text}");
+    assert!(all_text.contains("After"), "paragraph after table should exist — got: {all_text}");
+}
+
+// --- ANGLE 2: strikethrough text still in paragraph ---
+
+#[test]
+fn strikethrough_text_preserved_in_paragraph() {
+    let doc = parse_markdown("This is ~~deleted~~ text.", Locale::En);
+    assert_eq!(doc.metadata.paragraph_count, 1, "one paragraph");
+    let para = doc.sections.first()
+        .and_then(|s| s.blocks.first())
+        .and_then(|b| if let Block::Paragraph(p) = b { Some(p) } else { None });
+    if let Some(p) = para {
+        let text: String = p.sentences.iter().map(|s| s.text.clone()).collect();
+        assert!(text.contains("deleted"),
+            "strikethrough text should still appear in paragraph — got: {text}");
+    }
+}
+
+// --- ANGLE 3: exact paragraph text content ---
+
+#[test]
+fn paragraph_text_content_exact() {
+    let doc = parse_markdown("Hello beautiful world.", Locale::En);
+    let para = doc.sections.first()
+        .and_then(|s| s.blocks.first())
+        .and_then(|b| if let Block::Paragraph(p) = b { Some(p) } else { None });
+    assert!(para.is_some(), "paragraph must exist");
+    if let Some(p) = para {
+        let text = p.sentences.first().map(|s| s.text.as_str());
+        assert_eq!(text, Some("Hello beautiful world."), "exact paragraph text");
+    }
+}
+
+// --- ANGLE 3: bold+italic simultaneous ---
+
+#[test]
+fn bold_italic_simultaneous() {
+    let doc = parse_markdown("This is ***bold italic*** text.", Locale::En);
+    let para = doc.sections.first()
+        .and_then(|s| s.blocks.first())
+        .and_then(|b| if let Block::Paragraph(p) = b { Some(p) } else { None });
+    assert_eq!(para.map(|p| p.has_bold), Some(true), "has_bold for ***");
+    assert_eq!(para.map(|p| p.has_italic), Some(true), "has_italic for ***");
+}
+
+// --- ANGLE 3: nested emphasis ---
+
+#[test]
+fn nested_emphasis_bold_inside_italic() {
+    let doc = parse_markdown("*outer **inner** outer*", Locale::En);
+    let para = doc.sections.first()
+        .and_then(|s| s.blocks.first())
+        .and_then(|b| if let Block::Paragraph(p) = b { Some(p) } else { None });
+    assert_eq!(para.map(|p| p.has_bold), Some(true), "has_bold from nested");
+    assert_eq!(para.map(|p| p.has_italic), Some(true), "has_italic from outer");
+}
+
+// --- ANGLE 3: empty link text ---
+
+#[test]
+fn empty_link_text() {
+    let doc = parse_markdown("Click [](https://example.com) here.", Locale::En);
+    let para = doc.sections.first()
+        .and_then(|s| s.blocks.first())
+        .and_then(|b| if let Block::Paragraph(p) = b { Some(p) } else { None });
+    assert_eq!(para.map(|p| p.links.len()), Some(1), "empty-text link should still be counted");
+}
+
+// --- ANGLE 4: escaped characters at unit level ---
+
+#[test]
+fn escaped_bold_not_detected() {
+    let doc = parse_markdown(r"\*\*not bold\*\*", Locale::En);
+    let para = doc.sections.first()
+        .and_then(|s| s.blocks.first())
+        .and_then(|b| if let Block::Paragraph(p) = b { Some(p) } else { None });
+    assert_eq!(para.map(|p| p.has_bold), Some(false),
+        "escaped ** should NOT set has_bold");
+}
+
+#[test]
+fn escaped_italic_not_detected() {
+    let doc = parse_markdown(r"\*not italic\*", Locale::En);
+    let para = doc.sections.first()
+        .and_then(|s| s.blocks.first())
+        .and_then(|b| if let Block::Paragraph(p) = b { Some(p) } else { None });
+    assert_eq!(para.map(|p| p.has_italic), Some(false),
+        "escaped * should NOT set has_italic");
+}
+
+#[test]
+fn escaped_link_not_detected() {
+    let doc = parse_markdown(r"\[not a link\](not-a-url)", Locale::En);
+    let para = doc.sections.first()
+        .and_then(|s| s.blocks.first())
+        .and_then(|b| if let Block::Paragraph(p) = b { Some(p) } else { None });
+    assert_eq!(para.map(|p| p.links.len()), Some(0),
+        "escaped [] should NOT create a link");
+}
+
+// --- ANGLE 4: code block with headings/links/images ---
+
+#[test]
+fn code_block_with_heading_syntax_not_parsed() {
+    let doc = parse_markdown("```\n# Not a heading\n[Not a link](url)\n```", Locale::En);
+    assert_eq!(doc.metadata.heading_counts.h1, 0, "# inside code block not a heading");
+    assert_eq!(doc.metadata.link_count, 0, "[] inside code block not a link");
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 4-angle attack: round 2 fixes
+// ═══════════════════════════════════════════════════════════════
+
+// --- ANGLE 1: bold/italic depth reset across paragraphs ---
+
+#[test]
+fn bold_does_not_bleed_to_next_paragraph() {
+    let doc = parse_markdown("**Bold paragraph.**\n\nPlain paragraph.", Locale::En);
+    assert_eq!(doc.metadata.paragraph_count, 2, "two paragraphs");
+    // First paragraph: has_bold = true
+    let p0 = doc.sections.first()
+        .and_then(|s| s.blocks.first())
+        .and_then(|b| if let Block::Paragraph(p) = b { Some(p) } else { None });
+    assert_eq!(p0.map(|p| p.has_bold), Some(true), "first para bold");
+    // Second paragraph: has_bold = false
+    let p1 = doc.sections.first()
+        .and_then(|s| s.blocks.get(1))
+        .and_then(|b| if let Block::Paragraph(p) = b { Some(p) } else { None });
+    assert_eq!(p1.map(|p| p.has_bold), Some(false),
+        "bold must not bleed to next paragraph");
+}
+
+// --- ANGLE 2: hard break distinct from soft break ---
+
+#[test]
+fn hard_break_inserts_space() {
+    // Two trailing spaces + newline = hard break in CommonMark
+    let doc = parse_markdown("Line one  \nline two.", Locale::En);
+    let p = assert_first_paragraph(&doc);
+    let text: String = p.sentences.iter().map(|s| s.text.clone()).collect();
+    assert!(!text.contains("oneline"),
+        "hard break must insert space — got: {text}");
+}
+
+// --- ANGLE 2: horizontal rule doesn't corrupt state ---
+
+#[test]
+fn horizontal_rule_between_paragraphs() {
+    let doc = parse_markdown("Para one.\n\n---\n\nPara two.", Locale::En);
+    assert_eq!(doc.metadata.paragraph_count, 2, "two paragraphs around hr");
+    assert_eq!(doc.metadata.heading_counts.h1, 0, "hr is not a heading");
+    assert_eq!(doc.metadata.heading_counts.h2, 0, "hr is not a heading");
+}
+
+// --- ANGLE 4: inline HTML content excluded ---
+
+#[test]
+fn inline_html_not_in_paragraph_text() {
+    // <b>html bold</b> is raw HTML, not markdown bold — should be ignored
+    let doc = parse_markdown("Before <b>html bold</b> after.", Locale::En);
+    let p = assert_first_paragraph(&doc);
+    // The text events for "Before " and " after." should be captured.
+    // InlineHtml events for "<b>" and "</b>" are ignored.
+    // The text "html bold" between the tags IS a text event (not InlineHtml).
+    assert!(!p.has_bold, "HTML <b> should NOT set has_bold flag");
+}
+
+// --- ANGLE 4: task list marker ignored ---
+
+#[test]
+fn task_list_marker_ignored() {
+    let doc = parse_markdown("- [ ] unchecked item\n- [x] checked item", Locale::En);
+    let block = doc.sections.first().and_then(|s| s.blocks.first());
+    if let Some(Block::List(list)) = block {
+        assert_eq!(list.items.len(), 2, "two list items");
+        // Task list markers should not corrupt item text
+        assert!(list.items.first().is_some_and(|s| s.contains("unchecked")),
+            "item text preserved");
+    }
 }
