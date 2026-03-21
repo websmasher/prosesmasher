@@ -7,6 +7,9 @@ publish = false
 [dependencies]
 prosesmasher-domain-types = { path = "../../../domain/types" }
 prosesmasher-ports-outbound-traits = { path = "../../../ports/outbound/traits" }
+serde = { workspace = true }
+serde_json = { workspace = true }
+garde = { workspace = true }
 
 [lints]
 workspace = true
