@@ -1,0 +1,35 @@
+{
+  "locale": "fr",
+  "terms": {
+    "bannedWords": ["BANNED_WORD_SENTINEL"],
+    "bannedPhrases": ["BANNED_PHRASE_SENTINEL"],
+    "genderedTerms": ["GENDERED_SENTINEL"],
+    "forbiddenTerms": ["FORBIDDEN_SENTINEL"],
+    "raceTerms": ["RACE_SENTINEL"],
+    "hedgeWords": ["HEDGE_SENTINEL"],
+    "simplicityPairs": [["COMPLEX_SENTINEL", "SIMPLE_SENTINEL"]],
+    "negationSignals": ["NEGATION_SENTINEL"],
+    "reframeSignals": ["REFRAME_SENTINEL"],
+    "llmOpeners": ["LLM_OPENER_SENTINEL"],
+    "affirmationClosers": ["AFFIRMATION_SENTINEL"],
+    "summativePatterns": ["SUMMATIVE_SENTINEL"],
+    "falseQuestionPatterns": ["FALSE_QUESTION_SENTINEL"],
+    "humbleBraggerPhrases": ["HUMBLE_SENTINEL"],
+    "jargonFakerPhrases": ["JARGON_SENTINEL"],
+    "stopWords": ["STOP_SENTINEL"]
+  },
+  "thresholds": {
+    "wordCount": { "min": 111, "max": 222 },
+    "h2Count": { "min": 333, "max": 444 },
+    "h3Min": 555,
+    "boldMin": 666,
+    "maxParagraphSentences": 777,
+    "maxExclamationsPerParagraph": 888,
+    "maxHedgesPerSentence": 999,
+    "fleschKincaidMin": 11.11,
+    "gunningFogMax": 22.22,
+    "avgSentenceLengthMax": 1111,
+    "wordRepetitionMax": 2222,
+    "colemanLiauMax": 33.33
+  }
+}

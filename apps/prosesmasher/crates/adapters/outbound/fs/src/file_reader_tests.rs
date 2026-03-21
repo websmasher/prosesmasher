@@ -1,35 +1,75 @@
 use super::*;
 use std::path::Path;
+use prosesmasher_ports_outbound_traits::FileReader;
 
 #[test]
+#[allow(clippy::panic)] // test assertion
 fn read_existing_file() {
     let reader = FsFileReader;
-    // Read Cargo.toml from the crate root — guaranteed to exist
     let path = Path::new(env!("CARGO_MANIFEST_DIR")).join("Cargo.toml");
-    let result = reader.read_to_string(&path);
-    assert!(result.is_ok(), "should read existing file — got {result:?}");
-    let content = result.unwrap_or_default();
-    assert!(content.contains("prosesmasher-adapters-outbound-fs"),
-        "content should contain crate name");
+    match reader.read_to_string(&path) {
+        Ok(content) => {
+            assert!(content.contains("prosesmasher-adapters-outbound-fs"), "crate name in content");
+        }
+        Err(e) => panic!("should read existing file — got {e:?}"),
+    }
 }
 
 #[test]
-fn read_nonexistent_file() {
+fn read_nonexistent_file_is_not_found() {
     let reader = FsFileReader;
-    let path = Path::new("/nonexistent/path/to/file.txt");
-    let result = reader.read_to_string(path);
-    assert!(result.is_err(), "should fail on nonexistent file");
-    assert!(
-        matches!(result, Err(ReadError::NotFound(_))),
-        "should be NotFound error — got {result:?}",
-    );
+    let result = reader.read_to_string(Path::new("/nonexistent/path/to/file.txt"));
+    assert!(matches!(result, Err(ReadError::NotFound(_))), "should be NotFound — got {result:?}");
 }
 
 #[test]
 fn not_found_error_contains_path() {
     let reader = FsFileReader;
-    let path = Path::new("/does/not/exist.json");
-    if let Err(ReadError::NotFound(msg)) = reader.read_to_string(path) {
-        assert!(msg.contains("exist.json"), "error should contain filename — got: {msg}");
+    let result = reader.read_to_string(Path::new("/does/not/exist.json"));
+    match result {
+        Err(ReadError::NotFound(msg)) => {
+            assert!(msg.contains("exist.json"), "should contain filename — got: {msg}");
+        }
+        other => {
+            assert!(matches!(other, Err(ReadError::NotFound(_))),
+                "expected NotFound, got {other:?}");
+        }
+    }
+}
+
+#[test]
+#[allow(clippy::panic)] // test assertion
+fn read_empty_file_returns_empty_string() {
+    let path = std::env::temp_dir().join("prosesmasher-test-empty-file-reader");
+    #[allow(clippy::disallowed_methods)]
+    std::fs::write(&path, "").unwrap_or_else(|e| panic!("failed to write: {e}"));
+    let reader = FsFileReader;
+    match reader.read_to_string(&path) {
+        Ok(content) => assert_eq!(content, "", "empty content"),
+        Err(e) => panic!("empty file should return Ok — got {e:?}"),
+    }
+    #[allow(clippy::disallowed_methods)]
+    let _ = std::fs::remove_file(&path);
+}
+
+#[test]
+fn read_directory_returns_error() {
+    let reader = FsFileReader;
+    let result = reader.read_to_string(Path::new("/tmp"));
+    assert!(result.is_err(), "reading directory should fail — got {result:?}");
+    // Should NOT be NotFound — the path exists, it's just not a file
+    // On macOS/Linux this is typically an Io error
+    assert!(!matches!(result, Err(ReadError::NotFound(_))),
+        "directory read should not be NotFound — got {result:?}");
+}
+
+#[test]
+#[allow(clippy::panic)] // test assertion
+fn trait_object_works() {
+    let reader: &dyn FileReader = &FsFileReader;
+    let path = Path::new(env!("CARGO_MANIFEST_DIR")).join("Cargo.toml");
+    match reader.read_to_string(&path) {
+        Ok(content) => assert!(!content.is_empty(), "content through trait object"),
+        Err(e) => panic!("trait object should work — got {e:?}"),
     }
 }
