@@ -1,0 +1,7 @@
+{
+  "locale": "en",
+  "terms": {},
+  "thresholds": {
+    "wordCount": { "min": 0, "max": 0 }
+  }
+}

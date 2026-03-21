@@ -1,0 +1,11 @@
+{
+  "locale": "ru",
+  "terms": {
+    "bannedWords": ["кстати", "буквально"],
+    "bannedPhrases": ["давайте погрузимся"],
+    "hedgeWords": ["возможно", "наверное"],
+    "simplicityPairs": [["утилизировать", "использовать"]],
+    "stopWords": ["и", "в", "на", "с", "к"]
+  },
+  "thresholds": {}
+}
