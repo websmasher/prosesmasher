@@ -29,3 +29,7 @@ pub enum Command {
         group: Option<String>,
     },
 }
+
+#[cfg(test)]
+#[path = "args_tests.rs"]
+mod tests;

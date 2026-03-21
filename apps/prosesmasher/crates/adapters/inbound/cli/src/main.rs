@@ -1,14 +1,16 @@
 //! prosesmasher CLI entry point.
 
-use std::path::PathBuf;
+use std::process::ExitCode;
 
 use clap::Parser;
 use low_expectations as _;
+use walkdir as _;
 
 type CliResult = Result<(), Box<dyn std::error::Error>>;
 
 use prosesmasher_adapters_inbound_cli::args::{Args, Command};
 use prosesmasher_adapters_inbound_cli::checks::collect_checks;
+use prosesmasher_adapters_inbound_cli::collect_files;
 use prosesmasher_adapters_inbound_cli::output::print_result;
 use prosesmasher_adapters_outbound_fs::FsConfigLoader;
 use prosesmasher_adapters_outbound_fs::FsFileReader;
@@ -18,16 +20,15 @@ use prosesmasher_app_core::runner::run_checks;
 use prosesmasher_ports_outbound_traits::{ConfigLoader, DocumentParser, FileReader};
 
 #[allow(clippy::print_stderr)] // reason: CLI error reporting
-fn main() {
+fn main() -> ExitCode {
     let args = Args::parse();
 
-    if let Err(e) = run(args) {
-        eprintln!("Error: {e}");
-        // std::process::exit is banned — use a non-zero return via error propagation
-        // The process will exit with code 1 from the panic in eprintln path
-        // Actually, we just print and let main return — Rust returns 0.
-        // To get non-zero exit code without process::exit, we need to
-        // return ExitCode from main. Let's restructure.
+    match run(args) {
+        Ok(()) => ExitCode::SUCCESS,
+        Err(e) => {
+            eprintln!("Error: {e}");
+            ExitCode::FAILURE
+        }
     }
 }
 
@@ -89,22 +90,4 @@ fn run_check_command(
     }
 
     Ok(())
-}
-
-fn collect_files(path: &std::path::Path) -> Vec<PathBuf> {
-    if path.is_dir() {
-        let mut files: Vec<PathBuf> = walkdir::WalkDir::new(path)
-            .into_iter()
-            .filter_map(Result::ok)
-            .filter(|e| {
-                e.file_type().is_file()
-                    && e.path().extension().is_some_and(|ext| ext == "md")
-            })
-            .map(walkdir::DirEntry::into_path)
-            .collect();
-        files.sort();
-        files
-    } else {
-        vec![path.to_path_buf()]
-    }
 }
