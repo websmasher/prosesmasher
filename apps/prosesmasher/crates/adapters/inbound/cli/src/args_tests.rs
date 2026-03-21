@@ -8,10 +8,11 @@ fn parse_check_with_file() {
     assert!(args.is_ok(), "should parse");
     let args = args.unwrap_or_else(|e| panic!("parse failed: {e}"));
     match args.command {
-        Command::Check { path, config, group, format } => {
+        Command::Check { path, config, group, check, format } => {
             assert_eq!(path.to_str(), Some("foo.md"), "path");
             assert!(config.is_none(), "no config");
             assert!(group.is_none(), "no group");
+            assert!(check.is_none(), "no check filter");
             assert!(matches!(format, OutputFormat::Text), "default format is text");
         }
     }
@@ -58,6 +59,19 @@ fn parse_missing_path_fails() {
 fn parse_no_subcommand_fails() {
     let args = Args::try_parse_from(["prosesmasher"]);
     assert!(args.is_err(), "no subcommand should fail");
+}
+
+#[test]
+#[allow(clippy::panic)]
+fn parse_check_with_check_filter() {
+    let args = Args::try_parse_from(["prosesmasher", "check", "foo.md", "--check", "banned-words,em-dashes"]);
+    assert!(args.is_ok(), "should parse");
+    let args = args.unwrap_or_else(|e| panic!("parse failed: {e}"));
+    match args.command {
+        Command::Check { check, .. } => {
+            assert_eq!(check.as_deref(), Some("banned-words,em-dashes"), "check filter");
+        }
+    }
 }
 
 #[test]

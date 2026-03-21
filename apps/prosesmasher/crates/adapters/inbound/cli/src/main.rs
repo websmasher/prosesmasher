@@ -11,7 +11,7 @@ use walkdir as _;
 type CliResult = Result<(), Box<dyn std::error::Error>>;
 
 use prosesmasher_adapters_inbound_cli::args::{Args, Command, OutputFormat};
-use prosesmasher_adapters_inbound_cli::checks::collect_checks;
+use prosesmasher_adapters_inbound_cli::checks::{collect_checks, filter_checks_by_id};
 use prosesmasher_adapters_inbound_cli::collect_files;
 use prosesmasher_adapters_inbound_cli::output::output_result;
 use prosesmasher_adapters_outbound_fs::FsConfigLoader;
@@ -40,8 +40,9 @@ fn run(args: Args) -> CliResult {
             path,
             config,
             group,
+            check,
             format,
-        } => run_check_command(&path, config.as_deref(), group.as_deref(), &format),
+        } => run_check_command(&path, config.as_deref(), group.as_deref(), check.as_deref(), &format),
     }
 }
 
@@ -49,6 +50,7 @@ fn run_check_command(
     path: &std::path::Path,
     config_path: Option<&std::path::Path>,
     group: Option<&str>,
+    check_ids: Option<&str>,
     format: &OutputFormat,
 ) -> CliResult {
     let file_reader = FsFileReader;
@@ -65,9 +67,16 @@ fn run_check_command(
         return Err("No .md files found".into());
     }
 
-    let all_checks = collect_checks(group).map_err(|e| -> Box<dyn std::error::Error> {
+    // Collect checks: group filter first, then ID filter
+    let mut all_checks = collect_checks(group).map_err(|e| -> Box<dyn std::error::Error> {
         e.into()
     })?;
+
+    if let Some(ids) = check_ids {
+        all_checks = filter_checks_by_id(all_checks, ids).map_err(|e| -> Box<dyn std::error::Error> {
+            e.into()
+        })?;
+    }
 
     let mut any_failed = false;
     for file in &files {
