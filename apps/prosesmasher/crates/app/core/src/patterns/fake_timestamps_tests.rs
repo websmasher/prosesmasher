@@ -49,3 +49,16 @@ fn check_id_and_label() {
     assert_eq!(check.label(), "Fake Timestamps");
     assert_eq!(check.supported_locales(), Some([Locale::En].as_slice()));
 }
+
+#[test]
+fn twenty_four_hour_format_not_flagged() {
+    let doc = make_doc("The meeting starts at 14:30 in the main room.", Locale::En);
+    let config = CheckConfig::default();
+    let mut suite = ExpectationSuite::new("test");
+    super::FakeTimestampCheck.run(&doc, &config, &mut suite);
+    let result = suite.into_suite_result();
+    assert_eq!(
+        result.statistics.successful_expectations, 1,
+        "24-hour time without AM/PM should pass"
+    );
+}

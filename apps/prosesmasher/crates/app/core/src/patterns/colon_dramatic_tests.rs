@@ -52,3 +52,23 @@ fn check_id_and_label() {
     assert_eq!(check.label(), "Dramatic Colon");
     assert!(check.supported_locales().is_none());
 }
+
+/// False-positive test: "Time: 3 hours" is a factual label, not dramatic prose.
+/// NOTE: This test exposes a real bug — the current heuristic counts any short
+/// post-colon clause as dramatic, including factual label-value pairs.
+/// Filed as a known issue; ignored until the heuristic is refined.
+#[test]
+#[ignore = "false positive: colon-dramatic flags factual label:value pairs (needs heuristic fix)"]
+fn factual_colon_label_should_not_flag() {
+    let doc = make_doc("Time: 3 hours", Locale::En);
+    let config = CheckConfig::default();
+    let mut suite = ExpectationSuite::new("test");
+    super::ColonDramaticCheck.run(&doc, &config, &mut suite);
+    let result = suite.into_suite_result();
+    // Expected: pass (0 failures). If this fails, the heuristic needs refinement
+    // to distinguish dramatic colons from factual label:value patterns.
+    assert_eq!(
+        result.statistics.unsuccessful_expectations, 0,
+        "factual label 'Time: 3 hours' should not flag as dramatic (false positive bug)"
+    );
+}

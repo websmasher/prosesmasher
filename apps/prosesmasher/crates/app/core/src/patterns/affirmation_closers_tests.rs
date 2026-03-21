@@ -65,3 +65,23 @@ fn check_id_and_label() {
     assert_eq!(check.label(), "Affirmation Closers");
     assert!(check.supported_locales().is_none());
 }
+
+#[test]
+fn affirmation_closer_in_middle_section_detected() {
+    let doc = crate::test_helpers::make_doc_multi_section(
+        &[
+            "First section with normal text.",
+            "We worked hard and that's the key.",
+            "Final section with normal text.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_closers();
+    let mut suite = ExpectationSuite::new("test");
+    super::AffirmationClosersCheck.run(&doc, &config, &mut suite);
+    let result = suite.into_suite_result();
+    assert_eq!(
+        result.statistics.unsuccessful_expectations, 1,
+        "affirmation closer in section 2 of 3 should fail"
+    );
+}

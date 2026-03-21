@@ -40,3 +40,19 @@ fn check_id_and_label() {
     assert_eq!(check.label(), "No Smart Quotes");
     assert!(check.supported_locales().is_none(), "supports all locales");
 }
+
+#[test]
+fn em_dash_and_en_dash_not_flagged() {
+    let doc = make_doc(
+        "The result \u{2014} as expected \u{2013} was positive.",
+        Locale::En,
+    );
+    let config = CheckConfig::default();
+    let mut suite = ExpectationSuite::new("test");
+    super::SmartQuotesCheck.run(&doc, &config, &mut suite);
+    let result = suite.into_suite_result();
+    assert_eq!(
+        result.statistics.successful_expectations, 1,
+        "em-dash U+2014 and en-dash U+2013 should not trigger smart quotes check"
+    );
+}

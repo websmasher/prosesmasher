@@ -113,3 +113,33 @@ fn check_id_and_label() {
     assert_eq!(check.label(), "Average Sentence Length");
     assert!(check.supported_locales().is_none());
 }
+
+#[test]
+fn truncation_at_boundary_passes() {
+    // 101 words / 4 sentences = 25 (integer division truncates 25.25 → 25)
+    // With max=25, should pass because truncated value equals max.
+    let doc = make_sentence_doc(101, 4);
+    let config = config_with_avg_max(25);
+    let mut suite = ExpectationSuite::new("test");
+    super::AvgSentenceLengthCheck.run(&doc, &config, &mut suite);
+    let result = suite.into_suite_result();
+    assert_eq!(
+        result.statistics.successful_expectations, 1,
+        "101/4 = 25 (truncated from 25.25) should pass with max=25"
+    );
+    assert_eq!(result.statistics.unsuccessful_expectations, 0);
+}
+
+#[test]
+fn truncation_above_boundary_fails() {
+    // 104 words / 4 sentences = 26 (exact), max=25 → fail
+    let doc = make_sentence_doc(104, 4);
+    let config = config_with_avg_max(25);
+    let mut suite = ExpectationSuite::new("test");
+    super::AvgSentenceLengthCheck.run(&doc, &config, &mut suite);
+    let result = suite.into_suite_result();
+    assert_eq!(
+        result.statistics.unsuccessful_expectations, 1,
+        "104/4 = 26 should fail with max=25"
+    );
+}

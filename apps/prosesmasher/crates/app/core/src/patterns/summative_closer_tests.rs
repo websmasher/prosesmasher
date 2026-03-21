@@ -68,3 +68,23 @@ fn check_id_and_label() {
     assert_eq!(check.label(), "Summative Closer");
     assert!(check.supported_locales().is_none());
 }
+
+#[test]
+fn summative_closer_in_middle_section_detected() {
+    let doc = crate::test_helpers::make_doc_multi_section(
+        &[
+            "First section with normal text.",
+            "And that's what makes this approach so powerful.",
+            "Final section with normal text.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_patterns();
+    let mut suite = ExpectationSuite::new("test");
+    super::SummativeCloserCheck.run(&doc, &config, &mut suite);
+    let result = suite.into_suite_result();
+    assert_eq!(
+        result.statistics.unsuccessful_expectations, 1,
+        "summative closer in section 2 of 3 should fail"
+    );
+}
