@@ -27,7 +27,20 @@ pub enum Command {
         /// Only run checks from this group: terms, patterns, structure, readability.
         #[arg(long)]
         group: Option<String>,
+
+        /// Output format: text (human-readable) or json (machine-readable).
+        #[arg(long, default_value = "text")]
+        format: OutputFormat,
     },
+}
+
+/// Output format for check results.
+#[derive(Debug, Clone, clap::ValueEnum)]
+pub enum OutputFormat {
+    /// Human-readable text output.
+    Text,
+    /// Machine-readable JSON output.
+    Json,
 }
 
 #[cfg(test)]

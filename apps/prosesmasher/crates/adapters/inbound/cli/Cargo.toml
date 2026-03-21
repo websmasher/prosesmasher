@@ -11,6 +11,8 @@ prosesmasher-app-core = { path = "../../../app/core" }
 prosesmasher-adapters-outbound-fs = { path = "../../outbound/fs" }
 prosesmasher-adapters-outbound-parser = { path = "../../outbound/parser" }
 clap = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
 walkdir = { workspace = true }
 low-expectations = { path = "../../../../../../../low-expectations/crates/low-expectations" }
 

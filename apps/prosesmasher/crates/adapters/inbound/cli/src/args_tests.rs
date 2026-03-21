@@ -8,10 +8,11 @@ fn parse_check_with_file() {
     assert!(args.is_ok(), "should parse");
     let args = args.unwrap_or_else(|e| panic!("parse failed: {e}"));
     match args.command {
-        Command::Check { path, config, group } => {
+        Command::Check { path, config, group, format } => {
             assert_eq!(path.to_str(), Some("foo.md"), "path");
             assert!(config.is_none(), "no config");
             assert!(group.is_none(), "no group");
+            assert!(matches!(format, OutputFormat::Text), "default format is text");
         }
     }
 }
@@ -57,4 +58,17 @@ fn parse_missing_path_fails() {
 fn parse_no_subcommand_fails() {
     let args = Args::try_parse_from(["prosesmasher"]);
     assert!(args.is_err(), "no subcommand should fail");
+}
+
+#[test]
+#[allow(clippy::panic)]
+fn parse_check_with_format_json() {
+    let args = Args::try_parse_from(["prosesmasher", "check", "foo.md", "--format", "json"]);
+    assert!(args.is_ok(), "should parse");
+    let args = args.unwrap_or_else(|e| panic!("parse failed: {e}"));
+    match args.command {
+        Command::Check { format, .. } => {
+            assert!(matches!(format, OutputFormat::Json), "format should be json");
+        }
+    }
 }
