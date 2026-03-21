@@ -1,0 +1,12 @@
+{
+  "locale": "en",
+  "terms": {
+    "bannedWords": ["test"],
+    "unknownField": "should be ignored",
+    "anotherUnknown": [1, 2, 3]
+  },
+  "thresholds": {
+    "unknownThreshold": 42
+  },
+  "topLevelExtra": true
+}

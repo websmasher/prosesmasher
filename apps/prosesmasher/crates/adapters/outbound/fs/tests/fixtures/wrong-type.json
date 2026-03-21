@@ -1,0 +1,7 @@
+{
+  "locale": "en",
+  "terms": {
+    "bannedWords": "should be an array not a string"
+  },
+  "thresholds": {}
+}
