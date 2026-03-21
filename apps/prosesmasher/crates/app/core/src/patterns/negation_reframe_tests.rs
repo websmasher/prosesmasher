@@ -115,3 +115,49 @@ fn check_id_and_label() {
     assert_eq!(check.label(), "Negation-Reframe Pattern");
     assert!(check.supported_locales().is_none());
 }
+
+#[test]
+fn negation_reframe_inside_blockquote_detected() {
+    let sentences = make_sentences(&["This isn't defiance.", "It's developmental."]);
+    let doc = Document {
+        locale: Locale::En,
+        sections: vec![Section {
+            heading: None,
+            blocks: vec![Block::BlockQuote(vec![Block::Paragraph(Paragraph {
+                sentences,
+                has_bold: false,
+                has_italic: false,
+                links: vec![],
+            })])],
+        }],
+        metadata: DocumentMetadata::default(),
+    };
+    let config = config_with_signals();
+    let mut suite = ExpectationSuite::new("test");
+    super::NegationReframeCheck.run(&doc, &config, &mut suite);
+    let result = suite.into_suite_result();
+    assert_eq!(result.statistics.unsuccessful_expectations, 1,
+        "negation-reframe inside blockquote must be detected");
+}
+
+#[test]
+fn code_block_ignored() {
+    let doc = Document {
+        locale: Locale::En,
+        sections: vec![Section {
+            heading: None,
+            blocks: vec![Block::CodeBlock("This isn't code. It's fine.".to_owned())],
+        }],
+        metadata: DocumentMetadata::default(),
+    };
+    let config = config_with_signals();
+    let mut suite = ExpectationSuite::new("test");
+    super::NegationReframeCheck.run(&doc, &config, &mut suite);
+    let result = suite.into_suite_result();
+    // The check always emits one expectation (match_count between 0-0).
+    // Code block content is correctly skipped, so match_count=0 → passes.
+    assert_eq!(result.statistics.successful_expectations, 1,
+        "code block content ignored → 0 matches → pass");
+    assert_eq!(result.statistics.unsuccessful_expectations, 0,
+        "no failures from code block");
+}

@@ -53,9 +53,10 @@ fn h2_to_h4_skip_fails() {
     let mut suite = ExpectationSuite::new("test");
     super::HeadingHierarchyCheck.run(&doc, &config, &mut suite);
     let result = suite.into_suite_result();
-    assert!(
-        result.statistics.unsuccessful_expectations >= 1,
-        "H2→H4 skip should fail"
+    // H4 triggers both "H4+ not allowed" AND "level skip H2→H4" = 2 failures
+    assert_eq!(
+        result.statistics.unsuccessful_expectations, 2,
+        "H2→H4 skip should produce 2 failures (H4+ and skip)"
     );
 }
 

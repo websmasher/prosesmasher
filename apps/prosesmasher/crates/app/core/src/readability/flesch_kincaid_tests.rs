@@ -123,3 +123,29 @@ fn check_id_and_label() {
     assert_eq!(check.label(), "Flesch-Kincaid Reading Ease");
     assert!(check.supported_locales().is_none());
 }
+
+#[test]
+fn zero_words_nonzero_sentences_skips() {
+    let doc = Document {
+        locale: Locale::En,
+        sections: vec![],
+        metadata: DocumentMetadata {
+            total_words: 0,
+            total_sentences: 5,
+            total_syllables: 0,
+            ..Default::default()
+        },
+    };
+    let config = CheckConfig {
+        thresholds: Thresholds {
+            flesch_kincaid_min: Some(50.0),
+            ..Thresholds::default()
+        },
+        ..CheckConfig::default()
+    };
+    let mut suite = ExpectationSuite::new("test");
+    super::FleschKincaidCheck.run(&doc, &config, &mut suite);
+    let result = suite.into_suite_result();
+    assert_eq!(result.statistics.evaluated_expectations, 0,
+        "zero words with nonzero sentences → skip (no div by zero)");
+}
