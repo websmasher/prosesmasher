@@ -20,3 +20,7 @@ impl DocumentParser for MarkdownParser {
         Ok(markdown::parse_markdown(markdown, *locale))
     }
 }
+
+#[cfg(test)]
+#[path = "lib_tests.rs"]
+mod tests;
