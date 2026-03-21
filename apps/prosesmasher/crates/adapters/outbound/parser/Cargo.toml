@@ -9,6 +9,7 @@ prosesmasher-domain-types = { path = "../../../domain/types" }
 prosesmasher-ports-outbound-traits = { path = "../../../ports/outbound/traits" }
 hyphenation = { workspace = true }
 icu_segmenter = { workspace = true }
+pulldown-cmark = { workspace = true }
 
 [lints]
 workspace = true
