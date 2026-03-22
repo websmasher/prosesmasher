@@ -5,12 +5,11 @@ use prosesmasher_domain_types::{
     Word,
 };
 
-fn config_with_hedges(words: &[&str], max: Option<usize>) -> CheckConfig {
+fn config_with_hedges(_words: &[&str], max: Option<usize>) -> CheckConfig {
     let mut config = CheckConfig {
         locale: Locale::En,
         ..CheckConfig::default()
     };
-    config.terms.hedge_words = words.iter().map(|w| (*w).to_owned()).collect();
     if let Some(max) = max {
         config.quality.heuristics.hedge_stacking.max_per_sentence = max;
     }

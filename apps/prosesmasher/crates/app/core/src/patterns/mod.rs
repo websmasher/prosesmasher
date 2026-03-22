@@ -34,7 +34,6 @@ use crate::check::BoxedCheck;
 type SentenceSelector = fn(&[Block]) -> Option<SentenceRef<'_>>;
 type SentenceMatcher = fn(&str, &str) -> bool;
 type SentenceRef<'a> = (&'a str, usize);
-type PatternDefaults = fn(Locale) -> &'static [&'static str];
 
 /// All pattern checks.
 #[must_use]
@@ -212,82 +211,66 @@ fn sentence_contains(sentence: &str, phrase: &str) -> bool {
 
 #[must_use]
 pub fn resolve_llm_openers(config: &CheckConfig) -> Vec<String> {
-    resolve_legacy_or_default_patterns(config.locale, &config.terms.llm_openers, default_llm_openers)
+    default_llm_openers(config.locale)
+        .iter()
+        .map(|item| (*item).to_owned())
+        .collect()
 }
 
 #[must_use]
 pub fn resolve_affirmation_closers(config: &CheckConfig) -> Vec<String> {
-    resolve_legacy_or_default_patterns(
-        config.locale,
-        &config.terms.affirmation_closers,
-        default_affirmation_closers,
-    )
+    default_affirmation_closers(config.locale)
+        .iter()
+        .map(|item| (*item).to_owned())
+        .collect()
 }
 
 #[must_use]
 pub fn resolve_summative_patterns(config: &CheckConfig) -> Vec<String> {
-    resolve_legacy_or_default_patterns(
-        config.locale,
-        &config.terms.summative_patterns,
-        default_summative_patterns,
-    )
+    default_summative_patterns(config.locale)
+        .iter()
+        .map(|item| (*item).to_owned())
+        .collect()
 }
 
 #[must_use]
 pub fn resolve_false_question_patterns(config: &CheckConfig) -> Vec<String> {
-    resolve_legacy_or_default_patterns(
-        config.locale,
-        &config.terms.false_question_patterns,
-        default_false_question_patterns,
-    )
+    default_false_question_patterns(config.locale)
+        .iter()
+        .map(|item| (*item).to_owned())
+        .collect()
 }
 
 #[must_use]
 pub fn resolve_humble_bragger_phrases(config: &CheckConfig) -> Vec<String> {
-    resolve_legacy_or_default_patterns(
-        config.locale,
-        &config.terms.humble_bragger_phrases,
-        default_humble_bragger_phrases,
-    )
+    default_humble_bragger_phrases(config.locale)
+        .iter()
+        .map(|item| (*item).to_owned())
+        .collect()
 }
 
 #[must_use]
 pub fn resolve_jargon_faker_phrases(config: &CheckConfig) -> Vec<String> {
-    resolve_legacy_or_default_patterns(
-        config.locale,
-        &config.terms.jargon_faker_phrases,
-        default_jargon_faker_phrases,
-    )
+    default_jargon_faker_phrases(config.locale)
+        .iter()
+        .map(|item| (*item).to_owned())
+        .collect()
 }
 
 #[must_use]
 pub fn resolve_negation_signals(config: &CheckConfig) -> Vec<String> {
-    resolve_legacy_or_default_patterns(
-        config.locale,
-        &config.terms.negation_signals,
-        default_negation_signals,
-    )
+    default_negation_signals(config.locale)
+        .iter()
+        .map(|item| (*item).to_owned())
+        .collect()
 }
 
 #[must_use]
 pub fn resolve_reframe_signals(config: &CheckConfig) -> Vec<String> {
-    resolve_legacy_or_default_patterns(
-        config.locale,
-        &config.terms.reframe_signals,
-        default_reframe_signals,
-    )
-}
-
-fn resolve_legacy_or_default_patterns(
-    locale: Locale,
-    legacy: &[String],
-    defaults: PatternDefaults,
-) -> Vec<String> {
-    if !legacy.is_empty() {
-        return legacy.to_vec();
-    }
-
-    defaults(locale).iter().map(|item| (*item).to_owned()).collect()
+    default_reframe_signals(config.locale)
+        .iter()
+        .map(|item| (*item).to_owned())
+        .collect()
 }
 
 fn default_llm_openers(locale: Locale) -> &'static [&'static str] {

@@ -12,7 +12,7 @@ prosesmasher check article.md --check prohibited-terms,em-dashes,word-count
 
 ## Current Status
 
-**Fully functional.** Canonical config migration is in place, legacy config loading is still supported, and the active public surface is stable. 30 active checks, 541+ tests (all passing, 1 ignored for known colon-dramatic false positive). Every module converged under 4-angle adversarial test attacks.
+**Fully functional.** The library is canonical-only: config is `quality` + `documentPolicy`, removed `terms` / `thresholds` input is rejected, and the active public surface is stable. 30 active checks, 541+ tests (all passing, 1 ignored for known colon-dramatic false positive). Every module converged under 4-angle adversarial test attacks.
 
 ## Architecture
 
@@ -22,7 +22,7 @@ Hexagonal architecture with strict dependency flow: domain ← ports ← app ←
 crates/
 ├── domain/types/           — Locale, Document tree, CheckConfig, errors (pure, no deps)
 ├── ports/outbound/traits/  — FileReader, DocumentParser, ConfigLoader trait definitions
-├── app/core/               — Check trait, runner, all 34 checks (depends on domain + low-expectations)
+├── app/core/               — Check trait, runner, all 30 active checks (depends on domain + low-expectations)
 └── adapters/
     ├── inbound/cli/        — Clap CLI, composition root, output formatting
     └── outbound/
@@ -62,7 +62,7 @@ English, Russian, German, French, Spanish, Portuguese, Indonesian. Locale affect
 - Syllable counting (per-locale hyphenation dictionaries)
 - Sentence case check (skips German/Russian which have different capitalization rules)
 - Fake timestamps check (English-only — AM/PM)
-- Lexical policy is configurable per locale; most heuristic anti-slop checks now use library-owned defaults with optional overrides/toggles
+- Lexical policy is configurable per locale; heuristic anti-slop checks use library-owned defaults with optional overrides/toggles
 
 ## The Active Checks
 
@@ -94,7 +94,7 @@ English, Russian, German, French, Spanish, Portuguese, Indonesian. Locale affect
 | Humble Bragger | `humble-bragger` | "In my experience..." credentialing |
 | Jargon Faker | `jargon-faker` | "debugging your morning routine" |
 
-### Document Policy / Structure (8)
+### Document Policy / Structure (6)
 
 | Check | ID | What it checks |
 |---|---|---|
@@ -102,19 +102,19 @@ English, Russian, German, French, Spanish, Portuguese, Indonesian. Locale affect
 | Heading Hierarchy | `heading-hierarchy` | No H1 in body, no H4+, no level skips |
 | Heading Counts | `heading-counts` | H2/H3 count within range |
 | Bold Density | `bold-density` | Minimum bold paragraphs for scannability |
-| Paragraph Length | `paragraph-length` | Max sentences per paragraph |
 | Sentence Case | `sentence-case` | Headings use sentence case (not Title Case) |
 | Code Fences | `code-fences` | Flags code blocks in prose content |
-| Word Repetition | `word-repetition` | Same word appearing too many times |
 
-### Readability (4) — arithmetic formulas on word/sentence/syllable counts
+### Quality: Flow / Readability Heuristics (6)
 
-| Check | ID | Formula |
+| Check | ID | What it checks |
 |---|---|---|
-| Flesch-Kincaid | `flesch-kincaid` | 206.835 - 1.015×(w/s) - 84.6×(syl/w) |
-| Gunning Fog | `gunning-fog` | 0.4×((w/s) + 100×(complex/w)) |
-| Coleman-Liau | `coleman-liau` | 0.0588×L - 0.296×S - 15.8 |
-| Avg Sentence Length | `avg-sentence-length` | words / sentences |
+| Paragraph Length | `paragraph-length` | Max sentences per paragraph |
+| Word Repetition | `word-repetition` | Same word appearing too many times |
+| Flesch-Kincaid | `flesch-kincaid` | Reading ease lower bound |
+| Gunning Fog | `gunning-fog` | Complexity upper bound |
+| Coleman-Liau | `coleman-liau` | Grade-level upper bound |
+| Avg Sentence Length | `avg-sentence-length` | Sentence length upper bound |
 
 ## Config Format
 
@@ -182,7 +182,7 @@ Canonical shape:
 }
 ```
 
-Legacy `terms` / `thresholds` configs are still accepted by the FS loader and normalized into the canonical domain model. Config uses camelCase (JSON convention). Domain types use snake_case. DTO layer in the FS adapter handles conversion. Serde stays out of domain types — they're pure.
+Config uses camelCase (JSON convention). Domain types use snake_case. DTO layer in the FS adapter handles conversion and rejects unknown fields, including the removed legacy `terms` / `thresholds` schema. Serde stays out of domain types — they're pure.
 
 ## Test Infrastructure
 
@@ -216,7 +216,7 @@ apps/prosesmasher/
     │   ├── locale.rs                   — Locale enum (7 variants)
     │   ├── document.rs                 — Document, Section, Block, Paragraph, Sentence, Word
     │   ├── metadata.rs                 — DocumentMetadata, HeadingCounts
-    │   ├── config.rs                   — CheckConfig, TermLists, TermPool, Thresholds, Range
+    │   ├── config.rs                   — CheckConfig, QualityConfig, DocumentPolicyConfig, TermPool, Range
     │   └── error.rs                    — ReadError, ParseError, ConfigError
     ├── ports/outbound/traits/src/
     │   ├── file_reader.rs              — FileReader trait
@@ -226,10 +226,10 @@ apps/prosesmasher/
     │   ├── check.rs                    — Check trait + BoxedCheck type alias
     │   ├── runner.rs                   — run_checks() orchestrator
     │   ├── test_helpers.rs             — shared test document builders
-    │   ├── terms/                      — 9 term checks
+    │   ├── terms/                      — 5 lexical / term checks
     │   ├── patterns/                   — 13 pattern checks
-    │   ├── structure/                  — 8 structure checks
-    │   └── readability/                — 4 readability checks
+    │   ├── structure/                  — 8 markdown structure / flow checks
+    │   └── readability/                — 4 readability formula checks
     └── adapters/
         ├── inbound/cli/src/
         │   ├── args.rs                 — Clap argument parsing
