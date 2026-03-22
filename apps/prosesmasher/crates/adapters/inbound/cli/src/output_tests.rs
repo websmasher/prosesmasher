@@ -131,3 +131,92 @@ fn build_file_result_includes_rewrite_guidance_for_failures() {
         assert_eq!(failure.observed, Some(serde_json::json!(2)), "em-dashes observed");
     }
 }
+
+#[test]
+fn build_file_result_sanitizes_readability_output() {
+    use low_expectations::ExpectationSuite;
+    use std::path::Path;
+
+    let mut suite = ExpectationSuite::new("test");
+    let _result = suite
+        .record_custom_values(
+            "gunning-fog",
+            false,
+            serde_json::json!({
+                "formula": "fog",
+                "maximum_score_x100": 1400
+            }),
+            serde_json::json!({
+                "score": 14.67,
+                "score_x100": 1467,
+                "total_words": 100
+            }),
+            &[serde_json::json!({
+                "score": 14.67,
+                "score_x100": 1467,
+                "total_words": 100
+            })],
+        )
+        .label("Gunning Fog Index");
+
+    let result = suite.into_suite_result();
+    let file_result = build_file_result(Path::new("draft.md"), &result);
+    let failure = file_result.failures.first();
+    assert!(failure.is_some(), "failure present");
+    if let Some(failure) = failure {
+        assert_eq!(failure.expected, Some(serde_json::json!({
+            "formula": "fog",
+            "maximum_score": 14.0
+        })));
+        assert_eq!(failure.observed, Some(serde_json::json!({
+            "score": 14.67,
+            "total_words": 100
+        })));
+        assert!(failure.evidence.is_none(), "duplicate scalar evidence removed");
+    }
+}
+
+#[test]
+fn build_file_result_strips_internal_index_fields_from_evidence() {
+    use low_expectations::ExpectationSuite;
+    use std::path::Path;
+
+    let mut suite = ExpectationSuite::new("test");
+    let _result = suite
+        .record_custom_values(
+            "negation-reframe",
+            false,
+            serde_json::json!({ "min": 0, "max": 0 }),
+            serde_json::json!(1),
+            &[serde_json::json!({
+                "section_index": 3,
+                "paragraph_index": 4,
+                "sentence_index": 2,
+                "sentence_index_next": 3,
+                "pattern_type": "inline",
+                "matched_text": "x, not y",
+                "sentence": "A pediatrician is the right person for a referral, not a diagnosis."
+            })],
+        )
+        .label("Negation-Reframe Pattern");
+
+    let result = suite.into_suite_result();
+    let file_result = build_file_result(Path::new("draft.md"), &result);
+    let failure = file_result.failures.first();
+    assert!(failure.is_some(), "failure present");
+    if let Some(failure) = failure {
+        let evidence = failure.evidence.as_ref();
+        assert!(evidence.is_some(), "evidence preserved");
+        if let Some(evidence) = evidence.and_then(|items| items.first()) {
+            assert!(evidence.get("section_index").is_none(), "section index removed");
+            assert!(evidence.get("paragraph_index").is_none(), "paragraph index removed");
+            assert!(evidence.get("sentence_index").is_none(), "sentence index removed");
+            assert!(evidence.get("sentence_index_next").is_none(), "next index removed");
+            assert!(evidence.get("pattern_type").is_none(), "pattern type removed");
+            assert_eq!(
+                evidence.get("matched_text").and_then(serde_json::Value::as_str),
+                Some("x, not y")
+            );
+        }
+    }
+}
