@@ -15,6 +15,7 @@ fn parse_check_with_file() {
             group,
             check,
             format,
+            include_checks,
         } => {
             assert_eq!(path.to_str(), Some("foo.md"), "path");
             assert!(config.is_none(), "no config");
@@ -22,6 +23,7 @@ fn parse_check_with_file() {
             assert!(group.is_none(), "no group");
             assert!(check.is_none(), "no check filter");
             assert!(matches!(format, OutputFormat::Text), "default format is text");
+            assert!(!include_checks, "checks hidden by default");
         }
         Command::ListPresets | Command::DumpConfig { .. } => panic!("expected check command"),
     }
@@ -153,6 +155,29 @@ fn parse_check_with_format_json() {
     match args.command {
         Command::Check { format, .. } => {
             assert!(matches!(format, OutputFormat::Json), "format should be json");
+        }
+        Command::ListPresets | Command::DumpConfig { .. } => panic!("expected check command"),
+    }
+}
+
+#[test]
+#[allow(clippy::panic)]
+fn parse_check_with_include_checks() {
+    let args = Args::try_parse_from([
+        "prosesmasher",
+        "check",
+        "foo.md",
+        "--preset",
+        "general-en",
+        "--format",
+        "json",
+        "--include-checks",
+    ]);
+    assert!(args.is_ok(), "should parse");
+    let args = args.unwrap_or_else(|e| panic!("parse failed: {e}"));
+    match args.command {
+        Command::Check { include_checks, .. } => {
+            assert!(include_checks, "include checks flag");
         }
         Command::ListPresets | Command::DumpConfig { .. } => panic!("expected check command"),
     }
