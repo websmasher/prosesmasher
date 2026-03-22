@@ -1,60 +1,68 @@
 {
   "locale": "en",
-  "terms": {
-    "bannedWords": [
-      "actually",
-      "leverage",
-      "robust",
-      "seamless",
-      "transformative",
-      "unlock",
-      "elevate",
-      "delve",
-      "realm",
-      "tapestry"
-    ],
-    "bannedPhrases": [
-      "let's dive in",
-      "in today's fast-paced world",
-      "at the end of the day",
-      "it's important to note",
-      "the key takeaway is",
-      "in conclusion"
-    ],
-    "genderedTerms": [],
-    "forbiddenTerms": [],
-    "raceTerms": [],
-    "hedgeWords": ["might", "maybe", "perhaps", "somewhat", "arguably"],
-    "simplicityPairs": [
-      ["utilize", "use"],
-      ["implement", "do"],
-      ["facilitate", "help"],
-      ["numerous", "many"],
-      ["commence", "start"]
-    ],
-    "negationSignals": ["not", "isn't", "aren't", "doesn't"],
-    "reframeSignals": ["it's", "that's", "instead", "rather"],
-    "llmOpeners": ["the interesting part is", "in the world of"],
-    "affirmationClosers": ["and that's the key.", "that's what matters."],
-    "summativePatterns": ["and that's what makes", "that's why this"],
-    "falseQuestionPatterns": ["isn't that what we all", "isn't that the point"],
-    "humbleBraggerPhrases": ["in my experience", "as someone who has", "having worked with"],
-    "jargonFakerPhrases": ["debug your", "debug our", "optimizing for", "iterating on your"],
-    "stopWords": ["the", "a", "an", "is", "in", "to", "and", "of", "for", "that"],
-    "requiredTerms": []
+  "quality": {
+    "lexical": {
+      "prohibitedTerms": {
+        "defaults": false,
+        "add": [
+          "actually",
+          "leverage",
+          "robust",
+          "seamless",
+          "transformative",
+          "unlock",
+          "elevate",
+          "delve",
+          "realm",
+          "tapestry",
+          "let's dive in",
+          "in today's fast-paced world",
+          "at the end of the day",
+          "it's important to note",
+          "the key takeaway is",
+          "in conclusion"
+        ],
+        "remove": []
+      },
+      "simplicityPairs": {
+        "defaults": false,
+        "add": [
+          ["utilize", "use"],
+          ["implement", "do"],
+          ["facilitate", "help"],
+          ["numerous", "many"],
+          ["commence", "start"]
+        ],
+        "remove": []
+      },
+      "requiredTerms": []
+    },
+    "heuristics": {
+      "paragraphLength": { "maxSentences": 4 },
+      "exclamationDensity": { "maxPerParagraph": 1 },
+      "hedgeStacking": { "maxPerSentence": 1 },
+      "wordRepetition": {
+        "max": 5,
+        "excludedTerms": {
+          "defaults": false,
+          "add": ["the", "a", "an", "is", "in", "to", "and", "of", "for", "that"],
+          "remove": []
+        }
+      },
+      "readability": {
+        "fleschKincaidMin": 50.0,
+        "gunningFogMax": 14.0,
+        "avgSentenceLengthMax": 22,
+        "colemanLiauMax": 12.5
+      }
+    }
   },
-  "thresholds": {
+  "documentPolicy": {
     "wordCount": { "min": 500, "max": 1400 },
-    "h2Count": { "min": 2, "max": 6 },
-    "h3Min": 0,
-    "boldMin": 2,
-    "maxParagraphSentences": 4,
-    "maxExclamationsPerParagraph": 1,
-    "maxHedgesPerSentence": 1,
-    "fleschKincaidMin": 50.0,
-    "gunningFogMax": 14.0,
-    "avgSentenceLengthMax": 22,
-    "wordRepetitionMax": 5,
-    "colemanLiauMax": 12.5
+    "headingCounts": {
+      "h2": { "min": 2, "max": 6 },
+      "h3Min": 0
+    },
+    "boldDensity": { "min": 2 }
   }
 }

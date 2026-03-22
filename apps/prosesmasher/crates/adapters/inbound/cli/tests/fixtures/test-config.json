@@ -1,16 +1,34 @@
 {
   "locale": "en",
-  "terms": {
-    "bannedWords": ["actually", "leverage"],
-    "bannedPhrases": [],
-    "hedgeWords": ["might", "perhaps"],
-    "simplicityPairs": [],
-    "stopWords": ["the", "a", "is", "in", "to", "and", "of", "for"]
+  "quality": {
+    "lexical": {
+      "prohibitedTerms": {
+        "defaults": false,
+        "add": ["actually", "leverage"],
+        "remove": []
+      }
+    },
+    "heuristics": {
+      "paragraphLength": { "maxSentences": 5 },
+      "exclamationDensity": { "maxPerParagraph": 1 },
+      "wordRepetition": {
+        "max": 5,
+        "excludedTerms": {
+          "defaults": false,
+          "add": ["the", "a", "is", "in", "to", "and", "of", "for"],
+          "remove": []
+        }
+      },
+      "readability": {
+        "avgSentenceLengthMax": 30
+      },
+      "hedgeStacking": { "maxPerSentence": 2 }
+    }
   },
-  "thresholds": {
+  "documentPolicy": {
     "wordCount": { "min": 10, "max": 500 },
-    "maxParagraphSentences": 5,
-    "maxExclamationsPerParagraph": 1,
-    "avgSentenceLengthMax": 30
+    "headingHierarchy": { "enabled": true },
+    "sentenceCaseHeadings": { "enabled": true },
+    "codeFences": { "allowed": false }
   }
 }

@@ -7,12 +7,12 @@ CLI tool that validates prose quality in markdown files. Deterministic AI slop d
 ```bash
 prosesmasher check article.md --config config.json --format json
 prosesmasher check docs/ --group terms --format text
-prosesmasher check article.md --check banned-words,em-dashes,word-count
+prosesmasher check article.md --check prohibited-terms,em-dashes,word-count
 ```
 
 ## Current Status
 
-**Fully functional.** All 9 plans implemented. 34 checks, 541 tests (all passing, 1 ignored for known colon-dramatic false positive). Every module converged under 4-angle adversarial test attacks.
+**Fully functional.** Canonical config migration is in place, legacy config loading is still supported, and the active public surface is stable. 30 active checks, 541+ tests (all passing, 1 ignored for known colon-dramatic false positive). Every module converged under 4-angle adversarial test attacks.
 
 ## Architecture
 
@@ -62,25 +62,21 @@ English, Russian, German, French, Spanish, Portuguese, Indonesian. Locale affect
 - Syllable counting (per-locale hyphenation dictionaries)
 - Sentence case check (skips German/Russian which have different capitalization rules)
 - Fake timestamps check (English-only — AM/PM)
-- All term/pattern checks use config-provided per-locale term lists
+- Lexical policy is configurable per locale; most heuristic anti-slop checks now use library-owned defaults with optional overrides/toggles
 
-## The 34 Checks
+## The Active Checks
 
-### Terms (9) — word/phrase matching against config lists
+### Quality: Lexical / Terms (5)
 
 | Check | ID | What it catches |
 |---|---|---|
-| Banned Words | `banned-words` | AI slop words: "actually", "leverage", etc. |
-| Banned Phrases | `banned-phrases` | AI phrase tells: "let's dive in", etc. |
-| Gendered Terms | `gendered-terms` | "mama", "chairman", etc. |
-| Forbidden Terms | `forbidden-terms` | Business-specific forbidden terms |
-| Race Terms | `race-terms` | Ethnicity/race descriptors |
+| Prohibited Terms | `prohibited-terms` | Unified prohibited lexicon: words and multi-word phrases |
 | Hedge Stacking | `hedge-stacking` | 2+ hedges in one sentence ("might perhaps") |
 | Simplicity | `simplicity` | Complex→simple pairs: "utilize"→"use" |
 | Required Terms | `required-terms` | ALL configured terms must appear |
 | Recommended Terms | `recommended-terms` | At least N from pool must appear (with optional stem matching) |
 
-### Patterns (13) — structural writing anti-patterns
+### Quality: Heuristics / Patterns (13)
 
 | Check | ID | What it catches |
 |---|---|---|
@@ -98,7 +94,7 @@ English, Russian, German, French, Spanish, Portuguese, Indonesian. Locale affect
 | Humble Bragger | `humble-bragger` | "In my experience..." credentialing |
 | Jargon Faker | `jargon-faker` | "debugging your morning routine" |
 
-### Structure (8) — document-level structural validation
+### Document Policy / Structure (8)
 
 | Check | ID | What it checks |
 |---|---|---|
@@ -122,51 +118,71 @@ English, Russian, German, French, Spanish, Portuguese, Indonesian. Locale affect
 
 ## Config Format
 
+Canonical shape:
+
 ```json
 {
   "locale": "en",
-  "terms": {
-    "bannedWords": ["actually", "leverage"],
-    "bannedPhrases": ["let's dive in"],
-    "genderedTerms": ["mama"],
-    "forbiddenTerms": [],
-    "raceTerms": [],
-    "hedgeWords": ["might", "perhaps"],
-    "simplicityPairs": [["utilize", "use"]],
-    "negationSignals": ["not", "isn't"],
-    "reframeSignals": ["it's", "that's"],
-    "llmOpeners": ["the interesting part is"],
-    "affirmationClosers": ["and that's the key"],
-    "summativePatterns": ["and that's what makes"],
-    "falseQuestionPatterns": ["isn't that what"],
-    "humbleBraggerPhrases": ["in my experience"],
-    "jargonFakerPhrases": ["debugging your"],
-    "stopWords": ["the", "a", "is", "in", "to", "and"],
-    "requiredTerms": ["ownership", "borrowing"],
-    "recommendedTerms": {
-      "terms": ["ownership", "borrowing", "lifetimes", "traits", "async"],
-      "minCount": 3,
-      "allowInflections": true
+  "quality": {
+    "lexical": {
+      "prohibitedTerms": {
+        "defaults": true,
+        "add": ["live coaching calls"],
+        "remove": ["actually"]
+      },
+      "prohibitedSubstrings": {
+        "defaults": false,
+        "add": [],
+        "remove": []
+      },
+      "requiredTerms": ["ownership", "borrowing"],
+      "requiredSubstrings": [],
+      "recommendedTerms": {
+        "terms": ["ownership", "borrowing", "lifetimes", "traits", "async"],
+        "minCount": 3,
+        "allowInflections": true
+      },
+      "simplicityPairs": {
+        "defaults": true,
+        "add": [["utilize", "use"]],
+        "remove": []
+      }
+    },
+    "heuristics": {
+      "exclamationDensity": { "maxPerParagraph": 1 },
+      "hedgeStacking": { "maxPerSentence": 2 },
+      "wordRepetition": {
+        "max": 5,
+        "excludedTerms": {
+          "defaults": true,
+          "add": [],
+          "remove": []
+        }
+      },
+      "paragraphLength": { "maxSentences": 4 },
+      "readability": {
+        "fleschKincaidMin": 50.0,
+        "gunningFogMax": 14.0,
+        "avgSentenceLengthMax": 25,
+        "colemanLiauMax": 12.5
+      }
     }
   },
-  "thresholds": {
+  "documentPolicy": {
     "wordCount": { "min": 650, "max": 1000 },
-    "h2Count": { "min": 2, "max": 6 },
-    "h3Min": 0,
-    "boldMin": 3,
-    "maxParagraphSentences": 4,
-    "maxExclamationsPerParagraph": 1,
-    "maxHedgesPerSentence": 2,
-    "fleschKincaidMin": 50.0,
-    "gunningFogMax": 14.0,
-    "avgSentenceLengthMax": 25,
-    "wordRepetitionMax": 5,
-    "colemanLiauMax": 12.5
+    "headingCounts": {
+      "h2": { "min": 2, "max": 6 },
+      "h3Min": 0
+    },
+    "boldDensity": { "min": 3 },
+    "headingHierarchy": { "enabled": true },
+    "sentenceCaseHeadings": { "enabled": true },
+    "codeFences": { "allowed": false }
   }
 }
 ```
 
-Config uses camelCase (JSON convention). Domain types use snake_case. DTO layer in the FS adapter handles conversion. Serde stays out of domain types — they're pure.
+Legacy `terms` / `thresholds` configs are still accepted by the FS loader and normalized into the canonical domain model. Config uses camelCase (JSON convention). Domain types use snake_case. DTO layer in the FS adapter handles conversion. Serde stays out of domain types — they're pure.
 
 ## Test Infrastructure
 
