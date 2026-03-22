@@ -24,9 +24,10 @@ impl Check for ExclamationDensityCheck {
     }
 
     fn run(&self, doc: &Document, config: &CheckConfig, suite: &mut ExpectationSuite) {
-        let Some(max) = config.thresholds.max_exclamations_per_paragraph else {
+        if !config.quality.heuristics.exclamation_density.enabled {
             return;
-        };
+        }
+        let max = config.quality.heuristics.exclamation_density.max_per_paragraph;
         let max_i64 = i64::try_from(max).unwrap_or(i64::MAX);
         let mut para_index: usize = 0;
         for (section_index, section) in doc.sections.iter().enumerate() {

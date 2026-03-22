@@ -2,22 +2,19 @@ use crate::check::Check;
 use low_expectations::ExpectationSuite;
 use prosesmasher_domain_types::{
     Block, CheckConfig, Document, DocumentMetadata, Locale, Paragraph, Section, Sentence,
-    TermLists, Thresholds, Word,
+    Word,
 };
 
 fn config_with_hedges(words: &[&str], max: Option<usize>) -> CheckConfig {
-    CheckConfig {
+    let mut config = CheckConfig {
         locale: Locale::En,
-        terms: TermLists {
-            hedge_words: words.iter().map(|w| (*w).to_owned()).collect(),
-            ..TermLists::default()
-        },
-        thresholds: Thresholds {
-            max_hedges_per_sentence: max,
-            ..Thresholds::default()
-        },
         ..CheckConfig::default()
+    };
+    config.terms.hedge_words = words.iter().map(|w| (*w).to_owned()).collect();
+    if let Some(max) = max {
+        config.quality.heuristics.hedge_stacking.max_per_sentence = max;
     }
+    config
 }
 
 /// Build a document with multiple sentences in one paragraph.
@@ -87,15 +84,18 @@ fn one_hedge_per_sentence_passes() {
 }
 
 #[test]
-fn empty_hedge_list_skips() {
+fn default_config_runs() {
     let doc = make_doc_sentences(&["it might perhaps work"], Locale::En);
-    let config = config_with_hedges(&[], None);
+    let config = CheckConfig {
+        locale: Locale::En,
+        ..CheckConfig::default()
+    };
     let mut suite = ExpectationSuite::new("test");
     super::HedgeStackingCheck.run(&doc, &config, &mut suite);
     let result = suite.into_suite_result();
     assert_eq!(
-        result.statistics.evaluated_expectations, 0,
-        "empty hedge list → no expectations"
+        result.statistics.unsuccessful_expectations, 1,
+        "default hedge lexicon should run"
     );
 }
 

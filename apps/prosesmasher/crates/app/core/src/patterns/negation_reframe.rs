@@ -25,10 +25,15 @@ impl Check for NegationReframeCheck {
     }
 
     fn run(&self, doc: &Document, config: &CheckConfig, suite: &mut ExpectationSuite) {
-        if config.terms.negation_signals.is_empty() || config.terms.reframe_signals.is_empty() {
+        if !config.quality.heuristics.negation_reframe.enabled {
             return;
         }
-        let evidence = collect_negation_reframe_evidence(doc, config);
+        let negation_signals = super::resolve_negation_signals(config);
+        let reframe_signals = super::resolve_reframe_signals(config);
+        if negation_signals.is_empty() || reframe_signals.is_empty() {
+            return;
+        }
+        let evidence = collect_negation_reframe_evidence(doc, &negation_signals, &reframe_signals);
         let _result = suite
             .record_custom_values(
                 "negation-reframe",
@@ -42,7 +47,11 @@ impl Check for NegationReframeCheck {
     }
 }
 
-fn collect_negation_reframe_evidence(doc: &Document, config: &CheckConfig) -> Vec<Value> {
+fn collect_negation_reframe_evidence(
+    doc: &Document,
+    negation_signals: &[String],
+    reframe_signals: &[String],
+) -> Vec<Value> {
     let mut evidence = Vec::new();
 
     for (section_index, section) in doc.sections.iter().enumerate() {
@@ -52,7 +61,8 @@ fn collect_negation_reframe_evidence(doc: &Document, config: &CheckConfig) -> Ve
                 block,
                 section_index,
                 &mut paragraph_index,
-                config,
+                negation_signals,
+                reframe_signals,
                 &mut evidence,
             );
         }
@@ -65,7 +75,8 @@ fn collect_negation_reframe_evidence_from_block(
     block: &Block,
     section_index: usize,
     paragraph_index: &mut usize,
-    config: &CheckConfig,
+    negation_signals: &[String],
+    reframe_signals: &[String],
     evidence: &mut Vec<Value>,
 ) {
     match block {
@@ -74,7 +85,8 @@ fn collect_negation_reframe_evidence_from_block(
                 paragraph,
                 section_index,
                 *paragraph_index,
-                config,
+                negation_signals,
+                reframe_signals,
                 evidence,
             );
             *paragraph_index = paragraph_index.saturating_add(1);
@@ -85,7 +97,8 @@ fn collect_negation_reframe_evidence_from_block(
                     inner_block,
                     section_index,
                     paragraph_index,
-                    config,
+                    negation_signals,
+                    reframe_signals,
                     evidence,
                 );
             }
@@ -98,7 +111,8 @@ fn collect_negation_reframe_evidence_from_paragraph(
     para: &Paragraph,
     section_index: usize,
     paragraph_index: usize,
-    config: &CheckConfig,
+    negation_signals: &[String],
+    reframe_signals: &[String],
     evidence: &mut Vec<Value>,
 ) {
     if para.sentences.len() < 2 {
@@ -114,11 +128,11 @@ fn collect_negation_reframe_evidence_from_paragraph(
         };
         let a_lower = a.text.to_lowercase();
         let b_lower = b.text.to_lowercase();
-        let Some(negation_signal) = find_matching_term(&a_lower, &config.terms.negation_signals)
+        let Some(negation_signal) = find_matching_term(&a_lower, negation_signals)
         else {
             continue;
         };
-        let Some(reframe_signal) = find_matching_term(&b_lower, &config.terms.reframe_signals)
+        let Some(reframe_signal) = find_matching_term(&b_lower, reframe_signals)
         else {
             continue;
         };

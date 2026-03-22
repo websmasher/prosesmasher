@@ -1,19 +1,10 @@
 use crate::check::Check;
 use crate::test_helpers::make_doc;
 use low_expectations::ExpectationSuite;
-use prosesmasher_domain_types::{CheckConfig, Locale, TermLists};
+use prosesmasher_domain_types::{CheckConfig, Locale};
 
 fn config_with_openers() -> CheckConfig {
-    CheckConfig {
-        terms: TermLists {
-            llm_openers: vec![
-                "the interesting part is".to_owned(),
-                "in the world of".to_owned(),
-            ],
-            ..Default::default()
-        },
-        ..Default::default()
-    }
+    CheckConfig::default()
 }
 
 #[test]
@@ -58,7 +49,7 @@ fn normal_opener_passes() {
 }
 
 #[test]
-fn empty_config_skips() {
+fn default_config_runs() {
     let doc = make_doc(
         "The interesting part is that nobody noticed.",
         Locale::En,
@@ -68,8 +59,8 @@ fn empty_config_skips() {
     super::LlmOpenersCheck.run(&doc, &config, &mut suite);
     let result = suite.into_suite_result();
     assert_eq!(
-        result.statistics.evaluated_expectations, 0,
-        "empty openers should skip"
+        result.statistics.unsuccessful_expectations, 1,
+        "default LLM opener patterns should run"
     );
 }
 

@@ -25,12 +25,16 @@ impl Check for LlmOpenersCheck {
     }
 
     fn run(&self, doc: &Document, config: &CheckConfig, suite: &mut ExpectationSuite) {
-        if config.terms.llm_openers.is_empty() {
+        if !config.quality.heuristics.llm_openers.enabled {
+            return;
+        }
+        let llm_openers = super::resolve_llm_openers(config);
+        if llm_openers.is_empty() {
             return;
         }
         let evidence = super::collect_section_sentence_evidence(
             doc,
-            &config.terms.llm_openers,
+            &llm_openers,
             super::section_first_sentence,
             super::sentence_starts_with,
         );
@@ -38,7 +42,7 @@ impl Check for LlmOpenersCheck {
             .record_custom_values(
                 "llm-openers",
                 evidence.is_empty(),
-                json!({ "min": 0, "max": 0, "absent": config.terms.llm_openers }),
+                json!({ "min": 0, "max": 0, "absent": llm_openers }),
                 json!(evidence.len()),
                 &evidence,
             )

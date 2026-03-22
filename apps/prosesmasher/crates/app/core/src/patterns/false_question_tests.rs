@@ -1,19 +1,10 @@
 use crate::check::Check;
 use crate::test_helpers::make_doc;
 use low_expectations::ExpectationSuite;
-use prosesmasher_domain_types::{CheckConfig, Locale, TermLists};
+use prosesmasher_domain_types::{CheckConfig, Locale};
 
 fn config_with_patterns() -> CheckConfig {
-    CheckConfig {
-        terms: TermLists {
-            false_question_patterns: vec![
-                "isn't that what we all".to_owned(),
-                "isn't that the point".to_owned(),
-            ],
-            ..Default::default()
-        },
-        ..Default::default()
-    }
+    CheckConfig::default()
 }
 
 #[test]
@@ -68,15 +59,15 @@ fn non_question_passes() {
 }
 
 #[test]
-fn empty_config_skips() {
+fn default_config_runs() {
     let doc = make_doc("And isn't that what we all want?", Locale::En);
     let config = CheckConfig::default();
     let mut suite = ExpectationSuite::new("test");
     super::FalseQuestionCheck.run(&doc, &config, &mut suite);
     let result = suite.into_suite_result();
     assert_eq!(
-        result.statistics.evaluated_expectations, 0,
-        "empty patterns should skip"
+        result.statistics.unsuccessful_expectations, 1,
+        "default false-question patterns should run"
     );
 }
 

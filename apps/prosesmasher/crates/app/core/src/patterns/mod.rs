@@ -26,7 +26,7 @@ pub use smart_quotes::SmartQuotesCheck;
 pub use summative_closer::SummativeCloserCheck;
 pub use triple_repeat::TripleRepeatCheck;
 
-use prosesmasher_domain_types::{Block, Document, Paragraph};
+use prosesmasher_domain_types::{Block, CheckConfig, Document, Locale, Paragraph};
 use serde_json::{Value, json};
 
 use crate::check::BoxedCheck;
@@ -34,6 +34,7 @@ use crate::check::BoxedCheck;
 type SentenceSelector = fn(&[Block]) -> Option<SentenceRef<'_>>;
 type SentenceMatcher = fn(&str, &str) -> bool;
 type SentenceRef<'a> = (&'a str, usize);
+type PatternDefaults = fn(Locale) -> &'static [&'static str];
 
 /// All pattern checks.
 #[must_use]
@@ -207,4 +208,148 @@ fn sentence_ends_with(sentence: &str, phrase: &str) -> bool {
 
 fn sentence_contains(sentence: &str, phrase: &str) -> bool {
     sentence.contains(phrase)
+}
+
+#[must_use]
+pub fn resolve_llm_openers(config: &CheckConfig) -> Vec<String> {
+    resolve_legacy_or_default_patterns(config.locale, &config.terms.llm_openers, default_llm_openers)
+}
+
+#[must_use]
+pub fn resolve_affirmation_closers(config: &CheckConfig) -> Vec<String> {
+    resolve_legacy_or_default_patterns(
+        config.locale,
+        &config.terms.affirmation_closers,
+        default_affirmation_closers,
+    )
+}
+
+#[must_use]
+pub fn resolve_summative_patterns(config: &CheckConfig) -> Vec<String> {
+    resolve_legacy_or_default_patterns(
+        config.locale,
+        &config.terms.summative_patterns,
+        default_summative_patterns,
+    )
+}
+
+#[must_use]
+pub fn resolve_false_question_patterns(config: &CheckConfig) -> Vec<String> {
+    resolve_legacy_or_default_patterns(
+        config.locale,
+        &config.terms.false_question_patterns,
+        default_false_question_patterns,
+    )
+}
+
+#[must_use]
+pub fn resolve_humble_bragger_phrases(config: &CheckConfig) -> Vec<String> {
+    resolve_legacy_or_default_patterns(
+        config.locale,
+        &config.terms.humble_bragger_phrases,
+        default_humble_bragger_phrases,
+    )
+}
+
+#[must_use]
+pub fn resolve_jargon_faker_phrases(config: &CheckConfig) -> Vec<String> {
+    resolve_legacy_or_default_patterns(
+        config.locale,
+        &config.terms.jargon_faker_phrases,
+        default_jargon_faker_phrases,
+    )
+}
+
+#[must_use]
+pub fn resolve_negation_signals(config: &CheckConfig) -> Vec<String> {
+    resolve_legacy_or_default_patterns(
+        config.locale,
+        &config.terms.negation_signals,
+        default_negation_signals,
+    )
+}
+
+#[must_use]
+pub fn resolve_reframe_signals(config: &CheckConfig) -> Vec<String> {
+    resolve_legacy_or_default_patterns(
+        config.locale,
+        &config.terms.reframe_signals,
+        default_reframe_signals,
+    )
+}
+
+fn resolve_legacy_or_default_patterns(
+    locale: Locale,
+    legacy: &[String],
+    defaults: PatternDefaults,
+) -> Vec<String> {
+    if !legacy.is_empty() {
+        return legacy.to_vec();
+    }
+
+    defaults(locale).iter().map(|item| (*item).to_owned()).collect()
+}
+
+fn default_llm_openers(locale: Locale) -> &'static [&'static str] {
+    if locale == Locale::En {
+        &["the interesting part is", "in the world of"]
+    } else {
+        &[]
+    }
+}
+
+fn default_affirmation_closers(locale: Locale) -> &'static [&'static str] {
+    if locale == Locale::En {
+        &["and that's the key.", "that's what matters."]
+    } else {
+        &[]
+    }
+}
+
+fn default_summative_patterns(locale: Locale) -> &'static [&'static str] {
+    if locale == Locale::En {
+        &["and that's what makes", "that's why this"]
+    } else {
+        &[]
+    }
+}
+
+fn default_false_question_patterns(locale: Locale) -> &'static [&'static str] {
+    if locale == Locale::En {
+        &["isn't that what we all", "isn't that the point"]
+    } else {
+        &[]
+    }
+}
+
+fn default_humble_bragger_phrases(locale: Locale) -> &'static [&'static str] {
+    if locale == Locale::En {
+        &["in my experience", "as someone who has", "having worked with"]
+    } else {
+        &[]
+    }
+}
+
+fn default_jargon_faker_phrases(locale: Locale) -> &'static [&'static str] {
+    if locale == Locale::En {
+        &["debug our", "debug your", "optimizing for", "iterating on your"]
+    } else {
+        &[]
+    }
+}
+
+fn default_negation_signals(locale: Locale) -> &'static [&'static str] {
+    if locale == Locale::En {
+        &["not", "isn't", "aren't"]
+    } else {
+        &[]
+    }
+}
+
+fn default_reframe_signals(locale: Locale) -> &'static [&'static str] {
+    if locale == Locale::En {
+        &["it's", "this is", "that's"]
+    } else {
+        &[]
+    }
 }

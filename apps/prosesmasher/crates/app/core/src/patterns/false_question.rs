@@ -25,12 +25,16 @@ impl Check for FalseQuestionCheck {
     }
 
     fn run(&self, doc: &Document, config: &CheckConfig, suite: &mut ExpectationSuite) {
-        if config.terms.false_question_patterns.is_empty() {
+        if !config.quality.heuristics.false_question.enabled {
+            return;
+        }
+        let false_question_patterns = super::resolve_false_question_patterns(config);
+        if false_question_patterns.is_empty() {
             return;
         }
         let evidence = super::collect_section_sentence_evidence(
             doc,
-            &config.terms.false_question_patterns,
+            &false_question_patterns,
             super::section_last_sentence,
             false_question_matcher,
         );
@@ -38,7 +42,7 @@ impl Check for FalseQuestionCheck {
             .record_custom_values(
                 "false-question",
                 evidence.is_empty(),
-                json!({ "min": 0, "max": 0, "absent": config.terms.false_question_patterns }),
+                json!({ "min": 0, "max": 0, "absent": false_question_patterns }),
                 json!(evidence.len()),
                 &evidence,
             )
