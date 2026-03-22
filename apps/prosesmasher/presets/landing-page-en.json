@@ -1,56 +1,11 @@
 {
   "locale": "en",
   "quality": {
-    "lexical": {
-      "prohibitedTerms": {
-        "defaults": false,
-        "add": [
-          "actually",
-          "leverage",
-          "robust",
-          "seamless",
-          "transformative",
-          "unlock",
-          "elevate",
-          "delve",
-          "realm",
-          "tapestry",
-          "revolutionary",
-          "let's dive in",
-          "in today's fast-paced world",
-          "at the end of the day",
-          "it's important to note",
-          "the key takeaway is",
-          "in conclusion",
-          "when it comes to"
-        ],
-        "remove": []
-      },
-      "simplicityPairs": {
-        "defaults": false,
-        "add": [
-          ["utilize", "use"],
-          ["implement", "do"],
-          ["facilitate", "help"],
-          ["numerous", "many"],
-          ["commence", "start"]
-        ],
-        "remove": []
-      },
-      "requiredTerms": []
-    },
     "heuristics": {
       "paragraphLength": { "maxSentences": 3 },
       "exclamationDensity": { "maxPerParagraph": 0 },
       "hedgeStacking": { "maxPerSentence": 0 },
-      "wordRepetition": {
-        "max": 4,
-        "excludedTerms": {
-          "defaults": false,
-          "add": ["the", "a", "an", "is", "in", "to", "and", "of", "for", "that"],
-          "remove": []
-        }
-      },
+      "wordRepetition": { "max": 4 },
       "readability": {
         "fleschKincaidMin": 58.0,
         "gunningFogMax": 12.0,
@@ -65,6 +20,6 @@
       "h2": { "min": 1, "max": 5 },
       "h3Min": 0
     },
-    "boldDensity": { "min": 2 }
+    "headingHierarchy": { "enabled": true }
   }
 }

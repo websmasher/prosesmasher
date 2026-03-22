@@ -2,8 +2,7 @@
   "locale": "en",
   "quality": {
     "heuristics": {
-      "paragraphLength": { "maxSentences": 3 },
-      "exclamationDensity": { "maxPerParagraph": 0 },
+      "paragraphLength": { "maxSentences": 5 },
       "readability": {
         "fleschKincaidMin": 45.0,
         "gunningFogMax": 15.0,
@@ -13,10 +12,10 @@
     }
   },
   "documentPolicy": {
-    "wordCount": { "min": 200, "max": 1800 },
+    "wordCount": { "min": 1600, "max": 2500 },
     "headingCounts": {
-      "h2": { "min": 1, "max": 10 },
-      "h3Min": 1
+      "h2": { "min": 5, "max": 9 },
+      "h3Min": 2
     },
     "headingHierarchy": { "enabled": true }
   }

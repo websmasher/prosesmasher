@@ -141,11 +141,11 @@ fn canonical_config_normalizes() {
 fn all_curated_presets_load() {
     for name in [
         "general-en.json",
-        "blog-strict-en.json",
-        "technical-article-en.json",
+        "article-short-en.json",
+        "article-medium-en.json",
+        "article-long-en.json",
         "docs-en.json",
         "landing-page-en.json",
-        "essay-en.json",
     ] {
         let config = load_preset_ok(name);
         assert_eq!(config.locale, Locale::En, "{name}: locale should be en");
@@ -162,12 +162,40 @@ fn docs_preset_is_tighter_on_exclamations_than_general() {
 }
 
 #[test]
-fn landing_page_preset_targets_shorter_copy_than_essay() {
+fn landing_page_preset_targets_shorter_copy_than_article_long() {
     let landing = load_preset_ok("landing-page-en.json");
-    let essay = load_preset_ok("essay-en.json");
+    let article_long = load_preset_ok("article-long-en.json");
 
     assert_eq!(landing.document_policy.word_count.map(prosesmasher_domain_types::Range::max), Some(700));
-    assert_eq!(essay.document_policy.word_count.map(prosesmasher_domain_types::Range::min), Some(900));
+    assert_eq!(article_long.document_policy.word_count.map(prosesmasher_domain_types::Range::min), Some(1600));
+}
+
+#[test]
+fn general_preset_keeps_document_policy_off() {
+    let general = load_preset_ok("general-en.json");
+
+    assert!(general.document_policy.word_count.is_none());
+    assert!(general.document_policy.heading_counts.h2.is_none());
+    assert!(!general.document_policy.heading_hierarchy);
+}
+
+#[test]
+fn article_tiers_increase_word_count_and_heading_density() {
+    let short = load_preset_ok("article-short-en.json");
+    let medium = load_preset_ok("article-medium-en.json");
+    let long = load_preset_ok("article-long-en.json");
+
+    assert_eq!(short.document_policy.word_count.map(prosesmasher_domain_types::Range::min), Some(500));
+    assert_eq!(medium.document_policy.word_count.map(prosesmasher_domain_types::Range::min), Some(1000));
+    assert_eq!(long.document_policy.word_count.map(prosesmasher_domain_types::Range::min), Some(1600));
+
+    assert_eq!(short.document_policy.heading_counts.h3_min, Some(0));
+    assert_eq!(medium.document_policy.heading_counts.h3_min, Some(1));
+    assert_eq!(long.document_policy.heading_counts.h3_min, Some(2));
+
+    assert!(short.document_policy.heading_hierarchy);
+    assert!(medium.document_policy.heading_hierarchy);
+    assert!(long.document_policy.heading_hierarchy);
 }
 
 #[test]

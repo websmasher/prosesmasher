@@ -1,0 +1,19 @@
+{
+  "locale": "en",
+  "quality": {
+    "heuristics": {
+      "paragraphLength": { "maxSentences": 4 },
+      "readability": {
+        "avgSentenceLengthMax": 22
+      }
+    }
+  },
+  "documentPolicy": {
+    "wordCount": { "min": 500, "max": 1000 },
+    "headingCounts": {
+      "h2": { "min": 2, "max": 5 },
+      "h3Min": 0
+    },
+    "headingHierarchy": { "enabled": true }
+  }
+}
