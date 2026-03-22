@@ -8,6 +8,12 @@ fn fixture_path(name: &str) -> std::path::PathBuf {
         .join(name)
 }
 
+fn preset_path(name: &str) -> std::path::PathBuf {
+    Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("../../../../presets")
+        .join(name)
+}
+
 fn write_temp(name: &str, content: &str) -> std::path::PathBuf {
     use std::sync::atomic::{AtomicU64, Ordering};
     static COUNTER: AtomicU64 = AtomicU64::new(0);
@@ -57,6 +63,14 @@ fn load_fixture_ok(name: &str) -> prosesmasher_domain_types::CheckConfig {
     match FsConfigLoader.load_config(&fixture_path(name)) {
         Ok(config) => config,
         Err(e) => panic!("failed to load fixture {name}: {e}"),
+    }
+}
+
+#[allow(clippy::panic)] // test helper
+fn load_preset_ok(name: &str) -> prosesmasher_domain_types::CheckConfig {
+    match FsConfigLoader.load_config(&preset_path(name)) {
+        Ok(config) => config,
+        Err(e) => panic!("failed to load preset {name}: {e}"),
     }
 }
 
@@ -240,6 +254,42 @@ fn locale_with_whitespace_fails() {
     // " en " is 4 chars, passes garde length, but parse_locale(" en ") doesn't match
     assert!(matches!(err, ConfigError::ValidationFailed(_)),
         "locale with whitespace should fail — got {err:?}");
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Presets
+// ═══════════════════════════════════════════════════════════════
+
+#[test]
+fn all_curated_presets_load() {
+    for name in [
+        "general-en.json",
+        "blog-strict-en.json",
+        "technical-article-en.json",
+        "docs-en.json",
+        "landing-page-en.json",
+        "essay-en.json",
+    ] {
+        let config = load_preset_ok(name);
+        assert_eq!(config.locale, Locale::En, "{name}: locale should be en");
+    }
+}
+
+#[test]
+fn docs_preset_is_tighter_on_exclamations_than_general() {
+    let docs = load_preset_ok("docs-en.json");
+    let general = load_preset_ok("general-en.json");
+    assert_eq!(docs.thresholds.max_exclamations_per_paragraph, Some(0), "docs preset");
+    assert_eq!(general.thresholds.max_exclamations_per_paragraph, Some(1), "general preset");
+}
+
+#[test]
+fn landing_page_preset_targets_shorter_copy_than_essay() {
+    let landing = load_preset_ok("landing-page-en.json");
+    let essay = load_preset_ok("essay-en.json");
+
+    assert_eq!(landing.thresholds.word_count.map(Range::max), Some(700), "landing max words");
+    assert_eq!(essay.thresholds.word_count.map(Range::min), Some(900), "essay min words");
 }
 
 // ═══════════════════════════════════════════════════════════════

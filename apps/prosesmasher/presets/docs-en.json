@@ -1,0 +1,53 @@
+{
+  "locale": "en",
+  "terms": {
+    "bannedWords": [
+      "actually",
+      "leverage",
+      "seamless",
+      "transformative",
+      "unlock",
+      "elevate",
+      "delve"
+    ],
+    "bannedPhrases": [
+      "let's dive in",
+      "in today's fast-paced world",
+      "the key takeaway is",
+      "in conclusion"
+    ],
+    "genderedTerms": [],
+    "forbiddenTerms": [],
+    "raceTerms": [],
+    "hedgeWords": ["might", "maybe", "perhaps"],
+    "simplicityPairs": [
+      ["utilize", "use"],
+      ["facilitate", "help"],
+      ["commence", "start"]
+    ],
+    "negationSignals": ["not", "isn't", "aren't", "doesn't"],
+    "reframeSignals": ["it's", "that's", "instead", "rather"],
+    "llmOpeners": ["the interesting part is", "in the world of"],
+    "affirmationClosers": ["and that's the key.", "that's what matters."],
+    "summativePatterns": ["and that's what makes", "that's why this"],
+    "falseQuestionPatterns": ["isn't that what we all", "isn't that the point"],
+    "humbleBraggerPhrases": ["in my experience", "as someone who has"],
+    "jargonFakerPhrases": ["debug your", "debug our", "iterating on your"],
+    "stopWords": ["the", "a", "an", "is", "in", "to", "and", "of", "for", "that"],
+    "requiredTerms": []
+  },
+  "thresholds": {
+    "wordCount": { "min": 200, "max": 1800 },
+    "h2Count": { "min": 1, "max": 10 },
+    "h3Min": 1,
+    "boldMin": 1,
+    "maxParagraphSentences": 3,
+    "maxExclamationsPerParagraph": 0,
+    "maxHedgesPerSentence": 1,
+    "fleschKincaidMin": 45.0,
+    "gunningFogMax": 15.0,
+    "avgSentenceLengthMax": 24,
+    "wordRepetitionMax": 8,
+    "colemanLiauMax": 13.0
+  }
+}
