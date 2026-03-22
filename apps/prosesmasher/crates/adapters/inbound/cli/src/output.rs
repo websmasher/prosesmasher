@@ -268,11 +268,7 @@ fn expected_value(vr: &ValidationResult) -> Option<Value> {
 
 fn failure_message(id: &str, label: &str) -> String {
     match id {
-        "banned-words" => "Found banned words.".to_owned(),
-        "banned-phrases" => "Found banned phrases.".to_owned(),
-        "gendered-terms" => "Found gendered terms.".to_owned(),
-        "forbidden-terms" => "Found forbidden terms.".to_owned(),
-        "race-terms" => "Found race-related terms.".to_owned(),
+        "prohibited-terms" => "Found prohibited terms.".to_owned(),
         "hedge-stacking" => "Found sentences with too many hedging words.".to_owned(),
         "simplicity" => "Found terms that should be simplified.".to_owned(),
         "required-terms" => "Required terms are missing.".to_owned(),
@@ -309,11 +305,7 @@ fn failure_message(id: &str, label: &str) -> String {
 
 fn rewrite_hint(id: &str) -> &'static str {
     match id {
-        "banned-words" => "Rewrite the affected text without the banned words.",
-        "banned-phrases" => "Rewrite the affected text without the banned phrases.",
-        "gendered-terms" => "Replace the gendered terms with neutral wording.",
-        "forbidden-terms" => "Remove or replace the forbidden terms.",
-        "race-terms" => "Remove or replace the flagged race-related terms unless strictly necessary.",
+        "prohibited-terms" => "Rewrite the affected text without the prohibited terms.",
         "hedge-stacking" => "Reduce hedging so each sentence makes a clearer claim.",
         "simplicity" => "Replace complex wording with the simpler configured alternatives.",
         "required-terms" => "Add the missing required terms naturally in relevant sections.",

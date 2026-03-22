@@ -26,9 +26,11 @@ impl Check for WordRepetitionCheck {
     }
 
     fn run(&self, doc: &Document, config: &CheckConfig, suite: &mut ExpectationSuite) {
-        let Some(max_repetition) = config.thresholds.word_repetition_max else {
+        if !config.quality.heuristics.word_repetition.enabled {
             return;
-        };
+        }
+
+        let max_repetition = config.quality.heuristics.word_repetition.max;
 
         let mut freq: BTreeMap<String, usize> = BTreeMap::new();
 
@@ -38,8 +40,11 @@ impl Check for WordRepetitionCheck {
             }
         }
 
-        // Filter out stop words and words < 4 chars
-        let stop_words = &config.terms.stop_words;
+        // Filter out excluded words and words < 4 chars.
+        let excluded_terms =
+            crate::terms::resolve_string_override_list(
+                &config.quality.heuristics.word_repetition.excluded_terms,
+            );
 
         let max_i64 = i64::try_from(max_repetition).unwrap_or(i64::MAX);
 
@@ -48,7 +53,7 @@ impl Check for WordRepetitionCheck {
                 continue;
             }
 
-            if stop_words.iter().any(|sw| sw == word) {
+            if excluded_terms.iter().any(|term| term == word) {
                 continue;
             }
 

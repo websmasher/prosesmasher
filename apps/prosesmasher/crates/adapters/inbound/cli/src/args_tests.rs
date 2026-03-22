@@ -64,12 +64,12 @@ fn parse_no_subcommand_fails() {
 #[test]
 #[allow(clippy::panic)]
 fn parse_check_with_check_filter() {
-    let args = Args::try_parse_from(["prosesmasher", "check", "foo.md", "--check", "banned-words,em-dashes"]);
+    let args = Args::try_parse_from(["prosesmasher", "check", "foo.md", "--check", "prohibited-terms,em-dashes"]);
     assert!(args.is_ok(), "should parse");
     let args = args.unwrap_or_else(|e| panic!("parse failed: {e}"));
     match args.command {
         Command::Check { check, .. } => {
-            assert_eq!(check.as_deref(), Some("banned-words,em-dashes"), "check filter");
+            assert_eq!(check.as_deref(), Some("prohibited-terms,em-dashes"), "check filter");
         }
     }
 }

@@ -1,17 +1,15 @@
 use crate::check::Check;
 use crate::test_helpers::make_doc_with_word_count;
 use low_expectations::ExpectationSuite;
-use prosesmasher_domain_types::{CheckConfig, Locale, Range, Thresholds};
+use prosesmasher_domain_types::{CheckConfig, Locale, Range};
 
 fn config_with_word_range(min: usize, max: usize) -> CheckConfig {
-    CheckConfig {
+    let mut config = CheckConfig {
         locale: Locale::En,
-        thresholds: Thresholds {
-            word_count: Range::new(min, max),
-            ..Thresholds::default()
-        },
         ..CheckConfig::default()
-    }
+    };
+    config.document_policy.word_count = Range::new(min, max);
+    config
 }
 
 #[test]

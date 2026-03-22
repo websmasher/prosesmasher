@@ -2,7 +2,7 @@ use crate::check::Check;
 use low_expectations::ExpectationSuite;
 use prosesmasher_domain_types::{
     Block, CheckConfig, Document, DocumentMetadata, Locale, Paragraph, Section, Sentence,
-    Thresholds, Word,
+    Word,
 };
 
 fn make_sentence(text: &str) -> Sentence {
@@ -42,14 +42,7 @@ fn doc_with_paragraph_sentences(sentence_count: usize) -> Document {
 #[test]
 fn paragraph_exceeds_max_fails() {
     let doc = doc_with_paragraph_sentences(6);
-    let config = CheckConfig {
-        locale: Locale::En,
-        thresholds: Thresholds {
-            max_paragraph_sentences: Some(4),
-            ..Thresholds::default()
-        },
-        ..CheckConfig::default()
-    };
+    let config = config_with_max_sentences(4);
     let mut suite = ExpectationSuite::new("test");
     super::ParagraphLengthCheck.run(&doc, &config, &mut suite);
     let result = suite.into_suite_result();
@@ -74,14 +67,7 @@ fn paragraph_exceeds_max_fails() {
 #[test]
 fn paragraph_within_max_passes() {
     let doc = doc_with_paragraph_sentences(3);
-    let config = CheckConfig {
-        locale: Locale::En,
-        thresholds: Thresholds {
-            max_paragraph_sentences: Some(4),
-            ..Thresholds::default()
-        },
-        ..CheckConfig::default()
-    };
+    let config = config_with_max_sentences(4);
     let mut suite = ExpectationSuite::new("test");
     super::ParagraphLengthCheck.run(&doc, &config, &mut suite);
     let result = suite.into_suite_result();
@@ -111,14 +97,7 @@ fn paragraph_in_blockquote_checked() {
         metadata: DocumentMetadata::default(),
     };
 
-    let config = CheckConfig {
-        locale: Locale::En,
-        thresholds: Thresholds {
-            max_paragraph_sentences: Some(4),
-            ..Thresholds::default()
-        },
-        ..CheckConfig::default()
-    };
+    let config = config_with_max_sentences(4);
     let mut suite = ExpectationSuite::new("test");
     super::ParagraphLengthCheck.run(&doc, &config, &mut suite);
     let result = suite.into_suite_result();
@@ -130,14 +109,14 @@ fn paragraph_in_blockquote_checked() {
 
 #[test]
 fn no_threshold_skips() {
-    let doc = doc_with_paragraph_sentences(10);
+    let doc = doc_with_paragraph_sentences(3);
     let config = CheckConfig::default();
     let mut suite = ExpectationSuite::new("test");
     super::ParagraphLengthCheck.run(&doc, &config, &mut suite);
     let result = suite.into_suite_result();
     assert_eq!(
-        result.statistics.evaluated_expectations, 0,
-        "no threshold → no expectation"
+        result.statistics.successful_expectations, 1,
+        "default quality config should run paragraph-length with built-in max"
     );
 }
 
@@ -147,4 +126,13 @@ fn check_id_and_label() {
     assert_eq!(check.id(), "paragraph-length", "id");
     assert_eq!(check.label(), "Paragraph Length", "label");
     assert!(check.supported_locales().is_none(), "supports all locales");
+}
+
+fn config_with_max_sentences(max_sentences: usize) -> CheckConfig {
+    let mut config = CheckConfig {
+        locale: Locale::En,
+        ..CheckConfig::default()
+    };
+    config.quality.heuristics.paragraph_length.max_sentences = max_sentences;
+    config
 }

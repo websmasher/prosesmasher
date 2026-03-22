@@ -2,7 +2,7 @@ use crate::check::Check;
 use low_expectations::ExpectationSuite;
 use prosesmasher_domain_types::{
     Block, CheckConfig, Document, DocumentMetadata, Locale, Paragraph, Section, Sentence,
-    Thresholds, Word,
+    Word,
 };
 
 /// Build a doc with words of known letter counts.
@@ -46,14 +46,12 @@ fn make_coleman_doc(
 }
 
 fn config_with_cl_max(max: f64) -> CheckConfig {
-    CheckConfig {
+    let mut config = CheckConfig {
         locale: Locale::En,
-        thresholds: Thresholds {
-            coleman_liau_max: Some(max),
-            ..Thresholds::default()
-        },
         ..CheckConfig::default()
-    }
+    };
+    config.quality.heuristics.readability.coleman_liau_max = Some(max);
+    config
 }
 
 #[test]
@@ -114,7 +112,7 @@ fn no_threshold_skips() {
     let mut suite = ExpectationSuite::new("test");
     super::ColemanLiauCheck.run(&doc, &config, &mut suite);
     let result = suite.into_suite_result();
-    assert_eq!(result.statistics.evaluated_expectations, 0);
+    assert_eq!(result.statistics.successful_expectations, 1);
 }
 
 #[test]

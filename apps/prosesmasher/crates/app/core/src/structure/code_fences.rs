@@ -23,7 +23,11 @@ impl Check for CodeFencesCheck {
         None
     }
 
-    fn run(&self, doc: &Document, _config: &CheckConfig, suite: &mut ExpectationSuite) {
+    fn run(&self, doc: &Document, config: &CheckConfig, suite: &mut ExpectationSuite) {
+        if config.document_policy.allow_code_fences {
+            return;
+        }
+
         let mut evidence = Vec::new();
 
         for (section_index, section) in doc.sections.iter().enumerate() {

@@ -28,7 +28,10 @@ impl Check for ColemanLiauCheck {
     }
 
     fn run(&self, doc: &Document, config: &CheckConfig, suite: &mut ExpectationSuite) {
-        let Some(max) = config.thresholds.coleman_liau_max else {
+        if !config.quality.heuristics.readability.enabled {
+            return;
+        }
+        let Some(max) = config.quality.heuristics.readability.coleman_liau_max else {
             return;
         };
 

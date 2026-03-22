@@ -1,8 +1,6 @@
 use crate::check::Check;
 use low_expectations::ExpectationSuite;
-use prosesmasher_domain_types::{
-    CheckConfig, Document, DocumentMetadata, Locale, Section, Thresholds,
-};
+use prosesmasher_domain_types::{CheckConfig, Document, DocumentMetadata, Locale, Section};
 
 fn doc_with_bold_count(bold_count: usize) -> Document {
     Document {
@@ -21,14 +19,7 @@ fn doc_with_bold_count(bold_count: usize) -> Document {
 #[test]
 fn bold_below_min_fails() {
     let doc = doc_with_bold_count(1);
-    let config = CheckConfig {
-        locale: Locale::En,
-        thresholds: Thresholds {
-            bold_min: Some(3),
-            ..Thresholds::default()
-        },
-        ..CheckConfig::default()
-    };
+    let config = config_with_bold_min(3);
     let mut suite = ExpectationSuite::new("test");
     super::BoldDensityCheck.run(&doc, &config, &mut suite);
     let result = suite.into_suite_result();
@@ -41,14 +32,7 @@ fn bold_below_min_fails() {
 #[test]
 fn bold_above_min_passes() {
     let doc = doc_with_bold_count(5);
-    let config = CheckConfig {
-        locale: Locale::En,
-        thresholds: Thresholds {
-            bold_min: Some(3),
-            ..Thresholds::default()
-        },
-        ..CheckConfig::default()
-    };
+    let config = config_with_bold_min(3);
     let mut suite = ExpectationSuite::new("test");
     super::BoldDensityCheck.run(&doc, &config, &mut suite);
     let result = suite.into_suite_result();
@@ -61,14 +45,7 @@ fn bold_above_min_passes() {
 #[test]
 fn bold_at_exact_min_passes() {
     let doc = doc_with_bold_count(3);
-    let config = CheckConfig {
-        locale: Locale::En,
-        thresholds: Thresholds {
-            bold_min: Some(3),
-            ..Thresholds::default()
-        },
-        ..CheckConfig::default()
-    };
+    let config = config_with_bold_min(3);
     let mut suite = ExpectationSuite::new("test");
     super::BoldDensityCheck.run(&doc, &config, &mut suite);
     let result = suite.into_suite_result();
@@ -97,4 +74,13 @@ fn check_id_and_label() {
     assert_eq!(check.id(), "bold-density", "id");
     assert_eq!(check.label(), "Bold Density", "label");
     assert!(check.supported_locales().is_none(), "supports all locales");
+}
+
+fn config_with_bold_min(min: usize) -> CheckConfig {
+    let mut config = CheckConfig {
+        locale: Locale::En,
+        ..CheckConfig::default()
+    };
+    config.document_policy.bold_density_min = Some(min);
+    config
 }

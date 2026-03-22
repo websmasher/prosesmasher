@@ -24,7 +24,11 @@ impl Check for SentenceCaseCheck {
         Some(&[Locale::En, Locale::Es, Locale::Pt, Locale::Fr, Locale::Id])
     }
 
-    fn run(&self, doc: &Document, _config: &CheckConfig, suite: &mut ExpectationSuite) {
+    fn run(&self, doc: &Document, config: &CheckConfig, suite: &mut ExpectationSuite) {
+        if !config.document_policy.sentence_case_headings {
+            return;
+        }
+
         for (section_index, section) in doc.sections.iter().enumerate() {
             let Some(heading) = &section.heading else {
                 continue;

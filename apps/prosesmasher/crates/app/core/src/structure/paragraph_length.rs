@@ -24,9 +24,11 @@ impl Check for ParagraphLengthCheck {
     }
 
     fn run(&self, doc: &Document, config: &CheckConfig, suite: &mut ExpectationSuite) {
-        let Some(max_sentences) = config.thresholds.max_paragraph_sentences else {
+        if !config.quality.heuristics.paragraph_length.enabled {
             return;
-        };
+        }
+
+        let max_sentences = config.quality.heuristics.paragraph_length.max_sentences;
 
         let max_i64 = i64::try_from(max_sentences).unwrap_or(i64::MAX);
         let mut para_index: usize = 0;

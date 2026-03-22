@@ -185,7 +185,7 @@ fn all_absent_thresholds_none() {
 #[test]
 fn partial_terms_some_present_some_absent() {
     let c = load_fixture_ok("partial-terms.json");
-    assert_eq!(c.terms.banned_words.len(), 1, "present");
+    assert!(c.terms.banned_words.iter().any(|item| item == "present"), "present");
     assert_eq!(c.terms.hedge_words.len(), 1, "present");
     assert!(c.terms.banned_phrases.is_empty(), "absent");
     assert!(c.terms.simplicity_pairs.is_empty(), "absent");
@@ -487,15 +487,50 @@ fn missing_locale_fails() {
 }
 
 #[test]
-fn missing_terms_fails() {
-    let err = load_json_err(r#"{"locale":"en","thresholds":{}}"#);
-    assert!(matches!(err, ConfigError::InvalidJson(_)), "missing terms — got {err:?}");
+fn missing_terms_uses_defaults() {
+    let c = load_json_ok(r#"{"locale":"en","thresholds":{}}"#);
+    assert!(c.terms.banned_words.iter().any(|item| item == "actually"), "defaults applied");
 }
 
 #[test]
-fn missing_thresholds_fails() {
-    let err = load_json_err(r#"{"locale":"en","terms":{}}"#);
-    assert!(matches!(err, ConfigError::InvalidJson(_)), "missing thresholds — got {err:?}");
+fn missing_thresholds_uses_quality_defaults() {
+    let c = load_json_ok(r#"{"locale":"en","terms":{}}"#);
+    assert_eq!(c.thresholds.max_paragraph_sentences, Some(4), "quality defaults synthesized");
+}
+
+#[test]
+fn target_schema_quality_and_document_policy_normalize() {
+    let c = load_json_ok(
+        r#"{
+          "locale":"en",
+          "quality":{
+            "lexical":{
+              "prohibitedTerms":{"defaults":true,"add":["live coaching calls"],"remove":["actually"]},
+              "requiredTerms":["ownership"]
+            },
+            "heuristics":{
+              "wordRepetition":{"max":7,"excludedTerms":{"defaults":true,"add":["ownership"],"remove":["that"]}},
+              "paragraphLength":{"maxSentences":5}
+            }
+          },
+          "documentPolicy":{
+            "wordCount":{"min":650,"max":1000},
+            "headingHierarchy":{"enabled":true},
+            "sentenceCaseHeadings":{"enabled":true},
+            "codeFences":{"allowed":false}
+          }
+        }"#,
+    );
+
+    assert_eq!(c.quality.lexical.required_terms, vec!["ownership".to_owned()], "required terms");
+    assert!(c.terms.banned_words.iter().all(|term| term != "actually"), "removed default term");
+    assert!(c.terms.banned_phrases.iter().any(|term| term == "live coaching calls"), "added prohibited phrase");
+    assert_eq!(c.thresholds.word_repetition_max, Some(7), "word repetition max");
+    assert_eq!(c.thresholds.max_paragraph_sentences, Some(5), "paragraph length max");
+    assert_eq!(c.thresholds.word_count.map(Range::min), Some(650), "document policy word count");
+    assert!(c.document_policy.heading_hierarchy, "heading hierarchy enabled");
+    assert!(c.document_policy.sentence_case_headings, "sentence case enabled");
+    assert!(!c.document_policy.allow_code_fences, "code fences disallowed");
 }
 
 #[test]

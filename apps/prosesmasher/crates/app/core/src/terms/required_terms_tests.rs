@@ -1,16 +1,12 @@
 use crate::check::Check;
 use crate::test_helpers::make_doc;
 use low_expectations::ExpectationSuite;
-use prosesmasher_domain_types::{CheckConfig, Locale, TermLists};
+use prosesmasher_domain_types::{CheckConfig, Locale};
 
 fn config_with_required(terms: &[&str]) -> CheckConfig {
-    CheckConfig {
-        terms: TermLists {
-            required_terms: terms.iter().map(|t| (*t).to_owned()).collect(),
-            ..TermLists::default()
-        },
-        ..CheckConfig::default()
-    }
+    let mut config = CheckConfig::default();
+    config.quality.lexical.required_terms = terms.iter().map(|t| (*t).to_owned()).collect();
+    config
 }
 
 #[test]

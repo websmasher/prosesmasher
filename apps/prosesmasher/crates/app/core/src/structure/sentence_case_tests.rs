@@ -1,7 +1,8 @@
 use crate::check::Check;
 use low_expectations::ExpectationSuite;
 use prosesmasher_domain_types::{
-    Block, CheckConfig, Document, DocumentMetadata, Heading, Locale, Paragraph, Section, Sentence,
+    Block, CheckConfig, Document, DocumentMetadata, DocumentPolicyConfig, Heading, Locale,
+    Paragraph, Section, Sentence,
 };
 
 fn doc_with_heading(text: &str) -> Document {
@@ -26,10 +27,20 @@ fn doc_with_heading(text: &str) -> Document {
     }
 }
 
+fn config_enforcing_sentence_case() -> CheckConfig {
+    CheckConfig {
+        document_policy: DocumentPolicyConfig {
+            sentence_case_headings: true,
+            ..DocumentPolicyConfig::default()
+        },
+        ..CheckConfig::default()
+    }
+}
+
 #[test]
 fn title_case_heading_fails() {
     let doc = doc_with_heading("Why Saying Nothing Is Bad");
-    let config = CheckConfig::default();
+    let config = config_enforcing_sentence_case();
     let mut suite = ExpectationSuite::new("test");
     super::SentenceCaseCheck.run(&doc, &config, &mut suite);
     let result = suite.into_suite_result();
@@ -54,7 +65,7 @@ fn title_case_heading_fails() {
 #[test]
 fn sentence_case_heading_passes() {
     let doc = doc_with_heading("Why saying nothing is bad");
-    let config = CheckConfig::default();
+    let config = config_enforcing_sentence_case();
     let mut suite = ExpectationSuite::new("test");
     super::SentenceCaseCheck.run(&doc, &config, &mut suite);
     let result = suite.into_suite_result();
@@ -67,7 +78,7 @@ fn sentence_case_heading_passes() {
 #[test]
 fn acronyms_not_counted() {
     let doc = doc_with_heading("Working with the AWS API");
-    let config = CheckConfig::default();
+    let config = config_enforcing_sentence_case();
     let mut suite = ExpectationSuite::new("test");
     super::SentenceCaseCheck.run(&doc, &config, &mut suite);
     let result = suite.into_suite_result();
@@ -81,7 +92,7 @@ fn acronyms_not_counted() {
 fn two_capitalized_words_passes() {
     // Only 2 non-first capitalized words — below the 3 threshold
     let doc = doc_with_heading("How Content Marketing works today");
-    let config = CheckConfig::default();
+    let config = config_enforcing_sentence_case();
     let mut suite = ExpectationSuite::new("test");
     super::SentenceCaseCheck.run(&doc, &config, &mut suite);
     let result = suite.into_suite_result();
@@ -101,7 +112,7 @@ fn no_headings_passes() {
         }],
         metadata: DocumentMetadata::default(),
     };
-    let config = CheckConfig::default();
+    let config = config_enforcing_sentence_case();
     let mut suite = ExpectationSuite::new("test");
     super::SentenceCaseCheck.run(&doc, &config, &mut suite);
     let result = suite.into_suite_result();

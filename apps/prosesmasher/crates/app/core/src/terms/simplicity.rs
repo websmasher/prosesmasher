@@ -29,13 +29,12 @@ impl Check for SimplicityCheck {
     }
 
     fn run(&self, doc: &Document, config: &CheckConfig, suite: &mut ExpectationSuite) {
-        if config.terms.simplicity_pairs.is_empty() {
+        let simplicity_pairs = super::resolve_simplicity_pairs(config);
+        if simplicity_pairs.is_empty() {
             return;
         }
 
-        let complex_set: BTreeSet<String> = config
-            .terms
-            .simplicity_pairs
+        let complex_set: BTreeSet<String> = simplicity_pairs
             .iter()
             .map(|pair| pair.complex.to_lowercase())
             .collect();

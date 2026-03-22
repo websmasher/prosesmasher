@@ -29,7 +29,10 @@ impl Check for GunningFogCheck {
     }
 
     fn run(&self, doc: &Document, config: &CheckConfig, suite: &mut ExpectationSuite) {
-        let Some(max) = config.thresholds.gunning_fog_max else {
+        if !config.quality.heuristics.readability.enabled {
+            return;
+        }
+        let Some(max) = config.quality.heuristics.readability.gunning_fog_max else {
             return;
         };
 

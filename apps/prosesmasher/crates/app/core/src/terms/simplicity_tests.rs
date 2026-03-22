@@ -1,26 +1,24 @@
 use crate::check::Check;
 use crate::test_helpers::make_doc;
 use low_expectations::ExpectationSuite;
-use prosesmasher_domain_types::{CheckConfig, Locale, SimplePair, TermLists};
+use prosesmasher_domain_types::{CheckConfig, Locale, SimplePair};
 
 /// A (complex, simple) word pair for test configuration.
 type WordPair<'a> = (&'a str, &'a str);
 
 fn config_with_pairs(pairs: &[WordPair<'_>]) -> CheckConfig {
-    CheckConfig {
+    let mut config = CheckConfig {
         locale: Locale::En,
-        terms: TermLists {
-            simplicity_pairs: pairs
-                .iter()
-                .map(|(complex, simple)| SimplePair {
-                    complex: (*complex).to_owned(),
-                    simple: (*simple).to_owned(),
-                })
-                .collect(),
-            ..TermLists::default()
-        },
         ..CheckConfig::default()
-    }
+    };
+    config.quality.lexical.simplicity_pairs.add = pairs
+        .iter()
+        .map(|(complex, simple)| SimplePair {
+            complex: (*complex).to_owned(),
+            simple: (*simple).to_owned(),
+        })
+        .collect();
+    config
 }
 
 #[test]

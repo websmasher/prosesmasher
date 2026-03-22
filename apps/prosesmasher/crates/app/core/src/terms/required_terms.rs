@@ -5,7 +5,7 @@ use prosesmasher_domain_types::{CheckConfig, Document, Locale};
 
 use crate::check::Check;
 
-/// Checks that every term in `config.terms.required_terms` appears
+/// Checks that every term in `config.quality.lexical.required_terms` appears
 /// in the document. Each missing term is a failure.
 #[derive(Debug)]
 pub struct RequiredTermsCheck;
@@ -24,7 +24,7 @@ impl Check for RequiredTermsCheck {
     }
 
     fn run(&self, doc: &Document, config: &CheckConfig, suite: &mut ExpectationSuite) {
-        if config.terms.required_terms.is_empty() {
+        if config.quality.lexical.required_terms.is_empty() {
             return;
         }
 
@@ -37,7 +37,7 @@ impl Check for RequiredTermsCheck {
 
         let lower_words: Vec<String> = all_words.iter().map(|w| w.to_lowercase()).collect();
 
-        for term in &config.terms.required_terms {
+        for term in &config.quality.lexical.required_terms {
             let lower_term = term.to_lowercase();
             let found = lower_words.contains(&lower_term);
             let observed = i64::from(found);
