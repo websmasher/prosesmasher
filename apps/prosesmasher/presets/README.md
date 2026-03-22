@@ -1,4 +1,4 @@
-# Presets and Examples
+# Presets and Full Config
 
 These presets are curated starting points for English prose workflows.
 
@@ -11,11 +11,11 @@ They are not universal truth. They are opinionated defaults that you should copy
 
 The library already carries the default anti-slop lexicon, simplicity pairs, repetition exclusions, and baseline quality thresholds for English. The shipped presets differ only by `documentPolicy`. Quality stays on the shared library defaults everywhere.
 
-## Example Configs
+## Full Config
 
-- `examples/full-config-en.json` — canonical reference showing the full config surface, including every major lexical, heuristic, and document-policy option
+- `full-config-en.json` — canonical reference showing the full config surface, including every major lexical, heuristic, and document-policy option
 
-Use the example config to see what is possible.
+Use the full config when you want to author your own rules from scratch.
 Use the shipped presets when you want a real starting point without overcommitting to debatable policy choices.
 
 ## Presets
