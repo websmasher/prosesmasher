@@ -9,21 +9,23 @@ They are intended for:
 
 They are not universal truth. They are opinionated defaults that you should copy and tune for your domain.
 
+The library already carries the default anti-slop lexicon, simplicity pairs, repetition exclusions, and baseline quality thresholds for English. The shipped presets mostly add document-shape policy and a few threshold deltas instead of restating those defaults.
+
 ## Presets
 
-- `general-en.json` — balanced default for general web prose
-- `blog-strict-en.json` — tighter style for editorial/blog writing
-- `technical-article-en.json` — longer technical explainers and tutorials
-- `docs-en.json` — product/docs/reference-style prose
+- `general-en.json` — baseline quality defaults with no document-shape policy
+- `article-short-en.json` — short-form article shape
+- `article-medium-en.json` — standard article/blog shape
+- `article-long-en.json` — long-form article shape
+- `docs-en.json` — docs/reference-style prose
 - `landing-page-en.json` — concise marketing/site copy
-- `essay-en.json` — longer argument-driven prose with a bit more structural freedom
 
 ## Notes
 
 - These presets are English-first. Many phrase/pattern lists are explicitly English.
-- `requiredTerms` and `recommendedTerms` are left empty in the presets because those are domain-specific.
+- `requiredTerms`, `recommendedTerms`, and substring rules are left empty in the presets because those are domain-specific.
 - Copy a preset into your own config and then customize:
-  - banned terms for your organization
+  - prohibited terms for your organization
   - required terminology
   - threshold strictness
   - locale-specific term lists
