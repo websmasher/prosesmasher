@@ -4,7 +4,7 @@ use std::collections::BTreeMap;
 
 use low_expectations::ExpectationSuite;
 use prosesmasher_domain_types::{Block, CheckConfig, Document, Locale, Paragraph};
-use serde_json::json;
+use serde_json::{Value, json};
 
 use crate::check::Check;
 
@@ -46,6 +46,7 @@ impl Check for WordRepetitionCheck {
         );
 
         let max_i64 = i64::try_from(max_repetition).unwrap_or(i64::MAX);
+        let mut evidence: Vec<Value> = Vec::new();
 
         for (word, count) in &freq {
             if word.len() < 4 {
@@ -57,22 +58,25 @@ impl Check for WordRepetitionCheck {
             }
 
             let observed = i64::try_from(*count).unwrap_or(i64::MAX);
-            let col = format!("word-repetition-{word}");
-            let _result = suite
-                .record_custom_values(
-                    &col,
-                    observed <= max_i64,
-                    json!({ "max": max_i64, "word": word }),
-                    json!({ "word": word, "count": observed }),
-                    &[json!({
-                        "word": word,
-                        "count": observed,
-                        "max": max_i64,
-                    })],
-                )
-                .label("Word Repetition")
-                .checking(&format!("frequency of \"{word}\""));
+            if observed > max_i64 {
+                evidence.push(json!({
+                    "word": word,
+                    "count": observed,
+                    "max": max_i64,
+                }));
+            }
         }
+
+        let _result = suite
+            .record_custom_values(
+                "word-repetition",
+                evidence.is_empty(),
+                json!({ "max": max_i64 }),
+                json!(evidence.len()),
+                &evidence,
+            )
+            .label("Word Repetition")
+            .checking("word repetition above threshold");
     }
 }
 

@@ -27,7 +27,7 @@ fn exceeds_threshold_fails() {
     super::ExclamationDensityCheck.run(&doc, &config, &mut suite);
     let result = suite.into_suite_result();
     assert_eq!(result.statistics.unsuccessful_expectations, 1, "3 exclamations with max 1 should fail");
-    let vr = result.results.get("exclamation-density-para-0");
+    let vr = result.results.get("exclamation-density");
     assert!(vr.is_some(), "paragraph result should exist");
     if let Some(vr) = vr {
         let evidence = vr.result.partial_unexpected_list.as_ref();

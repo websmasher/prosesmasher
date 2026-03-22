@@ -65,6 +65,15 @@ fn two_hedges_in_one_sentence_fails() {
         result.statistics.unsuccessful_expectations, 1,
         "2 hedges in 1 sentence with threshold 2 → fail"
     );
+    let vr = result.results.get("hedge-stacking");
+    assert!(vr.is_some(), "hedge-stacking result should exist");
+    if let Some(vr) = vr {
+        let evidence = vr.result.partial_unexpected_list.as_ref();
+        assert!(evidence.is_some(), "evidence should be present");
+        assert_eq!(evidence.and_then(|e| e.first())
+            .and_then(|item| item.get("hedge_count"))
+            .and_then(serde_json::Value::as_i64), Some(2), "hedge count");
+    }
 }
 
 #[test]
@@ -76,8 +85,8 @@ fn one_hedge_per_sentence_passes() {
     super::HedgeStackingCheck.run(&doc, &config, &mut suite);
     let result = suite.into_suite_result();
     assert_eq!(
-        result.statistics.successful_expectations, 2,
-        "1 hedge per sentence → both pass"
+        result.statistics.successful_expectations, 1,
+        "1 hedge per sentence → aggregate pass"
     );
     assert_eq!(result.statistics.unsuccessful_expectations, 0, "no failures");
 }
@@ -162,6 +171,6 @@ fn hedges_in_code_block_not_detected() {
     let mut suite = ExpectationSuite::new("test");
     super::HedgeStackingCheck.run(&doc, &config, &mut suite);
     let result = suite.into_suite_result();
-    assert_eq!(result.statistics.evaluated_expectations, 0,
-        "code block content must be ignored");
+    assert_eq!(result.statistics.successful_expectations, 1,
+        "code block content must be ignored by aggregate check");
 }

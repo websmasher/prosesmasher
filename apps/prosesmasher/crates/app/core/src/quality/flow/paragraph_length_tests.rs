@@ -50,7 +50,7 @@ fn paragraph_exceeds_max_fails() {
         result.statistics.unsuccessful_expectations, 1,
         "6 sentences with max=4 should fail"
     );
-    let vr = result.results.get("paragraph-length-0");
+    let vr = result.results.get("paragraph-length");
     assert!(vr.is_some(), "paragraph-length result should exist");
     if let Some(vr) = vr {
         let evidence = vr.result.partial_unexpected_list.as_ref();

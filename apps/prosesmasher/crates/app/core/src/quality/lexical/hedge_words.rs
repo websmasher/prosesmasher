@@ -2,6 +2,7 @@
 
 use low_expectations::ExpectationSuite;
 use prosesmasher_domain_types::{Block, CheckConfig, Document, Locale};
+use serde_json::{Value, json};
 
 use crate::check::Check;
 
@@ -38,21 +39,43 @@ impl Check for HedgeStackingCheck {
         let max_hedges = config.quality.heuristics.hedge_stacking.max_per_sentence;
         let hedge_set = low_expectations::text::build_term_set(&hedge_words);
         let mut sentence_idx: usize = 0;
+        let mut evidence: Vec<Value> = Vec::new();
 
-        for section in &doc.sections {
+        for (section_index, section) in doc.sections.iter().enumerate() {
             for block in &section.blocks {
-                check_block(block, &hedge_set, max_hedges, suite, &mut sentence_idx);
+                check_block(
+                    block,
+                    section_index,
+                    &hedge_set,
+                    max_hedges,
+                    &mut sentence_idx,
+                    &mut evidence,
+                );
             }
         }
+
+        let max_allowed =
+            i64::try_from(max_hedges.saturating_sub(1)).unwrap_or(i64::MAX);
+        let _result = suite
+            .record_custom_values(
+                "hedge-stacking",
+                evidence.is_empty(),
+                json!({ "max": max_allowed }),
+                json!(evidence.len()),
+                &evidence,
+            )
+            .label("Hedge Stacking")
+            .checking("hedge word density per sentence");
     }
 }
 
 fn check_block(
     block: &Block,
+    section_index: usize,
     hedge_set: &std::collections::BTreeSet<String>,
     max_hedges: usize,
-    suite: &mut ExpectationSuite,
     sentence_idx: &mut usize,
+    evidence: &mut Vec<Value>,
 ) {
     match block {
         Block::Paragraph(p) => {
@@ -69,17 +92,28 @@ fn check_block(
                 let observed = i64::try_from(hedge_count).unwrap_or(i64::MAX);
                 let max_allowed =
                     i64::try_from(max_hedges.saturating_sub(1)).unwrap_or(i64::MAX);
-                let col = format!("hedge-stacking-s{sentence_idx}");
-                let _result = suite
-                    .expect_value_to_be_between(&col, observed, 0, max_allowed)
-                    .label("Hedge Stacking")
-                    .checking("hedge word density per sentence");
+                if observed > max_allowed {
+                    evidence.push(json!({
+                        "section_index": section_index,
+                        "sentence_index": *sentence_idx,
+                        "sentence": sentence.text,
+                        "hedge_count": observed,
+                        "max_allowed": max_allowed,
+                    }));
+                }
                 *sentence_idx = sentence_idx.saturating_add(1);
             }
         }
         Block::BlockQuote(inner) => {
             for b in inner {
-                check_block(b, hedge_set, max_hedges, suite, sentence_idx);
+                check_block(
+                    b,
+                    section_index,
+                    hedge_set,
+                    max_hedges,
+                    sentence_idx,
+                    evidence,
+                );
             }
         }
         Block::List(_) | Block::CodeBlock(_) => {}
