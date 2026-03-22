@@ -4,7 +4,7 @@ use std::collections::BTreeSet;
 use std::path::Path;
 
 use low_expectations::types::{Severity, SuiteValidationResult, ValidationResult};
-use serde_json::Value;
+use serde_json::{Map, Number, Value};
 use serde::Serialize;
 
 use crate::args::OutputFormat;
@@ -121,7 +121,7 @@ fn print_text(file: &Path, result: &SuiteValidationResult) {
             .result
             .observed_value
             .as_ref()
-            .map(ToString::to_string)
+            .map(|value| sanitize_value(value.clone()).to_string())
             .unwrap_or_default();
 
         println!("{}", format_line(vr.success, label, &observed));
@@ -154,11 +154,12 @@ pub fn build_file_result(file: &Path, result: &SuiteValidationResult) -> FileRes
         .iter()
         .map(|(column, vr)| {
             let label = check_label(column, &vr.expectation_config.meta).to_owned();
+            let observed = vr.result.observed_value.clone().map(sanitize_value);
             CheckOutput {
                 id: column.clone(),
                 label,
                 success: vr.success,
-                observed: vr.result.observed_value.clone(),
+                observed,
             }
         })
         .collect();
@@ -170,15 +171,18 @@ pub fn build_file_result(file: &Path, result: &SuiteValidationResult) -> FileRes
         .map(|(column, vr)| {
             let label = check_label(column, &vr.expectation_config.meta).to_owned();
             let message = failure_message(column, &label);
+            let observed = vr.result.observed_value.clone().map(sanitize_value);
+            let expected = expected_value(vr).map(sanitize_value);
+            let evidence = sanitized_evidence(column, vr, observed.as_ref());
             FailureOutput {
                 id: column.clone(),
                 label,
                 severity: failure_severity(vr),
                 message,
                 checking: check_checking(&vr.expectation_config.meta),
-                expected: expected_value(vr),
-                observed: vr.result.observed_value.clone(),
-                evidence: vr.result.partial_unexpected_list.clone(),
+                expected,
+                observed,
+                evidence,
                 rewrite_hint: rewrite_hint(column),
             }
         })
@@ -240,7 +244,7 @@ const fn failure_severity(vr: &ValidationResult) -> &'static str {
 fn check_checking(meta: &std::collections::BTreeMap<String, Value>) -> Option<String> {
     meta.get("checking")
         .and_then(|v| v.as_str())
-        .map(ToOwned::to_owned)
+        .map(|text| text.replace(" (×100)", ""))
 }
 
 fn expected_value(vr: &ValidationResult) -> Option<Value> {
@@ -264,6 +268,100 @@ fn expected_value(vr: &ValidationResult) -> Option<Value> {
     }
 
     None
+}
+
+fn sanitized_evidence(
+    id: &str,
+    vr: &ValidationResult,
+    observed: Option<&Value>,
+) -> Option<Vec<Value>> {
+    if matches!(
+        id,
+        "flesch-kincaid" | "gunning-fog" | "coleman-liau" | "avg-sentence-length"
+    ) {
+        return None;
+    }
+
+    let evidence = vr
+        .result
+        .partial_unexpected_list
+        .as_ref()
+        .map(|items| items.iter().cloned().map(sanitize_value).collect::<Vec<_>>())?;
+
+    if evidence.is_empty() {
+        return None;
+    }
+
+    if let (Some(observed), [single]) = (observed, evidence.as_slice())
+        && single == observed
+    {
+        return None;
+    }
+
+    Some(evidence)
+}
+
+fn sanitize_value(value: Value) -> Value {
+    match value {
+        Value::Object(map) => sanitize_object(map),
+        Value::Array(items) => {
+            Value::Array(items.into_iter().map(sanitize_value).collect())
+        }
+        other @ (Value::Null | Value::Bool(_) | Value::Number(_) | Value::String(_)) => other,
+    }
+}
+
+fn sanitize_object(map: Map<String, Value>) -> Value {
+    let mut sanitized = Map::new();
+
+    for (key, value) in map {
+        if matches!(
+            key.as_str(),
+            "section_index"
+                | "paragraph_index"
+                | "sentence_index"
+                | "sentence_index_next"
+                | "sentence_index_third"
+                | "pattern_type"
+                | "score_x100"
+        ) {
+            continue;
+        }
+
+        let _ = sanitized.insert(key, sanitize_value(value));
+    }
+
+    normalize_x100_threshold(&mut sanitized, "minimum_score_x100", "minimum_score");
+    normalize_x100_threshold(&mut sanitized, "maximum_score_x100", "maximum_score");
+
+    Value::Object(sanitized)
+}
+
+fn normalize_x100_threshold(
+    map: &mut Map<String, Value>,
+    x100_key: &str,
+    float_key: &str,
+) {
+    let Some(value) = map.remove(x100_key) else {
+        return;
+    };
+
+    if map.contains_key(float_key) {
+        return;
+    }
+
+    let Some(raw) = value.as_i64() else {
+        return;
+    };
+
+    let Some(raw_i32) = i32::try_from(raw).ok() else {
+        return;
+    };
+
+    let scaled = f64::from(raw_i32) / 100.0;
+    if let Some(number) = Number::from_f64(scaled) {
+        let _ = map.insert(float_key.to_owned(), Value::Number(number));
+    }
 }
 
 fn failure_message(id: &str, label: &str) -> String {
@@ -295,9 +393,10 @@ fn failure_message(id: &str, label: &str) -> String {
         "sentence-case" => "One or more headings are not in sentence case.".to_owned(),
         "code-fences" => "Found code fences in prose content.".to_owned(),
         "word-repetition" => "Found repeated words above the configured threshold.".to_owned(),
-        "flesch-kincaid" => "Readability is below the configured minimum.".to_owned(),
-        "gunning-fog" => "Readability is above the configured maximum fog threshold.".to_owned(),
-        "coleman-liau" => "Readability is above the configured Coleman-Liau threshold.".to_owned(),
+        "flesch-kincaid" => "Readability is below the allowed minimum.".to_owned(),
+        "gunning-fog" | "coleman-liau" => {
+            "Readability complexity is above the allowed maximum.".to_owned()
+        }
         "avg-sentence-length" => "Average sentence length exceeds the configured maximum.".to_owned(),
         _ => format!("{label} failed."),
     }
