@@ -1,4 +1,4 @@
-# Presets
+# Presets and Examples
 
 These presets are curated starting points for English prose workflows.
 
@@ -10,6 +10,13 @@ They are intended for:
 They are not universal truth. They are opinionated defaults that you should copy and tune for your domain.
 
 The library already carries the default anti-slop lexicon, simplicity pairs, repetition exclusions, and baseline quality thresholds for English. The shipped presets mostly add document-shape policy and a few threshold deltas instead of restating those defaults.
+
+## Example Configs
+
+- `examples/full-config-en.json` — canonical reference showing the full config surface, including every major lexical, heuristic, and document-policy option
+
+Use the example config to see what is possible.
+Use the shipped presets when you want a real starting point without overcommitting to debatable policy choices.
 
 ## Presets
 
