@@ -1,19 +1,10 @@
 use crate::check::Check;
 use crate::test_helpers::make_doc;
 use low_expectations::ExpectationSuite;
-use prosesmasher_domain_types::{CheckConfig, Locale, TermLists};
+use prosesmasher_domain_types::{CheckConfig, Locale};
 
 fn config_with_patterns() -> CheckConfig {
-    CheckConfig {
-        terms: TermLists {
-            summative_patterns: vec![
-                "and that's what makes".to_owned(),
-                "that's why this".to_owned(),
-            ],
-            ..Default::default()
-        },
-        ..Default::default()
-    }
+    CheckConfig::default()
 }
 
 #[test]
@@ -58,7 +49,7 @@ fn normal_closer_passes() {
 }
 
 #[test]
-fn empty_config_skips() {
+fn default_config_runs() {
     let doc = make_doc(
         "And that's what makes this approach so powerful.",
         Locale::En,
@@ -68,8 +59,8 @@ fn empty_config_skips() {
     super::SummativeCloserCheck.run(&doc, &config, &mut suite);
     let result = suite.into_suite_result();
     assert_eq!(
-        result.statistics.evaluated_expectations, 0,
-        "empty patterns should skip"
+        result.statistics.unsuccessful_expectations, 1,
+        "default summative patterns should run"
     );
 }
 

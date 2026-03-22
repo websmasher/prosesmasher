@@ -27,12 +27,16 @@ impl Check for HedgeStackingCheck {
     }
 
     fn run(&self, doc: &Document, config: &CheckConfig, suite: &mut ExpectationSuite) {
-        if config.terms.hedge_words.is_empty() {
+        if !config.quality.heuristics.hedge_stacking.enabled {
+            return;
+        }
+        let hedge_words = super::resolve_hedge_words(config);
+        if hedge_words.is_empty() {
             return;
         }
 
-        let max_hedges = config.thresholds.max_hedges_per_sentence.unwrap_or(2);
-        let hedge_set = low_expectations::text::build_term_set(&config.terms.hedge_words);
+        let max_hedges = config.quality.heuristics.hedge_stacking.max_per_sentence;
+        let hedge_set = low_expectations::text::build_term_set(&hedge_words);
         let mut sentence_idx: usize = 0;
 
         for section in &doc.sections {

@@ -25,12 +25,16 @@ impl Check for AffirmationClosersCheck {
     }
 
     fn run(&self, doc: &Document, config: &CheckConfig, suite: &mut ExpectationSuite) {
-        if config.terms.affirmation_closers.is_empty() {
+        if !config.quality.heuristics.affirmation_closers.enabled {
+            return;
+        }
+        let affirmation_closers = super::resolve_affirmation_closers(config);
+        if affirmation_closers.is_empty() {
             return;
         }
         let evidence = super::collect_section_sentence_evidence(
             doc,
-            &config.terms.affirmation_closers,
+            &affirmation_closers,
             super::section_last_sentence,
             super::sentence_ends_with,
         );
@@ -38,7 +42,7 @@ impl Check for AffirmationClosersCheck {
             .record_custom_values(
                 "affirmation-closers",
                 evidence.is_empty(),
-                json!({ "min": 0, "max": 0, "absent": config.terms.affirmation_closers }),
+                json!({ "min": 0, "max": 0, "absent": affirmation_closers }),
                 json!(evidence.len()),
                 &evidence,
             )

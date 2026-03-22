@@ -2,7 +2,7 @@ use crate::check::Check;
 use low_expectations::ExpectationSuite;
 use prosesmasher_domain_types::{
     Block, CheckConfig, Document, DocumentMetadata, Locale, Paragraph, Section, Sentence,
-    TermLists, Word,
+    Word,
 };
 
 fn make_sentences(texts: &[&str]) -> Vec<Sentence> {
@@ -47,14 +47,7 @@ fn make_doc_with_sentences(texts: &[&str], locale: Locale) -> Document {
 }
 
 fn config_with_signals() -> CheckConfig {
-    CheckConfig {
-        terms: TermLists {
-            negation_signals: vec!["not".to_owned(), "isn't".to_owned(), "aren't".to_owned()],
-            reframe_signals: vec!["it's".to_owned(), "this is".to_owned(), "that's".to_owned()],
-            ..Default::default()
-        },
-        ..Default::default()
-    }
+    CheckConfig::default()
 }
 
 #[test]
@@ -108,7 +101,7 @@ fn no_pattern_passes() {
 }
 
 #[test]
-fn empty_config_skips() {
+fn default_config_runs() {
     let doc = make_doc_with_sentences(
         &["This isn't defiance.", "It's developmental."],
         Locale::En,
@@ -118,8 +111,8 @@ fn empty_config_skips() {
     super::NegationReframeCheck.run(&doc, &config, &mut suite);
     let result = suite.into_suite_result();
     assert_eq!(
-        result.statistics.evaluated_expectations, 0,
-        "empty signals should skip"
+        result.statistics.unsuccessful_expectations, 1,
+        "default negation/reframe patterns should run"
     );
 }
 

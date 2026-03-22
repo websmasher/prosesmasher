@@ -1,19 +1,10 @@
 use crate::check::Check;
 use crate::test_helpers::make_doc;
 use low_expectations::ExpectationSuite;
-use prosesmasher_domain_types::{CheckConfig, Locale, TermLists};
+use prosesmasher_domain_types::{CheckConfig, Locale};
 
 fn config_with_closers() -> CheckConfig {
-    CheckConfig {
-        terms: TermLists {
-            affirmation_closers: vec![
-                "and that's the key.".to_owned(),
-                "that's what matters.".to_owned(),
-            ],
-            ..Default::default()
-        },
-        ..Default::default()
-    }
+    CheckConfig::default()
 }
 
 #[test]
@@ -58,15 +49,15 @@ fn normal_closer_passes() {
 }
 
 #[test]
-fn empty_config_skips() {
+fn default_config_runs() {
     let doc = make_doc("We worked hard and that's the key.", Locale::En);
     let config = CheckConfig::default();
     let mut suite = ExpectationSuite::new("test");
     super::AffirmationClosersCheck.run(&doc, &config, &mut suite);
     let result = suite.into_suite_result();
     assert_eq!(
-        result.statistics.evaluated_expectations, 0,
-        "empty closers should skip"
+        result.statistics.unsuccessful_expectations, 1,
+        "default affirmation closer patterns should run"
     );
 }
 

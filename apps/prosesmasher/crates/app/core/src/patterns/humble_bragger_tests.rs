@@ -1,20 +1,10 @@
 use crate::check::Check;
 use crate::test_helpers::make_doc;
 use low_expectations::ExpectationSuite;
-use prosesmasher_domain_types::{CheckConfig, Locale, TermLists};
+use prosesmasher_domain_types::{CheckConfig, Locale};
 
 fn config_with_phrases() -> CheckConfig {
-    CheckConfig {
-        terms: TermLists {
-            humble_bragger_phrases: vec![
-                "in my experience".to_owned(),
-                "as someone who has".to_owned(),
-                "having worked with".to_owned(),
-            ],
-            ..Default::default()
-        },
-        ..Default::default()
-    }
+    CheckConfig::default()
 }
 
 #[test]
@@ -59,15 +49,15 @@ fn normal_sentence_passes() {
 }
 
 #[test]
-fn empty_config_skips() {
+fn default_config_runs() {
     let doc = make_doc("In my experience this is common.", Locale::En);
     let config = CheckConfig::default();
     let mut suite = ExpectationSuite::new("test");
     super::HumbleBraggerCheck.run(&doc, &config, &mut suite);
     let result = suite.into_suite_result();
     assert_eq!(
-        result.statistics.evaluated_expectations, 0,
-        "empty phrases should skip"
+        result.statistics.unsuccessful_expectations, 1,
+        "default humble-bragger patterns should run"
     );
 }
 

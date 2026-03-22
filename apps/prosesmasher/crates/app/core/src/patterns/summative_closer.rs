@@ -25,12 +25,16 @@ impl Check for SummativeCloserCheck {
     }
 
     fn run(&self, doc: &Document, config: &CheckConfig, suite: &mut ExpectationSuite) {
-        if config.terms.summative_patterns.is_empty() {
+        if !config.quality.heuristics.summative_closer.enabled {
+            return;
+        }
+        let summative_patterns = super::resolve_summative_patterns(config);
+        if summative_patterns.is_empty() {
             return;
         }
         let evidence = super::collect_section_sentence_evidence(
             doc,
-            &config.terms.summative_patterns,
+            &summative_patterns,
             super::section_last_sentence,
             super::sentence_starts_with,
         );
@@ -38,7 +42,7 @@ impl Check for SummativeCloserCheck {
             .record_custom_values(
                 "summative-closer",
                 evidence.is_empty(),
-                json!({ "min": 0, "max": 0, "absent": config.terms.summative_patterns }),
+                json!({ "min": 0, "max": 0, "absent": summative_patterns }),
                 json!(evidence.len()),
                 &evidence,
             )

@@ -25,19 +25,23 @@ impl Check for HumbleBraggerCheck {
     }
 
     fn run(&self, doc: &Document, config: &CheckConfig, suite: &mut ExpectationSuite) {
-        if config.terms.humble_bragger_phrases.is_empty() {
+        if !config.quality.heuristics.humble_bragger.enabled {
+            return;
+        }
+        let humble_bragger_phrases = super::resolve_humble_bragger_phrases(config);
+        if humble_bragger_phrases.is_empty() {
             return;
         }
         let evidence = super::collect_sentence_phrase_evidence(
             doc,
-            &config.terms.humble_bragger_phrases,
+            &humble_bragger_phrases,
             super::sentence_contains,
         );
         let _result = suite
             .record_custom_values(
                 "humble-bragger",
                 evidence.is_empty(),
-                json!({ "min": 0, "max": 0, "absent": config.terms.humble_bragger_phrases }),
+                json!({ "min": 0, "max": 0, "absent": humble_bragger_phrases }),
                 json!(evidence.len()),
                 &evidence,
             )
