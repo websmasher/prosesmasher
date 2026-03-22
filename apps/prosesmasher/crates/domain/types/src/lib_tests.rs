@@ -89,7 +89,7 @@ fn check_config_default_has_canonical_defaults() {
     assert!(config.quality.heuristics.readability.enabled, "readability enabled");
     assert_eq!(
         config.quality.heuristics.paragraph_length.max_sentences,
-        4,
+        6,
         "paragraph length default"
     );
     assert!(config.document_policy.word_count.is_none(), "word_count policy off by default");

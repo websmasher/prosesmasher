@@ -158,8 +158,8 @@ fn presets_keep_shared_quality_defaults() {
 
     assert_eq!(article.quality.heuristics.exclamation_density.max_per_paragraph, 1);
     assert_eq!(general.quality.heuristics.exclamation_density.max_per_paragraph, 1);
-    assert_eq!(article.quality.heuristics.paragraph_length.max_sentences, 4);
-    assert_eq!(general.quality.heuristics.paragraph_length.max_sentences, 4);
+    assert_eq!(article.quality.heuristics.paragraph_length.max_sentences, 6);
+    assert_eq!(general.quality.heuristics.paragraph_length.max_sentences, 6);
 }
 
 #[test]
