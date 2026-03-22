@@ -1,0 +1,7 @@
+{
+  "locale": "en",
+  "quality": {},
+  "documentPolicy": {
+    "wordCount": { "min": 80, "max": 400 }
+  }
+}
