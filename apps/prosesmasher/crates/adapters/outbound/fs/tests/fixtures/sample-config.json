@@ -1,34 +1,43 @@
 {
   "locale": "en",
-  "terms": {
-    "bannedWords": ["actually", "leverage"],
-    "bannedPhrases": ["let's dive in"],
-    "genderedTerms": ["mama"],
-    "forbiddenTerms": [],
-    "raceTerms": [],
-    "hedgeWords": ["might", "perhaps"],
-    "simplicityPairs": [["utilize", "use"], ["implement", "do"]],
-    "negationSignals": ["not", "isn't"],
-    "reframeSignals": ["it's", "that's"],
-    "llmOpeners": ["the interesting part is"],
-    "affirmationClosers": ["and that's the key"],
-    "summativePatterns": ["and that's what makes"],
-    "falseQuestionPatterns": ["isn't that what"],
-    "humbleBraggerPhrases": ["in my experience"],
-    "jargonFakerPhrases": ["debugging your"],
-    "stopWords": ["the", "a", "is", "in", "to", "and"]
+  "quality": {
+    "lexical": {
+      "prohibitedTerms": {
+        "defaults": false,
+        "add": ["actually", "leverage", "let's dive in", "mama"],
+        "remove": []
+      },
+      "simplicityPairs": {
+        "defaults": false,
+        "add": [["utilize", "use"], ["implement", "do"]],
+        "remove": []
+      }
+    },
+    "heuristics": {
+      "paragraphLength": { "maxSentences": 4 },
+      "exclamationDensity": { "maxPerParagraph": 1 },
+      "hedgeStacking": { "maxPerSentence": 1 },
+      "wordRepetition": {
+        "max": 5,
+        "excludedTerms": {
+          "defaults": false,
+          "add": ["the", "a", "is", "in", "to", "and"],
+          "remove": []
+        }
+      },
+      "readability": {
+        "fleschKincaidMin": 50.0,
+        "gunningFogMax": 14.0,
+        "avgSentenceLengthMax": 25
+      }
+    }
   },
-  "thresholds": {
+  "documentPolicy": {
     "wordCount": { "min": 650, "max": 1000 },
-    "h2Count": { "min": 2, "max": 6 },
-    "h3Min": 0,
-    "boldMin": 3,
-    "maxParagraphSentences": 4,
-    "maxExclamationsPerParagraph": 1,
-    "maxHedgesPerSentence": 1,
-    "fleschKincaidMin": 50.0,
-    "gunningFogMax": 14.0,
-    "avgSentenceLengthMax": 25,
-    "wordRepetitionMax": 5
+    "headingCounts": {
+      "h2": { "min": 2, "max": 6 },
+      "h3Min": 0
+    },
+    "boldDensity": { "min": 3 }
   }
 }
