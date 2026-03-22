@@ -14,10 +14,10 @@ pub type BoxedCheck = Box<dyn Check>;
 
 /// A composable prose quality check.
 pub trait Check {
-    /// Unique check ID (e.g., "banned-words", "em-dashes").
+    /// Unique check ID (e.g., "prohibited-terms", "em-dashes").
     fn id(&self) -> &'static str;
 
-    /// Human-readable label (e.g., "Banned Words").
+    /// Human-readable label (e.g., "Prohibited Terms").
     fn label(&self) -> &'static str;
 
     /// Which locales this check supports. `None` = all locales.

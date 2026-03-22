@@ -1,21 +1,11 @@
-pub mod banned_phrases;
-pub mod banned_words;
-pub mod forbidden_terms;
-pub mod gendered_terms;
 pub mod hedge_words;
 pub mod prohibited_terms;
-pub mod race_terms;
 pub mod recommended_terms;
 pub mod required_terms;
 pub mod simplicity;
 
-pub use banned_phrases::BannedPhrasesCheck;
-pub use banned_words::BannedWordsCheck;
-pub use forbidden_terms::ForbiddenTermsCheck;
-pub use gendered_terms::GenderedTermsCheck;
 pub use hedge_words::HedgeStackingCheck;
 pub use prohibited_terms::ProhibitedTermsCheck;
-pub use race_terms::RaceTermsCheck;
 pub use recommended_terms::RecommendedTermsCheck;
 pub use required_terms::RequiredTermsCheck;
 pub use simplicity::SimplicityCheck;
