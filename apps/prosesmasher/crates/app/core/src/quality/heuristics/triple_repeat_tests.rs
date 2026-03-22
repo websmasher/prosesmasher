@@ -68,13 +68,13 @@ fn triple_same_opener_fails() {
             .and_then(|item| item.get("matched_text"))
             .and_then(serde_json::Value::as_str), Some("it's"), "matched opener");
         assert_eq!(evidence.and_then(|e| e.first())
-            .and_then(|item| item.get("sentence"))
+            .and_then(|item| item.get("sentence_1"))
             .and_then(serde_json::Value::as_str), Some("It's fast."), "first sentence");
         assert_eq!(evidence.and_then(|e| e.first())
-            .and_then(|item| item.get("next_sentence"))
+            .and_then(|item| item.get("sentence_2"))
             .and_then(serde_json::Value::as_str), Some("It's reliable."), "second sentence");
         assert_eq!(evidence.and_then(|e| e.first())
-            .and_then(|item| item.get("third_sentence"))
+            .and_then(|item| item.get("sentence_3"))
             .and_then(serde_json::Value::as_str), Some("It's revolutionary."), "third sentence");
     }
 }

@@ -83,7 +83,7 @@
       },
       "paragraphLength": {
         "enabled": true,
-        "maxSentences": 4
+        "maxSentences": 6
       },
       "readability": {
         "enabled": true,

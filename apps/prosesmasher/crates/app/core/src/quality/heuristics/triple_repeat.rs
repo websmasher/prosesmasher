@@ -41,57 +41,28 @@ impl Check for TripleRepeatCheck {
 fn collect_triple_repeat_evidence(doc: &Document) -> Vec<Value> {
     let mut evidence = Vec::new();
 
-    for (section_index, section) in doc.sections.iter().enumerate() {
-        let mut paragraph_index: usize = 0;
+    for section in &doc.sections {
         for block in &section.blocks {
-            collect_triple_repeat_evidence_from_block(
-                block,
-                section_index,
-                &mut paragraph_index,
-                &mut evidence,
-            );
+            collect_triple_repeat_evidence_from_block(block, &mut evidence);
         }
     }
 
     evidence
 }
 
-fn collect_triple_repeat_evidence_from_block(
-    block: &Block,
-    section_index: usize,
-    paragraph_index: &mut usize,
-    evidence: &mut Vec<Value>,
-) {
+fn collect_triple_repeat_evidence_from_block(block: &Block, evidence: &mut Vec<Value>) {
     match block {
-        Block::Paragraph(paragraph) => {
-            collect_triple_repeat_evidence_from_paragraph(
-                paragraph,
-                section_index,
-                *paragraph_index,
-                evidence,
-            );
-            *paragraph_index = paragraph_index.saturating_add(1);
-        }
+        Block::Paragraph(paragraph) => collect_triple_repeat_evidence_from_paragraph(paragraph, evidence),
         Block::BlockQuote(inner) => {
             for inner_block in inner {
-                collect_triple_repeat_evidence_from_block(
-                    inner_block,
-                    section_index,
-                    paragraph_index,
-                    evidence,
-                );
+                collect_triple_repeat_evidence_from_block(inner_block, evidence);
             }
         }
         Block::List(_) | Block::CodeBlock(_) => {}
     }
 }
 
-fn collect_triple_repeat_evidence_from_paragraph(
-    para: &Paragraph,
-    section_index: usize,
-    paragraph_index: usize,
-    evidence: &mut Vec<Value>,
-) {
+fn collect_triple_repeat_evidence_from_paragraph(para: &Paragraph, evidence: &mut Vec<Value>) {
     if para.sentences.len() < 3 {
         return;
     }
@@ -128,15 +99,10 @@ fn collect_triple_repeat_evidence_from_paragraph(
             };
 
             evidence.push(json!({
-                "section_index": section_index,
-                "paragraph_index": paragraph_index,
-                "sentence_index": sentence_index,
-                "sentence_index_next": sentence_index.saturating_add(1),
-                "sentence_index_third": sentence_index.saturating_add(2),
                 "matched_text": a,
-                "sentence": sentence_a.text,
-                "next_sentence": sentence_b.text,
-                "third_sentence": sentence_c.text,
+                "sentence_1": sentence_a.text,
+                "sentence_2": sentence_b.text,
+                "sentence_3": sentence_c.text,
             }));
         }
     }

@@ -153,7 +153,7 @@ impl Default for ParagraphLengthConfig {
     fn default() -> Self {
         Self {
             enabled: true,
-            max_sentences: 4,
+            max_sentences: 6,
         }
     }
 }

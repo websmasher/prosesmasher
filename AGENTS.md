@@ -159,7 +159,7 @@ Canonical shape:
           "remove": []
         }
       },
-      "paragraphLength": { "maxSentences": 4 },
+      "paragraphLength": { "maxSentences": 6 },
       "readability": {
         "fleschKincaidMin": 50.0,
         "gunningFogMax": 14.0,

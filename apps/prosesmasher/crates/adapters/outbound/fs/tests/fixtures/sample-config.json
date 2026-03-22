@@ -14,7 +14,7 @@
       }
     },
     "heuristics": {
-      "paragraphLength": { "maxSentences": 4 },
+      "paragraphLength": { "maxSentences": 6 },
       "exclamationDensity": { "maxPerParagraph": 1 },
       "hedgeStacking": { "maxPerSentence": 1 },
       "wordRepetition": {
