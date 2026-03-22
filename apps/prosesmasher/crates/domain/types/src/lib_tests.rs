@@ -73,7 +73,7 @@ fn heading_counts_default_zeroed() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// CheckConfig, TermLists, Thresholds — Default
+// CheckConfig defaults
 // ═══════════════════════════════════════════════════════════════
 
 #[test]
@@ -83,41 +83,16 @@ fn check_config_default_locale_is_en() {
 }
 
 #[test]
-fn term_lists_default_all_empty() {
-    let terms = TermLists::default();
-    assert!(terms.banned_words.is_empty(), "banned_words");
-    assert!(terms.banned_phrases.is_empty(), "banned_phrases");
-    assert!(terms.gendered_terms.is_empty(), "gendered_terms");
-    assert!(terms.forbidden_terms.is_empty(), "forbidden_terms");
-    assert!(terms.race_terms.is_empty(), "race_terms");
-    assert!(terms.hedge_words.is_empty(), "hedge_words");
-    assert!(terms.simplicity_pairs.is_empty(), "simplicity_pairs");
-    assert!(terms.negation_signals.is_empty(), "negation_signals");
-    assert!(terms.reframe_signals.is_empty(), "reframe_signals");
-    assert!(terms.llm_openers.is_empty(), "llm_openers");
-    assert!(terms.affirmation_closers.is_empty(), "affirmation_closers");
-    assert!(terms.summative_patterns.is_empty(), "summative_patterns");
-    assert!(terms.false_question_patterns.is_empty(), "false_question_patterns");
-    assert!(terms.humble_bragger_phrases.is_empty(), "humble_bragger_phrases");
-    assert!(terms.jargon_faker_phrases.is_empty(), "jargon_faker_phrases");
-    assert!(terms.stop_words.is_empty(), "stop_words");
-}
-
-#[test]
-fn thresholds_default_all_none() {
-    let t = Thresholds::default();
-    assert!(t.word_count.is_none(), "word_count");
-    assert!(t.h2_count.is_none(), "h2_count");
-    assert!(t.h3_min.is_none(), "h3_min");
-    assert!(t.bold_min.is_none(), "bold_min");
-    assert!(t.max_paragraph_sentences.is_none(), "max_paragraph_sentences");
-    assert!(t.max_exclamations_per_paragraph.is_none(), "max_exclamations_per_paragraph");
-    assert!(t.max_hedges_per_sentence.is_none(), "max_hedges_per_sentence");
-    assert!(t.flesch_kincaid_min.is_none(), "flesch_kincaid_min");
-    assert!(t.gunning_fog_max.is_none(), "gunning_fog_max");
-    assert!(t.avg_sentence_length_max.is_none(), "avg_sentence_length_max");
-    assert!(t.word_repetition_max.is_none(), "word_repetition_max");
-    assert!(t.coleman_liau_max.is_none(), "coleman_liau_max");
+fn check_config_default_has_canonical_defaults() {
+    let config = CheckConfig::default();
+    assert!(config.quality.heuristics.em_dashes.enabled, "em dashes enabled");
+    assert!(config.quality.heuristics.readability.enabled, "readability enabled");
+    assert_eq!(
+        config.quality.heuristics.paragraph_length.max_sentences,
+        4,
+        "paragraph length default"
+    );
+    assert!(config.document_policy.word_count.is_none(), "word_count policy off by default");
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -364,7 +339,7 @@ fn config_error_validation_failed_display() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// Error types as trait objects — CLI compatibility
+// Error types as trait objects
 // ═══════════════════════════════════════════════════════════════
 
 #[test]
@@ -448,23 +423,17 @@ fn document_metadata_clone() {
 
 #[test]
 fn check_config_clone() {
-    let config = CheckConfig {
+    let mut config = CheckConfig {
         locale: Locale::De,
-        terms: TermLists {
-            banned_words: vec!["actually".to_owned()],
-            ..TermLists::default()
-        },
-        thresholds: Thresholds {
-            word_count: Range::new(500, 1000),
-            ..Thresholds::default()
-        },
         ..CheckConfig::default()
     };
+    config.quality.lexical.prohibited_terms.add = vec!["actually".to_owned()];
+    config.document_policy.word_count = Range::new(500, 1000);
     #[allow(clippy::redundant_clone)] // intentionally testing Clone trait
     let cloned = config.clone();
     assert_eq!(cloned.locale, Locale::De, "clone preserves locale");
-    assert_eq!(cloned.terms.banned_words.len(), 1, "clone preserves terms");
-    assert!(cloned.thresholds.word_count.is_some(), "clone preserves thresholds");
+    assert_eq!(cloned.quality.lexical.prohibited_terms.add.len(), 1, "clone preserves lexical config");
+    assert!(cloned.document_policy.word_count.is_some(), "clone preserves document policy");
 }
 
 #[test]
@@ -635,42 +604,47 @@ fn document_construction_blockquote_content() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// TermLists with SimplePair populated
+// Canonical lexical config with SimplePair populated
 // ═══════════════════════════════════════════════════════════════
 
 #[test]
-fn term_lists_with_simplicity_pairs() {
-    let terms = TermLists {
-        simplicity_pairs: vec![
+fn lexical_config_with_simplicity_pairs() {
+    let lexical = LexicalConfig {
+        simplicity_pairs: OverrideList {
+            defaults: false,
+            add: vec![
             SimplePair { complex: "utilize".to_owned(), simple: "use".to_owned() },
             SimplePair { complex: "implement".to_owned(), simple: "do".to_owned() },
         ],
-        ..TermLists::default()
+            remove: Vec::new(),
+        },
+        ..LexicalConfig::default()
     };
-    assert_eq!(terms.simplicity_pairs.len(), 2, "should have 2 pairs");
-    if let Some(pair) = terms.simplicity_pairs.first() {
+    assert_eq!(lexical.simplicity_pairs.add.len(), 2, "should have 2 pairs");
+    if let Some(pair) = lexical.simplicity_pairs.add.first() {
         assert_eq!(pair.complex, "utilize", "first pair complex");
         assert_eq!(pair.simple, "use", "first pair simple");
     }
 }
 
 // ═══════════════════════════════════════════════════════════════
-// Thresholds with f64 values populated
+// Readability config with float values populated
 // ═══════════════════════════════════════════════════════════════
 
 #[test]
-fn thresholds_with_float_values() {
-    let t = Thresholds {
+fn readability_config_with_float_values() {
+    let t = ReadabilityConfig {
+        enabled: true,
+        defaults: false,
         flesch_kincaid_min: Some(50.0),
         gunning_fog_max: Some(14.0),
         coleman_liau_max: Some(12.5),
-        ..Thresholds::default()
+        avg_sentence_length_max: Some(25),
     };
     assert_eq!(t.flesch_kincaid_min, Some(50.0), "flesch_kincaid_min");
     assert_eq!(t.gunning_fog_max, Some(14.0), "gunning_fog_max");
     assert_eq!(t.coleman_liau_max, Some(12.5), "coleman_liau_max");
-    // Other fields remain None
-    assert!(t.word_count.is_none(), "word_count still None");
+    assert_eq!(t.avg_sentence_length_max, Some(25), "avg_sentence_length_max");
 }
 
 // ═══════════════════════════════════════════════════════════════

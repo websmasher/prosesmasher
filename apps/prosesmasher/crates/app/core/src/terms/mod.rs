@@ -100,10 +100,6 @@ pub fn resolve_simplicity_pairs(
 
 #[must_use]
 pub fn resolve_hedge_words(config: &prosesmasher_domain_types::CheckConfig) -> Vec<String> {
-    if !config.terms.hedge_words.is_empty() {
-        return dedupe_strings(config.terms.hedge_words.clone());
-    }
-
     if config.locale == prosesmasher_domain_types::Locale::En {
         dedupe_strings(vec![
             "might".to_owned(),
