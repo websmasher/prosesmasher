@@ -10,23 +10,30 @@ fn collect_all_returns_32() {
 
 #[test]
 #[allow(clippy::panic)] // test assertion
-fn collect_terms_returns_7() {
-    let checks = collect_checks(Some("terms")).unwrap_or_else(|e| panic!("collect failed: {e}"));
-    assert_eq!(checks.len(), 5, "terms check count");
+fn collect_quality_returns_24() {
+    let checks = collect_checks(Some("quality")).unwrap_or_else(|e| panic!("collect failed: {e}"));
+    assert_eq!(checks.len(), 24, "quality check count");
 }
 
 #[test]
 #[allow(clippy::panic)] // test assertion
-fn collect_patterns_returns_13() {
-    let checks = collect_checks(Some("patterns")).unwrap_or_else(|e| panic!("collect failed: {e}"));
-    assert_eq!(checks.len(), 13, "patterns check count");
+fn collect_lexical_returns_5() {
+    let checks = collect_checks(Some("lexical")).unwrap_or_else(|e| panic!("collect failed: {e}"));
+    assert_eq!(checks.len(), 5, "lexical check count");
 }
 
 #[test]
 #[allow(clippy::panic)] // test assertion
-fn collect_structure_returns_8() {
-    let checks = collect_checks(Some("structure")).unwrap_or_else(|e| panic!("collect failed: {e}"));
-    assert_eq!(checks.len(), 8, "structure check count");
+fn collect_heuristics_returns_13() {
+    let checks = collect_checks(Some("heuristics")).unwrap_or_else(|e| panic!("collect failed: {e}"));
+    assert_eq!(checks.len(), 13, "heuristics check count");
+}
+
+#[test]
+#[allow(clippy::panic)] // test assertion
+fn collect_flow_returns_2() {
+    let checks = collect_checks(Some("flow")).unwrap_or_else(|e| panic!("collect failed: {e}"));
+    assert_eq!(checks.len(), 2, "flow check count");
 }
 
 #[test]
@@ -66,14 +73,16 @@ fn collect_all_ids_unique() {
 #[allow(clippy::panic, clippy::arithmetic_side_effects)] // test assertion + safe addition
 fn collect_all_equals_sum_of_groups() {
     let all = collect_checks(None).unwrap_or_else(|e| panic!("all: {e}"));
-    let terms = collect_checks(Some("terms")).unwrap_or_else(|e| panic!("terms: {e}"));
-    let patterns = collect_checks(Some("patterns")).unwrap_or_else(|e| panic!("patterns: {e}"));
-    let structure = collect_checks(Some("structure")).unwrap_or_else(|e| panic!("structure: {e}"));
+    let lexical = collect_checks(Some("lexical")).unwrap_or_else(|e| panic!("lexical: {e}"));
+    let heuristics = collect_checks(Some("heuristics")).unwrap_or_else(|e| panic!("heuristics: {e}"));
+    let flow = collect_checks(Some("flow")).unwrap_or_else(|e| panic!("flow: {e}"));
     let readability = collect_checks(Some("readability")).unwrap_or_else(|e| panic!("readability: {e}"));
+    let document_policy =
+        collect_checks(Some("document-policy")).unwrap_or_else(|e| panic!("document-policy: {e}"));
 
-    let sum = terms.len() + patterns.len() + structure.len() + readability.len();
+    let sum = lexical.len() + heuristics.len() + flow.len() + readability.len() + document_policy.len();
 
-    assert_eq!(all.len(), sum, "all == terms + patterns + structure + readability");
+    assert_eq!(all.len(), sum, "all == lexical + heuristics + flow + readability + document-policy");
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -134,16 +143,22 @@ fn filter_with_spaces_around_commas() {
 #[test]
 #[allow(clippy::panic)]
 fn filter_combined_with_group() {
-    // --group terms --check prohibited-terms → only prohibited-terms from terms group
-    let terms = collect_checks(Some("terms")).unwrap_or_else(|e| panic!("{e}"));
-    let filtered = filter_checks_by_id(terms, "prohibited-terms").unwrap_or_else(|e| panic!("{e}"));
+    // --group lexical --check prohibited-terms → only prohibited-terms from lexical group
+    let lexical = collect_checks(Some("lexical")).unwrap_or_else(|e| panic!("{e}"));
+    let filtered = filter_checks_by_id(lexical, "prohibited-terms").unwrap_or_else(|e| panic!("{e}"));
     assert_eq!(filtered.len(), 1, "one check from group");
 }
 
 #[test]
 fn filter_check_not_in_group_errors() {
-    // --group terms --check em-dashes → em-dashes is a pattern check, not in terms
-    let terms = collect_checks(Some("terms")).unwrap_or_default();
-    let result = filter_checks_by_id(terms, "em-dashes");
-    assert!(result.is_err(), "em-dashes not in terms group should error");
+    // --group lexical --check em-dashes → em-dashes is a heuristic check, not in lexical
+    let lexical = collect_checks(Some("lexical")).unwrap_or_default();
+    let result = filter_checks_by_id(lexical, "em-dashes");
+    assert!(result.is_err(), "em-dashes not in lexical group should error");
+}
+#[test]
+#[allow(clippy::panic)] // test assertion
+fn collect_document_policy_returns_6() {
+    let checks = collect_checks(Some("document-policy")).unwrap_or_else(|e| panic!("collect failed: {e}"));
+    assert_eq!(checks.len(), 6, "document-policy check count");
 }

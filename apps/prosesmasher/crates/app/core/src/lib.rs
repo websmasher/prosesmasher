@@ -1,11 +1,9 @@
 //! Application core — check trait, runner, and all checks.
 
 pub mod check;
-pub mod patterns;
-pub mod readability;
+pub mod document_policy;
+pub mod quality;
 pub mod runner;
-pub mod structure;
-pub mod terms;
 
 #[cfg(test)]
 pub(crate) mod test_helpers;

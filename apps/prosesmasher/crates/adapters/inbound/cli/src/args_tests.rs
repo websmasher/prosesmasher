@@ -39,12 +39,12 @@ fn parse_check_with_config() {
 #[test]
 #[allow(clippy::panic)] // test assertion
 fn parse_check_with_group() {
-    let args = Args::try_parse_from(["prosesmasher", "check", "foo.md", "--group", "terms"]);
+    let args = Args::try_parse_from(["prosesmasher", "check", "foo.md", "--group", "quality"]);
     assert!(args.is_ok(), "should parse");
     let args = args.unwrap_or_else(|e| panic!("parse failed: {e}"));
     match args.command {
         Command::Check { group, .. } => {
-            assert_eq!(group.as_deref(), Some("terms"), "group");
+            assert_eq!(group.as_deref(), Some("quality"), "group");
         }
     }
 }

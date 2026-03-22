@@ -24,7 +24,7 @@ pub enum Command {
         #[arg(long)]
         config: Option<PathBuf>,
 
-        /// Only run checks from this group: terms, patterns, structure, readability.
+        /// Only run checks from this group: quality, document-policy, lexical, heuristics, flow, readability.
         #[arg(long)]
         group: Option<String>,
 

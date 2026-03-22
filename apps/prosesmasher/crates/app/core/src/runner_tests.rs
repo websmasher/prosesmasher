@@ -3,9 +3,9 @@ use crate::runner::run_checks;
 use crate::test_helpers::{make_doc, make_doc_with_word_count};
 use prosesmasher_domain_types::{CheckConfig, Locale, Range};
 
-use crate::patterns::EmDashCheck;
-use crate::structure::WordCountCheck;
-use crate::terms::ProhibitedTermsCheck;
+use crate::document_policy::WordCountCheck;
+use crate::quality::heuristics::EmDashCheck;
+use crate::quality::lexical::ProhibitedTermsCheck;
 
 #[test]
 fn runner_all_checks_pass() {

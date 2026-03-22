@@ -11,19 +11,21 @@ type CheckResult = Result<Vec<BoxedCheck>, String>;
 /// Returns `Err` if an unknown group name is provided.
 pub fn collect_checks(group: Option<&str>) -> CheckResult {
     match group {
-        Some("terms") => Ok(prosesmasher_app_core::terms::all_checks()),
-        Some("patterns") => Ok(prosesmasher_app_core::patterns::all_checks()),
-        Some("structure") => Ok(prosesmasher_app_core::structure::all_checks()),
-        Some("readability") => Ok(prosesmasher_app_core::readability::all_checks()),
+        Some("quality") => Ok(prosesmasher_app_core::quality::all_checks()),
+        Some("document-policy") => Ok(prosesmasher_app_core::document_policy::all_checks()),
+        Some("lexical") => Ok(prosesmasher_app_core::quality::lexical::all_checks()),
+        Some("heuristics") => Ok(prosesmasher_app_core::quality::heuristics::all_checks()),
+        Some("flow") => Ok(prosesmasher_app_core::quality::flow::all_checks()),
+        Some("readability") => Ok(prosesmasher_app_core::quality::readability::all_checks()),
         None => {
             let mut all = Vec::new();
-            all.extend(prosesmasher_app_core::terms::all_checks());
-            all.extend(prosesmasher_app_core::patterns::all_checks());
-            all.extend(prosesmasher_app_core::structure::all_checks());
-            all.extend(prosesmasher_app_core::readability::all_checks());
+            all.extend(prosesmasher_app_core::quality::all_checks());
+            all.extend(prosesmasher_app_core::document_policy::all_checks());
             Ok(all)
         }
-        Some(unknown) => Err(format!("Unknown check group: {unknown}. Valid groups: terms, patterns, structure, readability")),
+        Some(unknown) => Err(format!(
+            "Unknown check group: {unknown}. Valid groups: quality, document-policy, lexical, heuristics, flow, readability"
+        )),
     }
 }
 

@@ -41,10 +41,9 @@ impl Check for WordRepetitionCheck {
         }
 
         // Filter out excluded words and words < 4 chars.
-        let excluded_terms =
-            crate::terms::resolve_string_override_list(
-                &config.quality.heuristics.word_repetition.excluded_terms,
-            );
+        let excluded_terms = crate::quality::lexical::resolve_string_override_list(
+            &config.quality.heuristics.word_repetition.excluded_terms,
+        );
 
         let max_i64 = i64::try_from(max_repetition).unwrap_or(i64::MAX);
 

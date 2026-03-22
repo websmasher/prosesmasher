@@ -6,7 +6,7 @@ CLI tool that validates prose quality in markdown files. Deterministic AI slop d
 
 ```bash
 prosesmasher check article.md --config config.json --format json
-prosesmasher check docs/ --group terms --format text
+prosesmasher check docs/ --group quality --format text
 prosesmasher check article.md --check prohibited-terms,em-dashes,word-count
 ```
 
@@ -66,7 +66,7 @@ English, Russian, German, French, Spanish, Portuguese, Indonesian. Locale affect
 
 ## The Active Checks
 
-### Quality: Lexical / Terms (5)
+### Quality: Lexical (5)
 
 | Check | ID | What it catches |
 |---|---|---|
@@ -94,7 +94,7 @@ English, Russian, German, French, Spanish, Portuguese, Indonesian. Locale affect
 | Humble Bragger | `humble-bragger` | "In my experience..." credentialing |
 | Jargon Faker | `jargon-faker` | "debugging your morning routine" |
 
-### Document Policy / Structure (6)
+### Document Policy (6)
 
 | Check | ID | What it checks |
 |---|---|---|
@@ -226,10 +226,12 @@ apps/prosesmasher/
     │   ├── check.rs                    — Check trait + BoxedCheck type alias
     │   ├── runner.rs                   — run_checks() orchestrator
     │   ├── test_helpers.rs             — shared test document builders
-    │   ├── terms/                      — 5 lexical / term checks
-    │   ├── patterns/                   — 13 pattern checks
-    │   ├── structure/                  — 8 markdown structure / flow checks
-    │   └── readability/                — 4 readability formula checks
+    │   ├── quality/                    — core prose quality families
+    │   │   ├── lexical/               — prohibited/required/recommended terms, simplicity, hedge stacking
+    │   │   ├── heuristics/            — AI-slop rhetorical/style heuristics
+    │   │   ├── flow/                  — paragraph length + word repetition
+    │   │   └── readability/           — readability formula checks
+    │   └── document_policy/           — opt-in markdown shape checks
     └── adapters/
         ├── inbound/cli/src/
         │   ├── args.rs                 — Clap argument parsing
