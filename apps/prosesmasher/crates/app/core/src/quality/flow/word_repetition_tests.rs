@@ -52,7 +52,7 @@ fn word_exceeds_max_fails() {
         result.statistics.unsuccessful_expectations, 1,
         "actually x7 with max=5 should fail"
     );
-    let vr = result.results.get("word-repetition-actually");
+    let vr = result.results.get("word-repetition");
     assert!(vr.is_some(), "word repetition result should exist");
     if let Some(vr) = vr {
         let evidence = vr.result.partial_unexpected_list.as_ref();
@@ -87,8 +87,8 @@ fn short_words_ignored() {
     super::WordRepetitionCheck.run(&doc, &config, &mut suite);
     let result = suite.into_suite_result();
     assert_eq!(
-        result.statistics.evaluated_expectations, 0,
-        "words < 4 chars should be ignored"
+        result.statistics.successful_expectations, 1,
+        "words < 4 chars should produce one passing aggregate check"
     );
 }
 
@@ -101,8 +101,8 @@ fn stop_words_ignored() {
     super::WordRepetitionCheck.run(&doc, &config, &mut suite);
     let result = suite.into_suite_result();
     assert_eq!(
-        result.statistics.evaluated_expectations, 0,
-        "stop words should be ignored"
+        result.statistics.successful_expectations, 1,
+        "excluded words should produce one passing aggregate check"
     );
 }
 
