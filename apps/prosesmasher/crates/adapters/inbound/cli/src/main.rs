@@ -48,6 +48,7 @@ fn run(args: Args) -> CliResult {
             group,
             check,
             format,
+            include_checks,
         } => run_check_command(
             &path,
             config.as_deref(),
@@ -55,6 +56,7 @@ fn run(args: Args) -> CliResult {
             group.as_deref(),
             check.as_deref(),
             &format,
+            include_checks,
         ),
         Command::ListPresets => {
             run_list_presets_command();
@@ -73,6 +75,7 @@ fn run_check_command(
     group: Option<&str>,
     check_ids: Option<&str>,
     format: &OutputFormat,
+    include_checks: bool,
 ) -> CliResult {
     let file_reader = FsFileReader;
     let config_loader = FsConfigLoader;
@@ -103,7 +106,7 @@ fn run_check_command(
         let check_refs: Vec<&dyn Check> = all_checks.iter().map(AsRef::as_ref).collect();
         let result = run_checks(&check_refs, &doc, &check_config);
 
-        output_result(file, &result, format);
+        output_result(file, &result, format, include_checks);
 
         if !result.success {
             any_failed = true;

@@ -30,8 +30,9 @@ pub struct FileResult {
     pub rewrite_brief: Vec<String>,
     /// Failed checks with deterministic rewrite guidance.
     pub failures: Vec<FailureOutput>,
-    /// Individual check results.
-    pub checks: Vec<CheckOutput>,
+    /// Individual check results, included only when explicitly requested.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub checks: Option<Vec<CheckOutput>>,
 }
 
 /// Summary counts for a single file result.
@@ -99,10 +100,11 @@ pub fn output_result(
     file: &Path,
     result: &SuiteValidationResult,
     format: &OutputFormat,
+    include_checks: bool,
 ) {
     match format {
         OutputFormat::Text => print_text(file, result),
-        OutputFormat::Json => print_json(file, result),
+        OutputFormat::Json => print_json(file, result, include_checks),
     }
 }
 
@@ -137,8 +139,8 @@ fn print_text(file: &Path, result: &SuiteValidationResult) {
 }
 
 #[allow(clippy::print_stdout, clippy::disallowed_methods)] // JSON serialization output
-fn print_json(file: &Path, result: &SuiteValidationResult) {
-    let file_result = build_file_result(file, result);
+fn print_json(file: &Path, result: &SuiteValidationResult, include_checks: bool) {
+    let file_result = build_file_result(file, result, include_checks);
 
     // serde_json::to_string is banned by clippy.toml — allow here as this IS the output
     if let Ok(json) = serde_json::to_string_pretty(&file_result) {
@@ -148,21 +150,31 @@ fn print_json(file: &Path, result: &SuiteValidationResult) {
 
 /// Build a `FileResult` from a suite result (for testing).
 #[must_use]
-pub fn build_file_result(file: &Path, result: &SuiteValidationResult) -> FileResult {
-    let checks: Vec<CheckOutput> = result
-        .results
-        .iter()
-        .map(|(column, vr)| {
-            let label = check_label(column, &vr.expectation_config.meta).to_owned();
-            let observed = vr.result.observed_value.clone().map(sanitize_value);
-            CheckOutput {
-                id: column.clone(),
-                label,
-                success: vr.success,
-                observed,
-            }
-        })
-        .collect();
+pub fn build_file_result(
+    file: &Path,
+    result: &SuiteValidationResult,
+    include_checks: bool,
+) -> FileResult {
+    let checks = if include_checks {
+        Some(
+            result
+                .results
+                .iter()
+                .map(|(column, vr)| {
+                    let label = check_label(column, &vr.expectation_config.meta).to_owned();
+                    let observed = vr.result.observed_value.clone().map(sanitize_value);
+                    CheckOutput {
+                        id: column.clone(),
+                        label,
+                        success: vr.success,
+                        observed,
+                    }
+                })
+                .collect(),
+        )
+    } else {
+        None
+    };
 
     let failures: Vec<FailureOutput> = result
         .results

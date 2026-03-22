@@ -41,7 +41,7 @@ fn build_file_result_json_serializable() {
         .expect_value_to_be_between("word-count", 800, 650, 1000)
         .label("Word Count");
     let result = suite.into_suite_result();
-    let file_result = build_file_result(Path::new("test.md"), &result);
+    let file_result = build_file_result(Path::new("test.md"), &result, true);
 
     assert!(file_result.success, "should be success");
     assert_eq!(file_result.evaluated, 1, "1 check");
@@ -54,9 +54,9 @@ fn build_file_result_json_serializable() {
     assert!(file_result.rewrite_brief.is_empty(), "no rewrite brief on success");
     assert!(file_result.failures.is_empty(), "no failures on success");
     assert_eq!(file_result.file, "test.md", "file path");
-    assert_eq!(file_result.checks.len(), 1, "1 check output");
+    assert_eq!(file_result.checks.as_ref().map(Vec::len), Some(1), "1 check output");
 
-    if let Some(check) = file_result.checks.first() {
+    if let Some(check) = file_result.checks.as_ref().and_then(|checks| checks.first()) {
         assert_eq!(check.id, "word-count", "check id");
         assert_eq!(check.label, "Word Count", "check label");
         assert!(check.success, "check success");
@@ -86,7 +86,7 @@ fn build_file_result_includes_rewrite_guidance_for_failures() {
         .label("No Em-Dashes")
         .checking("em dash count");
     let result = suite.into_suite_result();
-    let file_result = build_file_result(Path::new("draft.md"), &result);
+    let file_result = build_file_result(Path::new("draft.md"), &result, false);
 
     assert!(!file_result.success, "should be failure");
     assert!(file_result.rewrite_needed, "rewrite should be needed");
@@ -96,6 +96,7 @@ fn build_file_result_includes_rewrite_guidance_for_failures() {
         "word-count rewrite brief present");
     assert!(file_result.rewrite_brief.iter().any(|s| s.contains("Replace em dashes")),
         "em-dash rewrite brief present");
+    assert!(file_result.checks.is_none(), "checks hidden by default");
 
     let word_count = file_result.failures.iter().find(|f| f.id == "word-count");
     assert!(word_count.is_some(), "word-count failure present");
@@ -160,7 +161,7 @@ fn build_file_result_sanitizes_readability_output() {
         .label("Gunning Fog Index");
 
     let result = suite.into_suite_result();
-    let file_result = build_file_result(Path::new("draft.md"), &result);
+    let file_result = build_file_result(Path::new("draft.md"), &result, false);
     let failure = file_result.failures.first();
     assert!(failure.is_some(), "failure present");
     if let Some(failure) = failure {
@@ -201,7 +202,7 @@ fn build_file_result_strips_internal_index_fields_from_evidence() {
         .label("Negation-Reframe Pattern");
 
     let result = suite.into_suite_result();
-    let file_result = build_file_result(Path::new("draft.md"), &result);
+    let file_result = build_file_result(Path::new("draft.md"), &result, false);
     let failure = file_result.failures.first();
     assert!(failure.is_some(), "failure present");
     if let Some(failure) = failure {
@@ -219,4 +220,20 @@ fn build_file_result_strips_internal_index_fields_from_evidence() {
             );
         }
     }
+}
+
+#[test]
+fn build_file_result_includes_checks_when_requested() {
+    use low_expectations::ExpectationSuite;
+    use std::path::Path;
+
+    let mut suite = ExpectationSuite::new("test");
+    let _result = suite
+        .expect_value_to_be_between("word-count", 800, 650, 1000)
+        .label("Word Count");
+
+    let result = suite.into_suite_result();
+    let file_result = build_file_result(Path::new("draft.md"), &result, true);
+
+    assert_eq!(file_result.checks.as_ref().map(Vec::len), Some(1));
 }
