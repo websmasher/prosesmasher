@@ -23,7 +23,7 @@ impl Check for WordCountCheck {
     }
 
     fn run(&self, doc: &Document, config: &CheckConfig, suite: &mut ExpectationSuite) {
-        if let Some(range) = config.thresholds.word_count {
+        if let Some(range) = config.document_policy.word_count {
             let observed = i64::try_from(doc.metadata.total_words).unwrap_or(i64::MAX);
             let min = i64::try_from(range.min()).unwrap_or(0);
             let max = i64::try_from(range.max()).unwrap_or(i64::MAX);

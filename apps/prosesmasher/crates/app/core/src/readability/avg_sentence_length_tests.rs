@@ -2,7 +2,7 @@ use crate::check::Check;
 use low_expectations::ExpectationSuite;
 use prosesmasher_domain_types::{
     Block, CheckConfig, Document, DocumentMetadata, Locale, Paragraph, Section, Sentence,
-    Thresholds, Word,
+    Word,
 };
 
 /// Build a doc with a specific word count and sentence count.
@@ -39,14 +39,12 @@ fn make_sentence_doc(total_words: usize, total_sentences: usize) -> Document {
 }
 
 fn config_with_avg_max(max: usize) -> CheckConfig {
-    CheckConfig {
+    let mut config = CheckConfig {
         locale: Locale::En,
-        thresholds: Thresholds {
-            avg_sentence_length_max: Some(max),
-            ..Thresholds::default()
-        },
         ..CheckConfig::default()
-    }
+    };
+    config.quality.heuristics.readability.avg_sentence_length_max = Some(max);
+    config
 }
 
 #[test]
@@ -101,7 +99,7 @@ fn no_threshold_skips() {
     let mut suite = ExpectationSuite::new("test");
     super::AvgSentenceLengthCheck.run(&doc, &config, &mut suite);
     let result = suite.into_suite_result();
-    assert_eq!(result.statistics.evaluated_expectations, 0);
+    assert_eq!(result.statistics.successful_expectations, 1);
 }
 
 #[test]

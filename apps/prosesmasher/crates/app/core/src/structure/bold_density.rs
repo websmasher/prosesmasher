@@ -23,7 +23,7 @@ impl Check for BoldDensityCheck {
     }
 
     fn run(&self, doc: &Document, config: &CheckConfig, suite: &mut ExpectationSuite) {
-        if let Some(bold_min) = config.thresholds.bold_min {
+        if let Some(bold_min) = config.document_policy.bold_density_min {
             let observed = i64::try_from(doc.metadata.bold_count).unwrap_or(i64::MAX);
             let min = i64::try_from(bold_min).unwrap_or(0);
             let _result = suite

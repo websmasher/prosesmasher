@@ -31,7 +31,7 @@ impl Check for RecommendedTermsCheck {
     }
 
     fn run(&self, doc: &Document, config: &CheckConfig, suite: &mut ExpectationSuite) {
-        let Some(ref pool) = config.terms.recommended_terms else {
+        let Some(ref pool) = config.quality.lexical.recommended_terms else {
             return;
         };
         if pool.terms.is_empty() {

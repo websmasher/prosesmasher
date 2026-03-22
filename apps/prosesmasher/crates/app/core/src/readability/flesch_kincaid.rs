@@ -31,7 +31,10 @@ impl Check for FleschKincaidCheck {
     }
 
     fn run(&self, doc: &Document, config: &CheckConfig, suite: &mut ExpectationSuite) {
-        let Some(min) = config.thresholds.flesch_kincaid_min else {
+        if !config.quality.heuristics.readability.enabled {
+            return;
+        }
+        let Some(min) = config.quality.heuristics.readability.flesch_kincaid_min else {
             return;
         };
 

@@ -29,7 +29,7 @@ pub enum Command {
         group: Option<String>,
 
         /// Only run specific checks by ID (comma-separated).
-        /// Example: --check banned-words,em-dashes,word-count
+        /// Example: --check prohibited-terms,em-dashes,word-count
         #[arg(long)]
         check: Option<String>,
 

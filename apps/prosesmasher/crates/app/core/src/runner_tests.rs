@@ -1,23 +1,21 @@
 use crate::check::Check;
 use crate::runner::run_checks;
 use crate::test_helpers::{make_doc, make_doc_with_word_count};
-use prosesmasher_domain_types::{CheckConfig, Locale, Range, TermLists, Thresholds};
+use prosesmasher_domain_types::{CheckConfig, Locale, Range};
 
 use crate::patterns::EmDashCheck;
 use crate::structure::WordCountCheck;
-use crate::terms::BannedWordsCheck;
+use crate::terms::ProhibitedTermsCheck;
 
 #[test]
 fn runner_all_checks_pass() {
     let doc = make_doc_with_word_count(800, Locale::En);
     let config = CheckConfig {
         locale: Locale::En,
-        thresholds: Thresholds {
-            word_count: Range::new(650, 1000),
-            ..Thresholds::default()
-        },
         ..CheckConfig::default()
     };
+    let mut config = config;
+    config.document_policy.word_count = Range::new(650, 1000);
     let checks: Vec<&dyn Check> = vec![&WordCountCheck, &EmDashCheck];
     let result = run_checks(&checks, &doc, &config);
     assert_eq!(result.statistics.unsuccessful_expectations, 0, "all should pass");
@@ -26,20 +24,13 @@ fn runner_all_checks_pass() {
 
 #[test]
 fn runner_mixed_pass_fail() {
-    // Word count passes (800 in 650-1000), but banned words fails
+    // Em-dashes passes, but prohibited terms fails.
     let doc = make_doc("we actually need this word0 word1 word2", Locale::En);
-    let config = CheckConfig {
-        locale: Locale::En,
-        terms: TermLists {
-            banned_words: vec!["actually".to_owned()],
-            ..TermLists::default()
-        },
-        ..CheckConfig::default()
-    };
-    let checks: Vec<&dyn Check> = vec![&EmDashCheck, &BannedWordsCheck];
+    let config = CheckConfig::default();
+    let checks: Vec<&dyn Check> = vec![&EmDashCheck, &ProhibitedTermsCheck];
     let result = run_checks(&checks, &doc, &config);
     assert_eq!(result.statistics.successful_expectations, 1, "em-dash should pass");
-    assert_eq!(result.statistics.unsuccessful_expectations, 1, "banned words should fail");
+    assert_eq!(result.statistics.unsuccessful_expectations, 1, "prohibited terms should fail");
 }
 
 #[test]
@@ -93,12 +84,10 @@ fn runner_none_locales_means_all() {
     let doc = make_doc_with_word_count(800, Locale::Id);
     let config = CheckConfig {
         locale: Locale::Id,
-        thresholds: Thresholds {
-            word_count: Range::new(650, 1000),
-            ..Thresholds::default()
-        },
         ..CheckConfig::default()
     };
+    let mut config = config;
+    config.document_policy.word_count = Range::new(650, 1000);
     let checks: Vec<&dyn Check> = vec![&WordCountCheck];
     let result = run_checks(&checks, &doc, &config);
     assert_eq!(result.statistics.successful_expectations, 1, "None locales → runs for any locale");

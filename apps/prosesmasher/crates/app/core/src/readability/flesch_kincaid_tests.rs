@@ -2,7 +2,7 @@ use crate::check::Check;
 use low_expectations::ExpectationSuite;
 use prosesmasher_domain_types::{
     Block, CheckConfig, Document, DocumentMetadata, Locale, Paragraph, Section, Sentence,
-    Thresholds, Word,
+    Word,
 };
 
 /// Build a document with precise control over words, sentences, and syllables.
@@ -45,14 +45,12 @@ fn make_readability_doc(
 }
 
 fn config_with_fk_min(min: f64) -> CheckConfig {
-    CheckConfig {
+    let mut config = CheckConfig {
         locale: Locale::En,
-        thresholds: Thresholds {
-            flesch_kincaid_min: Some(min),
-            ..Thresholds::default()
-        },
         ..CheckConfig::default()
-    }
+    };
+    config.quality.heuristics.readability.flesch_kincaid_min = Some(min);
+    config
 }
 
 #[test]
@@ -122,7 +120,7 @@ fn no_threshold_skips() {
     let mut suite = ExpectationSuite::new("test");
     super::FleschKincaidCheck.run(&doc, &config, &mut suite);
     let result = suite.into_suite_result();
-    assert_eq!(result.statistics.evaluated_expectations, 0);
+    assert_eq!(result.statistics.successful_expectations, 1);
 }
 
 #[test]
@@ -145,13 +143,8 @@ fn zero_words_nonzero_sentences_skips() {
             ..Default::default()
         },
     };
-    let config = CheckConfig {
-        thresholds: Thresholds {
-            flesch_kincaid_min: Some(50.0),
-            ..Thresholds::default()
-        },
-        ..CheckConfig::default()
-    };
+    let mut config = CheckConfig::default();
+    config.quality.heuristics.readability.flesch_kincaid_min = Some(50.0);
     let mut suite = ExpectationSuite::new("test");
     super::FleschKincaidCheck.run(&doc, &config, &mut suite);
     let result = suite.into_suite_result();

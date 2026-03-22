@@ -458,6 +458,7 @@ fn check_config_clone() {
             word_count: Range::new(500, 1000),
             ..Thresholds::default()
         },
+        ..CheckConfig::default()
     };
     #[allow(clippy::redundant_clone)] // intentionally testing Clone trait
     let cloned = config.clone();

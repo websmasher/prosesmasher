@@ -1,20 +1,16 @@
 use crate::check::Check;
 use crate::test_helpers::make_doc;
 use low_expectations::ExpectationSuite;
-use prosesmasher_domain_types::{CheckConfig, Locale, TermLists, TermPool};
+use prosesmasher_domain_types::{CheckConfig, Locale, TermPool};
 
 fn config_with_pool(terms: &[&str], min_count: usize, inflections: bool) -> CheckConfig {
-    CheckConfig {
-        terms: TermLists {
-            recommended_terms: Some(TermPool {
-                terms: terms.iter().map(|t| (*t).to_owned()).collect(),
-                min_count,
-                allow_inflections: inflections,
-            }),
-            ..TermLists::default()
-        },
-        ..CheckConfig::default()
-    }
+    let mut config = CheckConfig::default();
+    config.quality.lexical.recommended_terms = Some(TermPool {
+        terms: terms.iter().map(|t| (*t).to_owned()).collect(),
+        min_count,
+        allow_inflections: inflections,
+    });
+    config
 }
 
 #[test]

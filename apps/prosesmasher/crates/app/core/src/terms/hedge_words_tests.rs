@@ -16,6 +16,7 @@ fn config_with_hedges(words: &[&str], max: Option<usize>) -> CheckConfig {
             max_hedges_per_sentence: max,
             ..Thresholds::default()
         },
+        ..CheckConfig::default()
     }
 }
 

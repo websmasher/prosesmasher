@@ -1,7 +1,8 @@
 use crate::check::Check;
 use low_expectations::ExpectationSuite;
 use prosesmasher_domain_types::{
-    Block, CheckConfig, Document, DocumentMetadata, Heading, Locale, Paragraph, Section, Sentence,
+    Block, CheckConfig, Document, DocumentMetadata, DocumentPolicyConfig, Heading, Locale,
+    Paragraph, Section, Sentence,
 };
 
 type HeadingSpec<'a> = (u8, &'a str);
@@ -33,10 +34,20 @@ fn make_headed_doc(headings: &[HeadingSpec<'_>]) -> Document {
     }
 }
 
+fn config_enforcing_heading_hierarchy() -> CheckConfig {
+    CheckConfig {
+        document_policy: DocumentPolicyConfig {
+            heading_hierarchy: true,
+            ..DocumentPolicyConfig::default()
+        },
+        ..CheckConfig::default()
+    }
+}
+
 #[test]
 fn h1_present_fails() {
     let doc = make_headed_doc(&[(1, "My Title")]);
-    let config = CheckConfig::default();
+    let config = config_enforcing_heading_hierarchy();
     let mut suite = ExpectationSuite::new("test");
     super::HeadingHierarchyCheck.run(&doc, &config, &mut suite);
     let result = suite.into_suite_result();
@@ -58,7 +69,7 @@ fn h1_present_fails() {
 #[test]
 fn h2_to_h4_skip_fails() {
     let doc = make_headed_doc(&[(2, "Section A"), (4, "Deep section")]);
-    let config = CheckConfig::default();
+    let config = config_enforcing_heading_hierarchy();
     let mut suite = ExpectationSuite::new("test");
     super::HeadingHierarchyCheck.run(&doc, &config, &mut suite);
     let result = suite.into_suite_result();
@@ -72,7 +83,7 @@ fn h2_to_h4_skip_fails() {
 #[test]
 fn h2_h3_h2_passes() {
     let doc = make_headed_doc(&[(2, "First"), (3, "Sub"), (2, "Second")]);
-    let config = CheckConfig::default();
+    let config = config_enforcing_heading_hierarchy();
     let mut suite = ExpectationSuite::new("test");
     super::HeadingHierarchyCheck.run(&doc, &config, &mut suite);
     let result = suite.into_suite_result();
@@ -85,7 +96,7 @@ fn h2_h3_h2_passes() {
 #[test]
 fn h4_plus_fails() {
     let doc = make_headed_doc(&[(2, "Section"), (3, "Sub"), (5, "Too deep")]);
-    let config = CheckConfig::default();
+    let config = config_enforcing_heading_hierarchy();
     let mut suite = ExpectationSuite::new("test");
     super::HeadingHierarchyCheck.run(&doc, &config, &mut suite);
     let result = suite.into_suite_result();
@@ -105,7 +116,7 @@ fn no_headings_passes() {
         }],
         metadata: DocumentMetadata::default(),
     };
-    let config = CheckConfig::default();
+    let config = config_enforcing_heading_hierarchy();
     let mut suite = ExpectationSuite::new("test");
     super::HeadingHierarchyCheck.run(&doc, &config, &mut suite);
     let result = suite.into_suite_result();

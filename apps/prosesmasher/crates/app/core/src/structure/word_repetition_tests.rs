@@ -2,7 +2,7 @@ use crate::check::Check;
 use low_expectations::ExpectationSuite;
 use prosesmasher_domain_types::{
     Block, CheckConfig, Document, DocumentMetadata, Locale, Paragraph, Section, Sentence,
-    TermLists, Thresholds, Word,
+    Word,
 };
 
 fn doc_with_repeated_word(word: &str, count: usize) -> Document {
@@ -33,14 +33,12 @@ fn doc_with_repeated_word(word: &str, count: usize) -> Document {
 }
 
 fn config_with_repetition_max(max: usize) -> CheckConfig {
-    CheckConfig {
+    let mut config = CheckConfig {
         locale: Locale::En,
-        thresholds: Thresholds {
-            word_repetition_max: Some(max),
-            ..Thresholds::default()
-        },
         ..CheckConfig::default()
-    }
+    };
+    config.quality.heuristics.word_repetition.max = max;
+    config
 }
 
 #[test]
@@ -97,17 +95,8 @@ fn short_words_ignored() {
 #[test]
 fn stop_words_ignored() {
     let doc = doc_with_repeated_word("that", 10);
-    let config = CheckConfig {
-        locale: Locale::En,
-        thresholds: Thresholds {
-            word_repetition_max: Some(5),
-            ..Thresholds::default()
-        },
-        terms: TermLists {
-            stop_words: vec!["that".to_owned()],
-            ..TermLists::default()
-        },
-    };
+    let mut config = config_with_repetition_max(5);
+    config.quality.heuristics.word_repetition.excluded_terms.add = vec!["that".to_owned()];
     let mut suite = ExpectationSuite::new("test");
     super::WordRepetitionCheck.run(&doc, &config, &mut suite);
     let result = suite.into_suite_result();
@@ -119,14 +108,14 @@ fn stop_words_ignored() {
 
 #[test]
 fn no_threshold_skips() {
-    let doc = doc_with_repeated_word("actually", 100);
+    let doc = doc_with_repeated_word("actually", 4);
     let config = CheckConfig::default();
     let mut suite = ExpectationSuite::new("test");
     super::WordRepetitionCheck.run(&doc, &config, &mut suite);
     let result = suite.into_suite_result();
     assert_eq!(
-        result.statistics.evaluated_expectations, 0,
-        "no threshold → no expectations"
+        result.statistics.successful_expectations, 1,
+        "default quality config should run word repetition with built-in max"
     );
 }
 

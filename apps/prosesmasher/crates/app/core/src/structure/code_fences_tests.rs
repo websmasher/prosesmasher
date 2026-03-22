@@ -1,12 +1,22 @@
 use crate::check::Check;
 use crate::test_helpers::{make_doc, make_doc_code_only};
 use low_expectations::ExpectationSuite;
-use prosesmasher_domain_types::{CheckConfig, Locale};
+use prosesmasher_domain_types::{CheckConfig, DocumentPolicyConfig, Locale};
+
+fn config_disallowing_code_fences() -> CheckConfig {
+    CheckConfig {
+        document_policy: DocumentPolicyConfig {
+            allow_code_fences: false,
+            ..DocumentPolicyConfig::default()
+        },
+        ..CheckConfig::default()
+    }
+}
 
 #[test]
 fn doc_with_code_block_fails() {
     let doc = make_doc_code_only("fn main() {}", Locale::En);
-    let config = CheckConfig::default();
+    let config = config_disallowing_code_fences();
     let mut suite = ExpectationSuite::new("test");
     super::CodeFencesCheck.run(&doc, &config, &mut suite);
     let result = suite.into_suite_result();
@@ -28,7 +38,7 @@ fn doc_with_code_block_fails() {
 #[test]
 fn doc_without_code_block_passes() {
     let doc = make_doc("This is a normal paragraph without code.", Locale::En);
-    let config = CheckConfig::default();
+    let config = config_disallowing_code_fences();
     let mut suite = ExpectationSuite::new("test");
     super::CodeFencesCheck.run(&doc, &config, &mut suite);
     let result = suite.into_suite_result();

@@ -24,7 +24,7 @@ impl Check for HeadingCountsCheck {
     }
 
     fn run(&self, doc: &Document, config: &CheckConfig, suite: &mut ExpectationSuite) {
-        if let Some(range) = config.thresholds.h2_count {
+        if let Some(range) = config.document_policy.heading_counts.h2 {
             let observed = i64::try_from(doc.metadata.heading_counts.h2).unwrap_or(i64::MAX);
             let min = i64::try_from(range.min()).unwrap_or(0);
             let max = i64::try_from(range.max()).unwrap_or(i64::MAX);
@@ -45,7 +45,7 @@ impl Check for HeadingCountsCheck {
                 .checking("H2 heading count");
         }
 
-        if let Some(h3_min) = config.thresholds.h3_min {
+        if let Some(h3_min) = config.document_policy.heading_counts.h3_min {
             let observed = i64::try_from(doc.metadata.heading_counts.h3).unwrap_or(i64::MAX);
             let min = i64::try_from(h3_min).unwrap_or(0);
             let _result = suite
