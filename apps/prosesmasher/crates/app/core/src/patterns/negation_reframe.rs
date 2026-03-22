@@ -2,6 +2,7 @@
 
 use low_expectations::ExpectationSuite;
 use prosesmasher_domain_types::{Block, CheckConfig, Document, Locale, Paragraph};
+use serde_json::{Value, json};
 
 use crate::check::Check;
 
@@ -27,57 +28,117 @@ impl Check for NegationReframeCheck {
         if config.terms.negation_signals.is_empty() || config.terms.reframe_signals.is_empty() {
             return;
         }
-        let mut match_count: usize = 0;
-        for section in &doc.sections {
-            check_blocks(&section.blocks, config, &mut match_count);
-        }
-        let count_i64 = i64::try_from(match_count).unwrap_or(i64::MAX);
+        let evidence = collect_negation_reframe_evidence(doc, config);
         let _result = suite
-            .expect_value_to_be_between("negation-reframe", count_i64, 0, 0)
+            .record_custom_values(
+                "negation-reframe",
+                evidence.is_empty(),
+                json!({ "min": 0, "max": 0 }),
+                json!(evidence.len()),
+                &evidence,
+            )
             .label("Negation-Reframe Pattern")
             .checking("consecutive negation + reframe sentence pairs");
     }
 }
 
-fn check_blocks(blocks: &[Block], config: &CheckConfig, count: &mut usize) {
-    for block in blocks {
-        match block {
-            Block::Paragraph(p) => check_paragraph(p, config, count),
-            Block::BlockQuote(inner) => check_blocks(inner, config, count),
-            Block::List(_) | Block::CodeBlock(_) => {}
+fn collect_negation_reframe_evidence(doc: &Document, config: &CheckConfig) -> Vec<Value> {
+    let mut evidence = Vec::new();
+
+    for (section_index, section) in doc.sections.iter().enumerate() {
+        let mut paragraph_index: usize = 0;
+        for block in &section.blocks {
+            collect_negation_reframe_evidence_from_block(
+                block,
+                section_index,
+                &mut paragraph_index,
+                config,
+                &mut evidence,
+            );
         }
+    }
+
+    evidence
+}
+
+fn collect_negation_reframe_evidence_from_block(
+    block: &Block,
+    section_index: usize,
+    paragraph_index: &mut usize,
+    config: &CheckConfig,
+    evidence: &mut Vec<Value>,
+) {
+    match block {
+        Block::Paragraph(paragraph) => {
+            collect_negation_reframe_evidence_from_paragraph(
+                paragraph,
+                section_index,
+                *paragraph_index,
+                config,
+                evidence,
+            );
+            *paragraph_index = paragraph_index.saturating_add(1);
+        }
+        Block::BlockQuote(inner) => {
+            for inner_block in inner {
+                collect_negation_reframe_evidence_from_block(
+                    inner_block,
+                    section_index,
+                    paragraph_index,
+                    config,
+                    evidence,
+                );
+            }
+        }
+        Block::List(_) | Block::CodeBlock(_) => {}
     }
 }
 
-fn check_paragraph(para: &Paragraph, config: &CheckConfig, count: &mut usize) {
+fn collect_negation_reframe_evidence_from_paragraph(
+    para: &Paragraph,
+    section_index: usize,
+    paragraph_index: usize,
+    config: &CheckConfig,
+    evidence: &mut Vec<Value>,
+) {
     if para.sentences.len() < 2 {
         return;
     }
-    let mut idx: usize = 0;
-    loop {
-        let next = idx.saturating_add(1);
-        if next >= para.sentences.len() {
-            break;
-        }
-        let Some(a) = para.sentences.get(idx) else {
-            break;
+
+    for (sentence_index, pair) in para.sentences.windows(2).enumerate() {
+        let Some(a) = pair.first() else {
+            continue;
         };
-        let Some(b) = para.sentences.get(next) else {
-            break;
+        let Some(b) = pair.get(1) else {
+            continue;
         };
         let a_lower = a.text.to_lowercase();
         let b_lower = b.text.to_lowercase();
-        let has_negation = config.terms.negation_signals.iter().any(|sig| {
-            a_lower.contains(&sig.to_lowercase())
-        });
-        let has_reframe = config.terms.reframe_signals.iter().any(|sig| {
-            b_lower.contains(&sig.to_lowercase())
-        });
-        if has_negation && has_reframe {
-            *count = count.saturating_add(1);
-        }
-        idx = next;
+        let Some(negation_signal) = find_matching_term(&a_lower, &config.terms.negation_signals)
+        else {
+            continue;
+        };
+        let Some(reframe_signal) = find_matching_term(&b_lower, &config.terms.reframe_signals)
+        else {
+            continue;
+        };
+
+        evidence.push(json!({
+            "section_index": section_index,
+            "paragraph_index": paragraph_index,
+            "sentence_index": sentence_index,
+            "sentence_index_next": sentence_index.saturating_add(1),
+            "matched_text": format!("{negation_signal} -> {reframe_signal}"),
+            "sentence": a.text,
+            "next_sentence": b.text,
+            "negation_signal": negation_signal,
+            "reframe_signal": reframe_signal,
+        }));
     }
+}
+
+fn find_matching_term<'a>(text: &str, terms: &'a [String]) -> Option<&'a str> {
+    terms.iter().map(String::as_str).find(|term| text.contains(term))
 }
 
 #[cfg(test)]

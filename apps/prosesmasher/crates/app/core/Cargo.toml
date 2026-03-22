@@ -8,6 +8,7 @@ publish = false
 prosesmasher-domain-types = { path = "../../domain/types" }
 prosesmasher-ports-outbound-traits = { path = "../../ports/outbound/traits" }
 low-expectations = { path = "../../../../../../low-expectations/crates/low-expectations" }
+serde_json.workspace = true
 
 [lints]
 workspace = true

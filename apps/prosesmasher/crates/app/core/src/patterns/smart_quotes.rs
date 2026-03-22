@@ -2,6 +2,7 @@
 
 use low_expectations::ExpectationSuite;
 use prosesmasher_domain_types::{Block, CheckConfig, Document, Locale};
+use serde_json::{Value, json};
 
 use crate::check::Check;
 
@@ -26,13 +27,29 @@ impl Check for SmartQuotesCheck {
     }
 
     fn run(&self, doc: &Document, _config: &CheckConfig, suite: &mut ExpectationSuite) {
-        let mut count: usize = 0;
-        for section in &doc.sections {
-            count_smart_quotes_in_blocks(&section.blocks, &mut count);
+        let mut evidence = Vec::new();
+        let mut paragraph_index: usize = 0;
+
+        for (section_index, section) in doc.sections.iter().enumerate() {
+            for block in &section.blocks {
+                collect_smart_quote_evidence(
+                    block,
+                    section_index,
+                    &mut paragraph_index,
+                    &mut evidence,
+                );
+            }
         }
+        let count = evidence.len();
         let count_i64 = i64::try_from(count).unwrap_or(i64::MAX);
         let _result = suite
-            .expect_value_to_be_between("smart-quotes", count_i64, 0, 0)
+            .record_custom_values(
+                "smart-quotes",
+                evidence.is_empty(),
+                json!({ "min": 0, "max": 0 }),
+                json!(count_i64),
+                &evidence,
+            )
             .label("No Smart Quotes")
             .checking("curly quote characters (U+201C, U+201D, U+2018, U+2019)");
     }
@@ -44,19 +61,44 @@ fn is_smart_quote(c: char) -> bool {
     SMART_QUOTE_CHARS.contains(&c)
 }
 
-fn count_smart_quotes_in_blocks(blocks: &[Block], count: &mut usize) {
-    for block in blocks {
-        match block {
-            Block::Paragraph(p) => {
-                for sentence in &p.sentences {
-                    *count = count.saturating_add(
-                        sentence.text.chars().filter(|c| is_smart_quote(*c)).count(),
-                    );
+fn collect_smart_quote_evidence(
+    block: &Block,
+    section_index: usize,
+    paragraph_index: &mut usize,
+    evidence: &mut Vec<Value>,
+) {
+    match block {
+        Block::Paragraph(paragraph) => {
+            for (sentence_index, sentence) in paragraph.sentences.iter().enumerate() {
+                let matches: Vec<char> = sentence
+                    .text
+                    .chars()
+                    .filter(|c| is_smart_quote(*c))
+                    .collect();
+                if !matches.is_empty() {
+                    evidence.push(json!({
+                        "section_index": section_index,
+                        "paragraph_index": *paragraph_index,
+                        "sentence_index": sentence_index,
+                        "matched_text": matches.iter().collect::<String>(),
+                        "match_count": matches.len(),
+                        "sentence": sentence.text,
+                    }));
                 }
             }
-            Block::BlockQuote(inner) => count_smart_quotes_in_blocks(inner, count),
-            Block::List(_) | Block::CodeBlock(_) => {}
+            *paragraph_index = paragraph_index.saturating_add(1);
         }
+        Block::BlockQuote(inner) => {
+            for inner_block in inner {
+                collect_smart_quote_evidence(
+                    inner_block,
+                    section_index,
+                    paragraph_index,
+                    evidence,
+                );
+            }
+        }
+        Block::List(_) | Block::CodeBlock(_) => {}
     }
 }
 

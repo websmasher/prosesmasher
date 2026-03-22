@@ -2,6 +2,7 @@
 
 use low_expectations::ExpectationSuite;
 use prosesmasher_domain_types::{CheckConfig, Document, Locale};
+use serde_json::json;
 
 use crate::check::Check;
 
@@ -28,7 +29,18 @@ impl Check for HeadingCountsCheck {
             let min = i64::try_from(range.min()).unwrap_or(0);
             let max = i64::try_from(range.max()).unwrap_or(i64::MAX);
             let _result = suite
-                .expect_value_to_be_between("h2-count", observed, min, max)
+                .record_custom_values(
+                    "h2-count",
+                    observed >= min && observed <= max,
+                    json!({ "min": min, "max": max, "count_type": "h2" }),
+                    json!({ "observed": observed, "count_type": "h2" }),
+                    &[json!({
+                        "count_type": "h2",
+                        "observed": observed,
+                        "min": min,
+                        "max": max,
+                    })],
+                )
                 .label("Heading Counts")
                 .checking("H2 heading count");
         }
@@ -37,7 +49,17 @@ impl Check for HeadingCountsCheck {
             let observed = i64::try_from(doc.metadata.heading_counts.h3).unwrap_or(i64::MAX);
             let min = i64::try_from(h3_min).unwrap_or(0);
             let _result = suite
-                .expect_value_to_be_between("h3-count", observed, min, i64::MAX)
+                .record_custom_values(
+                    "h3-count",
+                    observed >= min,
+                    json!({ "min": min, "count_type": "h3" }),
+                    json!({ "observed": observed, "count_type": "h3" }),
+                    &[json!({
+                        "count_type": "h3",
+                        "observed": observed,
+                        "min": min,
+                    })],
+                )
                 .label("Heading Counts")
                 .checking("H3 heading count");
         }

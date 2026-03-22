@@ -2,6 +2,7 @@
 
 use low_expectations::ExpectationSuite;
 use prosesmasher_domain_types::{Block, CheckConfig, Document, Locale};
+use serde_json::json;
 
 use crate::check::Check;
 
@@ -56,7 +57,29 @@ impl Check for ColemanLiauCheck {
         let max_100 = f64_to_i64_x100(max);
 
         let _result = suite
-            .expect_value_to_be_at_most("coleman-liau", score_100, max_100)
+            .record_custom_values(
+                "coleman-liau",
+                score_100 <= max_100,
+                json!({
+                    "maximum_score_x100": max_100,
+                    "formula": "0.0588 × L - 0.296 × S - 15.8",
+                }),
+                json!({
+                    "score_x100": score_100,
+                    "score": score,
+                    "total_words": total_words,
+                    "total_sentences": total_sentences,
+                    "total_letters": total_letters,
+                }),
+                &[json!({
+                    "score_x100": score_100,
+                    "score": score,
+                    "total_words": total_words,
+                    "total_sentences": total_sentences,
+                    "total_letters": total_letters,
+                    "maximum_score_x100": max_100,
+                })],
+            )
             .label("Coleman-Liau Index")
             .checking("grade level index (×100)");
     }

@@ -14,6 +14,18 @@ fn dramatic_colon_detected() {
         result.statistics.unsuccessful_expectations, 1,
         "short clause after colon should fail"
     );
+    let vr = result.results.get("colon-dramatic");
+    assert!(vr.is_some(), "colon-dramatic result should exist");
+    if let Some(vr) = vr {
+        let evidence = vr.result.partial_unexpected_list.as_ref();
+        assert!(evidence.is_some(), "evidence should be present");
+        assert_eq!(evidence.and_then(|e| e.first())
+            .and_then(|item| item.get("matched_text"))
+            .and_then(serde_json::Value::as_str), Some("everything changed."), "matched clause");
+        assert_eq!(evidence.and_then(|e| e.first())
+            .and_then(|item| item.get("sentence"))
+            .and_then(serde_json::Value::as_str), Some("And then it hit me: everything changed."), "sentence evidence");
+    }
 }
 
 #[test]

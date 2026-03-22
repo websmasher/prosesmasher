@@ -2,6 +2,7 @@
 
 use low_expectations::ExpectationSuite;
 use prosesmasher_domain_types::{CheckConfig, Document, Locale};
+use serde_json::json;
 
 use crate::check::Check;
 
@@ -24,7 +25,7 @@ impl Check for SentenceCaseCheck {
     }
 
     fn run(&self, doc: &Document, _config: &CheckConfig, suite: &mut ExpectationSuite) {
-        for section in &doc.sections {
+        for (section_index, section) in doc.sections.iter().enumerate() {
             let Some(heading) = &section.heading else {
                 continue;
             };
@@ -41,21 +42,27 @@ impl Check for SentenceCaseCheck {
             let is_title_case = capitalized_non_first >= 3;
 
             let col = format!("sentence-case-{}", heading.text);
-            let errors: Vec<String> = if is_title_case {
-                vec![format!(
-                    "title case detected: \"{}\" ({capitalized_non_first} capitalized words after first)",
-                    heading.text
-                )]
+            let evidence = if is_title_case {
+                vec![json!({
+                    "section_index": section_index,
+                    "heading_level": heading.level,
+                    "heading_text": heading.text,
+                    "capitalized_non_first_words": capitalized_non_first,
+                    "sentence_case_expected": true,
+                })]
             } else {
-                vec![]
+                Vec::new()
             };
             let _result = suite
-                .record_custom(
+                .record_custom_values(
                     &col,
                     !is_title_case,
-                    "sentence case heading",
-                    &heading.text,
-                    &errors,
+                    json!({
+                        "rule": "sentence case",
+                        "max_capitalized_non_first_words": 2,
+                    }),
+                    json!(heading.text),
+                    &evidence,
                 )
                 .label("Sentence Case")
                 .checking(&format!("heading: \"{}\"", heading.text));

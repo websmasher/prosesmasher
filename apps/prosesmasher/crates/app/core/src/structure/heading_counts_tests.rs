@@ -40,6 +40,15 @@ fn h2_below_min_fails() {
         result.statistics.unsuccessful_expectations, 1,
         "h2=1 with min=2 should fail"
     );
+    let vr = result.results.get("h2-count");
+    assert!(vr.is_some(), "h2-count result should exist");
+    if let Some(vr) = vr {
+        let evidence = vr.result.partial_unexpected_list.as_ref();
+        assert!(evidence.is_some(), "evidence should be present");
+        assert_eq!(evidence.and_then(|e| e.first())
+            .and_then(|item| item.get("observed"))
+            .and_then(serde_json::Value::as_i64), Some(1), "observed count");
+    }
 }
 
 #[test]

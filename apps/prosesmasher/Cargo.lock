@@ -416,6 +416,7 @@ dependencies = [
  "low-expectations",
  "prosesmasher-domain-types",
  "prosesmasher-ports-outbound-traits",
+ "serde_json",
 ]
 
 [[package]]

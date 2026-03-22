@@ -1,7 +1,8 @@
 //! False-question check — flags rhetorical questions matching known patterns.
 
 use low_expectations::ExpectationSuite;
-use prosesmasher_domain_types::{Block, CheckConfig, Document, Locale, Paragraph};
+use prosesmasher_domain_types::{CheckConfig, Document, Locale};
+use serde_json::json;
 
 use crate::check::Check;
 
@@ -27,46 +28,27 @@ impl Check for FalseQuestionCheck {
         if config.terms.false_question_patterns.is_empty() {
             return;
         }
-        let mut count: usize = 0;
-        for section in &doc.sections {
-            let Some(para) = last_paragraph(&section.blocks) else {
-                continue;
-            };
-            let Some(sentence) = para.sentences.last() else {
-                continue;
-            };
-            if !sentence.text.ends_with('?') {
-                continue;
-            }
-            let lower = sentence.text.to_lowercase();
-            let matched = config.terms.false_question_patterns.iter().any(|phrase| {
-                lower.contains(&phrase.to_lowercase())
-            });
-            if matched {
-                count = count.saturating_add(1);
-            }
-        }
-        let count_i64 = i64::try_from(count).unwrap_or(i64::MAX);
+        let evidence = super::collect_section_sentence_evidence(
+            doc,
+            &config.terms.false_question_patterns,
+            super::section_last_sentence,
+            false_question_matcher,
+        );
         let _result = suite
-            .expect_value_to_be_between("false-question", count_i64, 0, 0)
+            .record_custom_values(
+                "false-question",
+                evidence.is_empty(),
+                json!({ "min": 0, "max": 0, "absent": config.terms.false_question_patterns }),
+                json!(evidence.len()),
+                &evidence,
+            )
             .label("False Question")
             .checking("rhetorical questions matching known patterns");
     }
 }
 
-fn last_paragraph(blocks: &[Block]) -> Option<&Paragraph> {
-    for block in blocks.iter().rev() {
-        match block {
-            Block::Paragraph(p) => return Some(p),
-            Block::BlockQuote(inner) => {
-                if let Some(p) = last_paragraph(inner) {
-                    return Some(p);
-                }
-            }
-            Block::List(_) | Block::CodeBlock(_) => {}
-        }
-    }
-    None
+fn false_question_matcher(sentence: &str, phrase: &str) -> bool {
+    sentence.ends_with('?') && sentence.contains(phrase)
 }
 
 #[cfg(test)]

@@ -4,6 +4,7 @@ use std::collections::BTreeMap;
 
 use low_expectations::ExpectationSuite;
 use prosesmasher_domain_types::{Block, CheckConfig, Document, Locale, Paragraph};
+use serde_json::json;
 
 use crate::check::Check;
 
@@ -54,7 +55,17 @@ impl Check for WordRepetitionCheck {
             let observed = i64::try_from(*count).unwrap_or(i64::MAX);
             let col = format!("word-repetition-{word}");
             let _result = suite
-                .expect_value_to_be_between(&col, observed, 0, max_i64)
+                .record_custom_values(
+                    &col,
+                    observed <= max_i64,
+                    json!({ "max": max_i64, "word": word }),
+                    json!({ "word": word, "count": observed }),
+                    &[json!({
+                        "word": word,
+                        "count": observed,
+                        "max": max_i64,
+                    })],
+                )
                 .label("Word Repetition")
                 .checking(&format!("frequency of \"{word}\""));
         }

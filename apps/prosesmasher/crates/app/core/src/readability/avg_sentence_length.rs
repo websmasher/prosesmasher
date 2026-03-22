@@ -2,6 +2,7 @@
 
 use low_expectations::ExpectationSuite;
 use prosesmasher_domain_types::{CheckConfig, Document, Locale};
+use serde_json::json;
 
 use crate::check::Check;
 
@@ -41,7 +42,25 @@ impl Check for AvgSentenceLengthCheck {
         let max_i64 = i64::try_from(max).unwrap_or(i64::MAX);
 
         let _result = suite
-            .expect_value_to_be_at_most("avg-sentence-length", avg_i64, max_i64)
+            .record_custom_values(
+                "avg-sentence-length",
+                avg_i64 <= max_i64,
+                json!({
+                    "max_words_per_sentence": max_i64,
+                    "formula": "total_words / total_sentences",
+                }),
+                json!({
+                    "average_words_per_sentence": avg_i64,
+                    "total_words": doc.metadata.total_words,
+                    "total_sentences": total_sentences,
+                }),
+                &[json!({
+                    "average_words_per_sentence": avg_i64,
+                    "total_words": doc.metadata.total_words,
+                    "total_sentences": total_sentences,
+                    "max_words_per_sentence": max_i64,
+                })],
+            )
             .label("Average Sentence Length")
             .checking("words per sentence");
     }

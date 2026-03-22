@@ -1,7 +1,8 @@
 //! LLM-openers check — flags section openers that match known LLM patterns.
 
 use low_expectations::ExpectationSuite;
-use prosesmasher_domain_types::{Block, CheckConfig, Document, Locale, Paragraph};
+use prosesmasher_domain_types::{CheckConfig, Document, Locale};
+use serde_json::json;
 
 use crate::check::Check;
 
@@ -27,43 +28,23 @@ impl Check for LlmOpenersCheck {
         if config.terms.llm_openers.is_empty() {
             return;
         }
-        let mut count: usize = 0;
-        for section in &doc.sections {
-            let Some(para) = first_paragraph(&section.blocks) else {
-                continue;
-            };
-            let Some(sentence) = para.sentences.first() else {
-                continue;
-            };
-            let lower = sentence.text.to_lowercase();
-            let matched = config.terms.llm_openers.iter().any(|phrase| {
-                lower.starts_with(&phrase.to_lowercase())
-            });
-            if matched {
-                count = count.saturating_add(1);
-            }
-        }
-        let count_i64 = i64::try_from(count).unwrap_or(i64::MAX);
+        let evidence = super::collect_section_sentence_evidence(
+            doc,
+            &config.terms.llm_openers,
+            super::section_first_sentence,
+            super::sentence_starts_with,
+        );
         let _result = suite
-            .expect_value_to_be_between("llm-openers", count_i64, 0, 0)
+            .record_custom_values(
+                "llm-openers",
+                evidence.is_empty(),
+                json!({ "min": 0, "max": 0, "absent": config.terms.llm_openers }),
+                json!(evidence.len()),
+                &evidence,
+            )
             .label("LLM Openers")
             .checking("section openers matching LLM patterns");
     }
-}
-
-fn first_paragraph(blocks: &[Block]) -> Option<&Paragraph> {
-    for block in blocks {
-        match block {
-            Block::Paragraph(p) => return Some(p),
-            Block::BlockQuote(inner) => {
-                if let Some(p) = first_paragraph(inner) {
-                    return Some(p);
-                }
-            }
-            Block::List(_) | Block::CodeBlock(_) => {}
-        }
-    }
-    None
 }
 
 #[cfg(test)]

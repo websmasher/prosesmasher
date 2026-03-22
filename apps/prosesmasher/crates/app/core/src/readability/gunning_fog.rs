@@ -2,6 +2,7 @@
 
 use low_expectations::ExpectationSuite;
 use prosesmasher_domain_types::{Block, CheckConfig, Document, Locale};
+use serde_json::json;
 
 use crate::check::Check;
 
@@ -41,7 +42,7 @@ impl Check for GunningFogCheck {
 
         let mut complex_count: usize = 0;
         for section in &doc.sections {
-            count_complex_in_blocks(&section.blocks, &mut complex_count);
+            complex_count = complex_count.saturating_add(count_complex_in_blocks(&section.blocks));
         }
 
         let words_f = f64::from(u32::try_from(total_words).unwrap_or(u32::MAX));
@@ -54,29 +55,55 @@ impl Check for GunningFogCheck {
         let max_100 = f64_to_i64_x100(max);
 
         let _result = suite
-            .expect_value_to_be_at_most("gunning-fog", score_100, max_100)
+            .record_custom_values(
+                "gunning-fog",
+                score_100 <= max_100,
+                json!({
+                    "maximum_score_x100": max_100,
+                    "formula": "0.4 × ((words/sentences) + 100 × (complex_words/words))",
+                }),
+                json!({
+                    "score_x100": score_100,
+                    "score": score,
+                    "total_words": total_words,
+                    "total_sentences": total_sentences,
+                    "complex_word_count": complex_count,
+                }),
+                &[json!({
+                    "score_x100": score_100,
+                    "score": score,
+                    "total_words": total_words,
+                    "total_sentences": total_sentences,
+                    "complex_word_count": complex_count,
+                    "maximum_score_x100": max_100,
+                })],
+            )
             .label("Gunning Fog Index")
             .checking("fog index (×100)");
     }
 }
 
 /// Count words with 3+ syllables in all blocks (recursive for blockquotes).
-fn count_complex_in_blocks(blocks: &[Block], count: &mut usize) {
+fn count_complex_in_blocks(blocks: &[Block]) -> usize {
+    let mut count: usize = 0;
     for block in blocks {
         match block {
             Block::Paragraph(p) => {
                 for sentence in &p.sentences {
                     for word in &sentence.words {
                         if word.syllable_count >= 3 {
-                            *count = count.saturating_add(1);
+                            count = count.saturating_add(1);
                         }
                     }
                 }
             }
-            Block::BlockQuote(inner) => count_complex_in_blocks(inner, count),
+            Block::BlockQuote(inner) => {
+                count = count.saturating_add(count_complex_in_blocks(inner));
+            }
             Block::List(_) | Block::CodeBlock(_) => {}
         }
     }
+    count
 }
 
 /// Multiply by 100, round, and convert to i64 without using `as`.

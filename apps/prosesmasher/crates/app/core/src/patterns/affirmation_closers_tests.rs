@@ -30,6 +30,18 @@ fn affirmation_closer_detected() {
         result.statistics.unsuccessful_expectations, 1,
         "affirmation closer should fail"
     );
+    let vr = result.results.get("affirmation-closers");
+    assert!(vr.is_some(), "affirmation-closers result should exist");
+    if let Some(vr) = vr {
+        let evidence = vr.result.partial_unexpected_list.as_ref();
+        assert!(evidence.is_some(), "evidence should be present");
+        assert_eq!(evidence.and_then(|e| e.first())
+            .and_then(|item| item.get("matched_text"))
+            .and_then(serde_json::Value::as_str), Some("and that's the key."), "matched closer");
+        assert_eq!(evidence.and_then(|e| e.first())
+            .and_then(|item| item.get("sentence"))
+            .and_then(serde_json::Value::as_str), Some("We worked hard and that's the key."), "sentence evidence");
+    }
 }
 
 #[test]

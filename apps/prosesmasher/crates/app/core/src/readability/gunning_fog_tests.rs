@@ -84,6 +84,15 @@ fn complex_text_fails() {
         result.statistics.unsuccessful_expectations, 1,
         "complex text should fail (fog 24 > max 12)"
     );
+    let vr = result.results.get("gunning-fog");
+    assert!(vr.is_some(), "gunning-fog result should exist");
+    if let Some(vr) = vr {
+        let evidence = vr.result.partial_unexpected_list.as_ref();
+        assert!(evidence.is_some(), "evidence should be present");
+        assert_eq!(evidence.and_then(|e| e.first())
+            .and_then(|item| item.get("complex_word_count"))
+            .and_then(serde_json::Value::as_i64), Some(10), "complex word count");
+    }
 }
 
 #[test]

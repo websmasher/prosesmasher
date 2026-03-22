@@ -54,6 +54,18 @@ fn word_exceeds_max_fails() {
         result.statistics.unsuccessful_expectations, 1,
         "actually x7 with max=5 should fail"
     );
+    let vr = result.results.get("word-repetition-actually");
+    assert!(vr.is_some(), "word repetition result should exist");
+    if let Some(vr) = vr {
+        let evidence = vr.result.partial_unexpected_list.as_ref();
+        assert!(evidence.is_some(), "evidence should be present");
+        assert_eq!(evidence.and_then(|e| e.first())
+            .and_then(|item| item.get("word"))
+            .and_then(serde_json::Value::as_str), Some("actually"), "repeated word");
+        assert_eq!(evidence.and_then(|e| e.first())
+            .and_then(|item| item.get("count"))
+            .and_then(serde_json::Value::as_i64), Some(7), "repetition count");
+    }
 }
 
 #[test]

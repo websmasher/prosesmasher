@@ -2,6 +2,7 @@
 
 use low_expectations::ExpectationSuite;
 use prosesmasher_domain_types::{Block, CheckConfig, Document, Locale};
+use serde_json::{Value, json};
 
 use crate::check::Check;
 
@@ -23,33 +24,50 @@ impl Check for CodeFencesCheck {
     }
 
     fn run(&self, doc: &Document, _config: &CheckConfig, suite: &mut ExpectationSuite) {
-        let mut count: usize = 0;
+        let mut evidence = Vec::new();
 
-        for section in &doc.sections {
+        for (section_index, section) in doc.sections.iter().enumerate() {
             for block in &section.blocks {
-                count_code_blocks(block, &mut count);
+                collect_code_block_evidence(block, section_index, &mut evidence);
             }
         }
 
-        let observed = i64::try_from(count).unwrap_or(i64::MAX);
+        let observed = i64::try_from(evidence.len()).unwrap_or(i64::MAX);
         let _result = suite
-            .expect_value_to_be_between("code-fences", observed, 0, 0)
+            .record_custom_values(
+                "code-fences",
+                evidence.is_empty(),
+                json!({ "min": 0, "max": 0, "rule": "no code blocks in prose content" }),
+                json!({ "count": observed }),
+                &evidence,
+            )
             .label("Code Fences")
             .checking("code block count");
     }
 }
 
-fn count_code_blocks(block: &Block, count: &mut usize) {
+fn collect_code_block_evidence(block: &Block, section_index: usize, evidence: &mut Vec<Value>) {
     match block {
         Block::CodeBlock(_) => {
-            *count = count.saturating_add(1);
+            evidence.push(json!({
+                "section_index": section_index,
+                "code_block_text": block_code_text(block),
+                "issue": "code block in prose",
+            }));
         }
         Block::BlockQuote(blocks) => {
             for inner in blocks {
-                count_code_blocks(inner, count);
+                collect_code_block_evidence(inner, section_index, evidence);
             }
         }
         Block::Paragraph(_) | Block::List(_) => {}
+    }
+}
+
+fn block_code_text(block: &Block) -> String {
+    match block {
+        Block::CodeBlock(code) => code.clone(),
+        Block::BlockQuote(_) | Block::Paragraph(_) | Block::List(_) => String::new(),
     }
 }
 

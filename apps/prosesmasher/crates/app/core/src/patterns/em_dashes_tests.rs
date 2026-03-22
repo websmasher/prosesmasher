@@ -21,6 +21,18 @@ fn one_em_dash_fails() {
     super::EmDashCheck.run(&doc, &config, &mut suite);
     let result = suite.into_suite_result();
     assert_eq!(result.statistics.unsuccessful_expectations, 1, "1 em-dash → fail");
+    let vr = result.results.get("em-dashes");
+    assert!(vr.is_some(), "em-dashes result should exist");
+    if let Some(vr) = vr {
+        let evidence = vr.result.partial_unexpected_list.as_ref();
+        assert!(evidence.is_some(), "evidence should be present");
+        assert_eq!(evidence.and_then(|e| e.first())
+            .and_then(|item| item.get("match_count"))
+            .and_then(serde_json::Value::as_u64), Some(1), "match count");
+        assert_eq!(evidence.and_then(|e| e.first())
+            .and_then(|item| item.get("sentence"))
+            .and_then(serde_json::Value::as_str), Some("Hello \u{2014} world."), "sentence evidence");
+    }
 }
 
 #[test]

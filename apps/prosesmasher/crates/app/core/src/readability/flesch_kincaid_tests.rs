@@ -81,6 +81,15 @@ fn hard_text_fails() {
         result.statistics.unsuccessful_expectations, 1,
         "hard text should fail (score ~12 < min 60)"
     );
+    let vr = result.results.get("flesch-kincaid");
+    assert!(vr.is_some(), "flesch-kincaid result should exist");
+    if let Some(vr) = vr {
+        let evidence = vr.result.partial_unexpected_list.as_ref();
+        assert!(evidence.is_some(), "evidence should be present");
+        assert_eq!(evidence.and_then(|e| e.first())
+            .and_then(|item| item.get("score_x100"))
+            .and_then(serde_json::Value::as_i64), Some(1226), "score x100");
+    }
 }
 
 #[test]

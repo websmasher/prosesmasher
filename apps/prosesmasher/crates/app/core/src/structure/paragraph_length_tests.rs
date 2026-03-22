@@ -57,6 +57,18 @@ fn paragraph_exceeds_max_fails() {
         result.statistics.unsuccessful_expectations, 1,
         "6 sentences with max=4 should fail"
     );
+    let vr = result.results.get("paragraph-length-0");
+    assert!(vr.is_some(), "paragraph-length result should exist");
+    if let Some(vr) = vr {
+        let evidence = vr.result.partial_unexpected_list.as_ref();
+        assert!(evidence.is_some(), "evidence should be present");
+        assert_eq!(evidence.and_then(|e| e.first())
+            .and_then(|item| item.get("paragraph_text"))
+            .and_then(serde_json::Value::as_str), Some("This is sentence 0. This is sentence 1. This is sentence 2. This is sentence 3. This is sentence 4. This is sentence 5."), "paragraph text");
+        assert_eq!(evidence.and_then(|e| e.first())
+            .and_then(|item| item.get("sentence_count"))
+            .and_then(serde_json::Value::as_i64), Some(6), "sentence count");
+    }
 }
 
 #[test]

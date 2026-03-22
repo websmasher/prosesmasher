@@ -14,6 +14,15 @@ fn doc_with_code_block_fails() {
         result.statistics.unsuccessful_expectations, 1,
         "document with code block should fail"
     );
+    let vr = result.results.get("code-fences");
+    assert!(vr.is_some(), "code-fences result should exist");
+    if let Some(vr) = vr {
+        let evidence = vr.result.partial_unexpected_list.as_ref();
+        assert!(evidence.is_some(), "evidence should be present");
+        assert_eq!(evidence.and_then(|e| e.first())
+            .and_then(|item| item.get("code_block_text"))
+            .and_then(serde_json::Value::as_str), Some("fn main() {}"), "code block text");
+    }
 }
 
 #[test]

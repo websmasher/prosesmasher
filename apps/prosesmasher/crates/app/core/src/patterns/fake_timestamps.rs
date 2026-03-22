@@ -2,6 +2,7 @@
 
 use low_expectations::ExpectationSuite;
 use prosesmasher_domain_types::{Block, CheckConfig, Document, Locale};
+use serde_json::{Value, json};
 
 use crate::check::Check;
 
@@ -23,93 +24,140 @@ impl Check for FakeTimestampCheck {
     }
 
     fn run(&self, doc: &Document, _config: &CheckConfig, suite: &mut ExpectationSuite) {
-        let mut count: usize = 0;
-        for section in &doc.sections {
-            check_blocks(&section.blocks, &mut count);
-        }
-        let count_i64 = i64::try_from(count).unwrap_or(i64::MAX);
+        let evidence = collect_fake_timestamp_evidence(doc);
         let _result = suite
-            .expect_value_to_be_between("fake-timestamps", count_i64, 0, 0)
+            .record_custom_values(
+                "fake-timestamps",
+                evidence.is_empty(),
+                json!({ "min": 0, "max": 0 }),
+                json!(evidence.len()),
+                &evidence,
+            )
             .label("Fake Timestamps")
             .checking("suspicious timestamp patterns (digit:digit AM/PM)");
     }
 }
 
-fn check_blocks(blocks: &[Block], count: &mut usize) {
-    for block in blocks {
-        match block {
-            Block::Paragraph(p) => {
-                for sentence in &p.sentences {
-                    if contains_timestamp(&sentence.text) {
-                        *count = count.saturating_add(1);
-                    }
-                }
-            }
-            Block::BlockQuote(inner) => check_blocks(inner, count),
-            Block::List(_) | Block::CodeBlock(_) => {}
+fn collect_fake_timestamp_evidence(doc: &Document) -> Vec<Value> {
+    let mut evidence = Vec::new();
+
+    for (section_index, section) in doc.sections.iter().enumerate() {
+        let mut paragraph_index: usize = 0;
+        for block in &section.blocks {
+            collect_fake_timestamp_evidence_from_block(
+                block,
+                section_index,
+                &mut paragraph_index,
+                &mut evidence,
+            );
         }
+    }
+
+    evidence
+}
+
+fn collect_fake_timestamp_evidence_from_block(
+    block: &Block,
+    section_index: usize,
+    paragraph_index: &mut usize,
+    evidence: &mut Vec<Value>,
+) {
+    match block {
+        Block::Paragraph(paragraph) => {
+            for (sentence_index, sentence) in paragraph.sentences.iter().enumerate() {
+                let timestamps = collect_timestamp_matches(&sentence.text);
+                if timestamps.is_empty() {
+                    continue;
+                }
+                evidence.push(json!({
+                    "section_index": section_index,
+                    "paragraph_index": *paragraph_index,
+                    "sentence_index": sentence_index,
+                    "matched_text": timestamps.first().cloned().unwrap_or_default(),
+                    "timestamps": timestamps,
+                    "match_count": timestamps.len(),
+                    "sentence": sentence.text,
+                }));
+            }
+            *paragraph_index = paragraph_index.saturating_add(1);
+        }
+        Block::BlockQuote(inner) => {
+            for inner_block in inner {
+                collect_fake_timestamp_evidence_from_block(
+                    inner_block,
+                    section_index,
+                    paragraph_index,
+                    evidence,
+                );
+            }
+        }
+        Block::List(_) | Block::CodeBlock(_) => {}
     }
 }
 
 /// Scan text for patterns like "5:47 PM" or "2:30 AM" without regex.
 /// Looks for: digit(s) ':' digit(s) space 'AM'/'PM' (case-insensitive).
-fn contains_timestamp(text: &str) -> bool {
-    let chars: Vec<char> = text.chars().collect();
-    let len = chars.len();
+fn collect_timestamp_matches(text: &str) -> Vec<String> {
+    let chars = text.char_indices().collect::<Vec<_>>();
+    let mut matches = Vec::new();
     let mut i: usize = 0;
-    while i < len {
-        let Some(&c) = chars.get(i) else {
+
+    while i < chars.len() {
+        let Some((digit_start_byte, c)) = chars.get(i).copied() else {
             break;
         };
-        // Look for a digit that could start a timestamp
-        if c.is_ascii_digit() {
-            // Scan digits before colon
-            let start = i;
-            while i < len {
-                match chars.get(i) {
-                    Some(ch) if ch.is_ascii_digit() => {
-                        i = i.saturating_add(1);
-                    }
-                    _ => break,
-                }
-            }
-            // Check for colon
-            if i < len && chars.get(i) == Some(&':') {
-                i = i.saturating_add(1);
-                // Check for digits after colon
-                let digit_start = i;
-                while i < len {
-                    match chars.get(i) {
-                        Some(ch) if ch.is_ascii_digit() => {
-                            i = i.saturating_add(1);
-                        }
-                        _ => break,
-                    }
-                }
-                if i > digit_start {
-                    // Skip optional space
-                    if i < len && chars.get(i) == Some(&' ') {
-                        i = i.saturating_add(1);
-                    }
-                    // Check for AM/PM
-                    if let (Some(ch_a), Some(ch_b)) =
-                        (chars.get(i), chars.get(i.saturating_add(1)))
-                    {
-                        let a = ch_a.to_ascii_uppercase();
-                        let b = ch_b.to_ascii_uppercase();
-                        if (a == 'A' || a == 'P') && b == 'M' {
-                            return true;
-                        }
-                    }
-                }
-            }
-            // If we didn't find a timestamp, continue from after start digit
-            i = start.saturating_add(1);
-        } else {
+        if !c.is_ascii_digit() {
+            i = i.saturating_add(1);
+            continue;
+        }
+
+        let digit_start = i;
+        while chars.get(i).is_some_and(|(_, ch)| ch.is_ascii_digit()) {
             i = i.saturating_add(1);
         }
+
+        if chars.get(i).is_none_or(|(_, ch)| *ch != ':') {
+            i = digit_start.saturating_add(1);
+            continue;
+        }
+
+        i = i.saturating_add(1);
+        let minute_start = i;
+        while chars.get(i).is_some_and(|(_, ch)| ch.is_ascii_digit()) {
+            i = i.saturating_add(1);
+        }
+        if i == minute_start {
+            i = digit_start.saturating_add(1);
+            continue;
+        }
+
+        if chars.get(i).is_some_and(|(_, ch)| *ch == ' ') {
+            i = i.saturating_add(1);
+        }
+
+        let Some((_, ch_a)) = chars.get(i).copied() else {
+            i = digit_start.saturating_add(1);
+            continue;
+        };
+        let Some((pm_byte, ch_b)) = chars.get(i.saturating_add(1)).copied() else {
+            i = digit_start.saturating_add(1);
+            continue;
+        };
+        let a = ch_a.to_ascii_uppercase();
+        let b = ch_b.to_ascii_uppercase();
+        if (a == 'A' || a == 'P') && b == 'M' {
+            let start_byte = digit_start_byte;
+            let end_byte = pm_byte.saturating_add(ch_b.len_utf8());
+            if let Some(timestamp) = text.get(start_byte..end_byte) {
+                matches.push(timestamp.to_owned());
+            }
+            i = i.saturating_add(2);
+        } else {
+            i = digit_start.saturating_add(1);
+        }
     }
-    false
+
+    matches
 }
 
 #[cfg(test)]

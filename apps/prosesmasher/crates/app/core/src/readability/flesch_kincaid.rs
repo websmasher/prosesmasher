@@ -2,6 +2,7 @@
 
 use low_expectations::ExpectationSuite;
 use prosesmasher_domain_types::{CheckConfig, Document, Locale};
+use serde_json::json;
 
 use crate::check::Check;
 
@@ -55,7 +56,29 @@ impl Check for FleschKincaidCheck {
         let min_100 = f64_to_i64_x100(min);
 
         let _result = suite
-            .expect_value_to_be_at_least("flesch-kincaid", score_100, min_100)
+            .record_custom_values(
+                "flesch-kincaid",
+                score_100 >= min_100,
+                json!({
+                    "minimum_score_x100": min_100,
+                    "formula": "206.835 - 1.015 × (words/sentences) - 84.6 × (syllables/words)",
+                }),
+                json!({
+                    "score_x100": score_100,
+                    "score": score,
+                    "total_words": total_words,
+                    "total_sentences": total_sentences,
+                    "total_syllables": total_syllables,
+                }),
+                &[json!({
+                    "score_x100": score_100,
+                    "score": score,
+                    "total_words": total_words,
+                    "total_sentences": total_sentences,
+                    "total_syllables": total_syllables,
+                    "minimum_score_x100": min_100,
+                })],
+            )
             .label("Flesch-Kincaid Reading Ease")
             .checking("reading ease score (×100)");
     }
