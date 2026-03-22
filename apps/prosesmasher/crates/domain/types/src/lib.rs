@@ -6,7 +6,7 @@ pub mod error;
 pub mod locale;
 pub mod metadata;
 
-pub use config::{CheckConfig, Range, SimplePair, TermLists, Thresholds};
+pub use config::{CheckConfig, Range, SimplePair, TermLists, TermPool, Thresholds};
 pub use document::{Block, Document, Heading, Link, ListBlock, Paragraph, Section, Sentence, Word};
 pub use error::{ConfigError, ParseError, ReadError};
 pub use locale::Locale;

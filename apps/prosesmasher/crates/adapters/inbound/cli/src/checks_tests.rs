@@ -5,14 +5,14 @@ use std::collections::BTreeSet;
 #[allow(clippy::panic)] // test assertion
 fn collect_all_returns_32() {
     let checks = collect_checks(None).unwrap_or_else(|e| panic!("collect failed: {e}"));
-    assert_eq!(checks.len(), 32, "total check count");
+    assert_eq!(checks.len(), 34, "total check count");
 }
 
 #[test]
 #[allow(clippy::panic)] // test assertion
 fn collect_terms_returns_7() {
     let checks = collect_checks(Some("terms")).unwrap_or_else(|e| panic!("collect failed: {e}"));
-    assert_eq!(checks.len(), 7, "terms check count");
+    assert_eq!(checks.len(), 9, "terms check count");
 }
 
 #[test]

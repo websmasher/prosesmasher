@@ -7,7 +7,7 @@ use garde::Validate;
 use serde::Deserialize;
 
 use prosesmasher_domain_types::{
-    CheckConfig, ConfigError, Locale, Range, SimplePair, TermLists, Thresholds,
+    CheckConfig, ConfigError, Locale, Range, SimplePair, TermLists, TermPool, Thresholds,
 };
 
 #[derive(Deserialize, Validate)]
@@ -72,6 +72,21 @@ pub struct TermListsDto {
     #[garde(skip)]
     #[serde(default)]
     pub stop_words: Vec<String>,
+    #[garde(skip)]
+    #[serde(default)]
+    pub required_terms: Vec<String>,
+    #[garde(skip)]
+    #[serde(default)]
+    pub recommended_terms: Option<TermPoolDto>,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct TermPoolDto {
+    pub terms: Vec<String>,
+    pub min_count: usize,
+    #[serde(default)]
+    pub allow_inflections: bool,
 }
 
 #[derive(Deserialize, Validate)]
@@ -181,6 +196,12 @@ fn convert_terms(dto: TermListsDto) -> TermLists {
         humble_bragger_phrases: dto.humble_bragger_phrases,
         jargon_faker_phrases: dto.jargon_faker_phrases,
         stop_words: dto.stop_words,
+        required_terms: dto.required_terms,
+        recommended_terms: dto.recommended_terms.map(|pool| TermPool {
+            terms: pool.terms,
+            min_count: pool.min_count,
+            allow_inflections: pool.allow_inflections,
+        }),
     }
 }
 

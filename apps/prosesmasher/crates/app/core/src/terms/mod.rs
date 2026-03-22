@@ -4,6 +4,8 @@ pub mod forbidden_terms;
 pub mod gendered_terms;
 pub mod hedge_words;
 pub mod race_terms;
+pub mod recommended_terms;
+pub mod required_terms;
 pub mod simplicity;
 
 pub use banned_phrases::BannedPhrasesCheck;
@@ -12,6 +14,8 @@ pub use forbidden_terms::ForbiddenTermsCheck;
 pub use gendered_terms::GenderedTermsCheck;
 pub use hedge_words::HedgeStackingCheck;
 pub use race_terms::RaceTermsCheck;
+pub use recommended_terms::RecommendedTermsCheck;
+pub use required_terms::RequiredTermsCheck;
 pub use simplicity::SimplicityCheck;
 
 use prosesmasher_domain_types::Block;
@@ -29,6 +33,8 @@ pub fn all_checks() -> Vec<BoxedCheck> {
         Box::new(RaceTermsCheck),
         Box::new(HedgeStackingCheck),
         Box::new(SimplicityCheck),
+        Box::new(RequiredTermsCheck),
+        Box::new(RecommendedTermsCheck),
     ]
 }
 

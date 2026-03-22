@@ -32,6 +32,24 @@ pub struct TermLists {
     pub humble_bragger_phrases: Vec<String>,
     pub jargon_faker_phrases: Vec<String>,
     pub stop_words: Vec<String>,
+    /// All of these terms must appear in the document.
+    pub required_terms: Vec<String>,
+    /// At least `min_count` of these terms must appear.
+    pub recommended_terms: Option<TermPool>,
+}
+
+/// A pool of terms where at least `min_count` must appear.
+///
+/// Used for editorial keyword requirements: "this article should
+/// mention at least 3 of these 10 topic keywords."
+#[derive(Debug, Clone)]
+pub struct TermPool {
+    /// The terms to look for.
+    pub terms: Vec<String>,
+    /// Minimum number that must appear.
+    pub min_count: usize,
+    /// When true, match word stems (e.g., "screens" matches "screen").
+    pub allow_inflections: bool,
 }
 
 #[derive(Debug, Clone, Default)]
