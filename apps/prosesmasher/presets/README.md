@@ -9,7 +9,7 @@ They are intended for:
 
 They are not universal truth. They are opinionated defaults that you should copy and tune for your domain.
 
-The library already carries the default anti-slop lexicon, simplicity pairs, repetition exclusions, and baseline quality thresholds for English. The shipped presets mostly add document-shape policy and a few threshold deltas instead of restating those defaults.
+The library already carries the default anti-slop lexicon, simplicity pairs, repetition exclusions, and baseline quality thresholds for English. The shipped presets differ only by `documentPolicy`. Quality stays on the shared library defaults everywhere.
 
 ## Example Configs
 
@@ -21,11 +21,10 @@ Use the shipped presets when you want a real starting point without overcommitti
 ## Presets
 
 - `general-en.json` — baseline quality defaults with no document-shape policy
-- `article-short-en.json` — short-form article shape
-- `article-medium-en.json` — standard article/blog shape
-- `article-long-en.json` — long-form article shape
-- `docs-en.json` — docs/reference-style prose
-- `landing-page-en.json` — concise marketing/site copy
+- `article-en.json` — standard article structure
+- `substack-en.json` — longer, looser newsletter/article structure
+- `email-en.json` — short prose body with no heading policy
+- `tweet-en.json` — very short prose body with no heading policy
 
 ## Notes
 

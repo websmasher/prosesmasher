@@ -1,0 +1,13 @@
+{
+  "locale": "en",
+  "quality": {},
+  "documentPolicy": {
+    "wordCount": { "min": 1000, "max": 2200 },
+    "headingCounts": {
+      "h2": { "min": 3, "max": 7 },
+      "h3Min": 1
+    },
+    "headingHierarchy": { "enabled": true },
+    "sentenceCaseHeadings": { "enabled": true }
+  }
+}

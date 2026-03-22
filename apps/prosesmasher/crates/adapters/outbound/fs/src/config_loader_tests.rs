@@ -141,11 +141,10 @@ fn canonical_config_normalizes() {
 fn all_curated_presets_load() {
     for name in [
         "general-en.json",
-        "article-short-en.json",
-        "article-medium-en.json",
-        "article-long-en.json",
-        "docs-en.json",
-        "landing-page-en.json",
+        "article-en.json",
+        "substack-en.json",
+        "email-en.json",
+        "tweet-en.json",
     ] {
         let config = load_preset_ok(name);
         assert_eq!(config.locale, Locale::En, "{name}: locale should be en");
@@ -153,21 +152,23 @@ fn all_curated_presets_load() {
 }
 
 #[test]
-fn docs_preset_is_tighter_on_exclamations_than_general() {
-    let docs = load_preset_ok("docs-en.json");
+fn presets_keep_shared_quality_defaults() {
+    let article = load_preset_ok("article-en.json");
     let general = load_preset_ok("general-en.json");
 
-    assert_eq!(docs.quality.heuristics.exclamation_density.max_per_paragraph, 0);
+    assert_eq!(article.quality.heuristics.exclamation_density.max_per_paragraph, 1);
     assert_eq!(general.quality.heuristics.exclamation_density.max_per_paragraph, 1);
+    assert_eq!(article.quality.heuristics.paragraph_length.max_sentences, 4);
+    assert_eq!(general.quality.heuristics.paragraph_length.max_sentences, 4);
 }
 
 #[test]
-fn landing_page_preset_targets_shorter_copy_than_article_long() {
-    let landing = load_preset_ok("landing-page-en.json");
-    let article_long = load_preset_ok("article-long-en.json");
+fn tweet_preset_targets_shorter_copy_than_substack() {
+    let tweet = load_preset_ok("tweet-en.json");
+    let substack = load_preset_ok("substack-en.json");
 
-    assert_eq!(landing.document_policy.word_count.map(prosesmasher_domain_types::Range::max), Some(700));
-    assert_eq!(article_long.document_policy.word_count.map(prosesmasher_domain_types::Range::min), Some(1600));
+    assert_eq!(tweet.document_policy.word_count.map(prosesmasher_domain_types::Range::max), Some(60));
+    assert_eq!(substack.document_policy.word_count.map(prosesmasher_domain_types::Range::min), Some(1200));
 }
 
 #[test]
@@ -180,22 +181,32 @@ fn general_preset_keeps_document_policy_off() {
 }
 
 #[test]
-fn article_tiers_increase_word_count_and_heading_density() {
-    let short = load_preset_ok("article-short-en.json");
-    let medium = load_preset_ok("article-medium-en.json");
-    let long = load_preset_ok("article-long-en.json");
+fn article_and_substack_use_heading_policy_but_email_and_tweet_do_not() {
+    let article = load_preset_ok("article-en.json");
+    let substack = load_preset_ok("substack-en.json");
+    let email = load_preset_ok("email-en.json");
+    let tweet = load_preset_ok("tweet-en.json");
 
-    assert_eq!(short.document_policy.word_count.map(prosesmasher_domain_types::Range::min), Some(500));
-    assert_eq!(medium.document_policy.word_count.map(prosesmasher_domain_types::Range::min), Some(1000));
-    assert_eq!(long.document_policy.word_count.map(prosesmasher_domain_types::Range::min), Some(1600));
+    assert_eq!(article.document_policy.heading_counts.h2.map(prosesmasher_domain_types::Range::min), Some(3));
+    assert_eq!(substack.document_policy.heading_counts.h2.map(prosesmasher_domain_types::Range::min), Some(1));
+    assert!(article.document_policy.heading_hierarchy);
+    assert!(substack.document_policy.heading_hierarchy);
 
-    assert_eq!(short.document_policy.heading_counts.h3_min, Some(0));
-    assert_eq!(medium.document_policy.heading_counts.h3_min, Some(1));
-    assert_eq!(long.document_policy.heading_counts.h3_min, Some(2));
+    assert!(email.document_policy.heading_counts.h2.is_none());
+    assert!(tweet.document_policy.heading_counts.h2.is_none());
+    assert!(!email.document_policy.heading_hierarchy);
+    assert!(!tweet.document_policy.heading_hierarchy);
+}
 
-    assert!(short.document_policy.heading_hierarchy);
-    assert!(medium.document_policy.heading_hierarchy);
-    assert!(long.document_policy.heading_hierarchy);
+#[test]
+fn email_is_longer_than_tweet_but_shorter_than_article() {
+    let tweet = load_preset_ok("tweet-en.json");
+    let email = load_preset_ok("email-en.json");
+    let article = load_preset_ok("article-en.json");
+
+    assert_eq!(tweet.document_policy.word_count.map(prosesmasher_domain_types::Range::min), Some(8));
+    assert_eq!(email.document_policy.word_count.map(prosesmasher_domain_types::Range::min), Some(80));
+    assert_eq!(article.document_policy.word_count.map(prosesmasher_domain_types::Range::min), Some(1000));
 }
 
 #[test]
