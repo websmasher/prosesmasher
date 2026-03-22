@@ -30,6 +30,18 @@ fn llm_opener_detected() {
         result.statistics.unsuccessful_expectations, 1,
         "LLM opener should fail"
     );
+    let vr = result.results.get("llm-openers");
+    assert!(vr.is_some(), "llm-openers result should exist");
+    if let Some(vr) = vr {
+        let evidence = vr.result.partial_unexpected_list.as_ref();
+        assert!(evidence.is_some(), "evidence should be present");
+        assert_eq!(evidence.and_then(|e| e.first())
+            .and_then(|item| item.get("matched_text"))
+            .and_then(serde_json::Value::as_str), Some("the interesting part is"), "matched opener");
+        assert_eq!(evidence.and_then(|e| e.first())
+            .and_then(|item| item.get("sentence"))
+            .and_then(serde_json::Value::as_str), Some("The interesting part is that nobody noticed."), "sentence evidence");
+    }
 }
 
 #[test]

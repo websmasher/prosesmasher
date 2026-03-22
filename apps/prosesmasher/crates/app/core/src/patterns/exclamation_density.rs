@@ -2,6 +2,7 @@
 
 use low_expectations::ExpectationSuite;
 use prosesmasher_domain_types::{Block, CheckConfig, Document, Locale};
+use serde_json::json;
 
 use crate::check::Check;
 
@@ -27,16 +28,23 @@ impl Check for ExclamationDensityCheck {
             return;
         };
         let max_i64 = i64::try_from(max).unwrap_or(i64::MAX);
-        let mut para_idx: usize = 0;
-        for section in &doc.sections {
-            check_blocks(&section.blocks, &mut para_idx, max_i64, suite);
+        let mut para_index: usize = 0;
+        for (section_index, section) in doc.sections.iter().enumerate() {
+            check_blocks(
+                &section.blocks,
+                section_index,
+                &mut para_index,
+                max_i64,
+                suite,
+            );
         }
     }
 }
 
 fn check_blocks(
     blocks: &[Block],
-    para_idx: &mut usize,
+    section_index: usize,
+    para_index: &mut usize,
     max_i64: i64,
     suite: &mut ExpectationSuite,
 ) {
@@ -50,17 +58,37 @@ fn check_blocks(
                     );
                 }
                 let count_i64 = i64::try_from(count).unwrap_or(i64::MAX);
+                let paragraph_text = p
+                    .sentences
+                    .iter()
+                    .map(|sentence| sentence.text.as_str())
+                    .collect::<Vec<_>>()
+                    .join(" ");
+                let evidence = if count_i64 > max_i64 {
+                    vec![json!({
+                        "section_index": section_index,
+                        "paragraph_index": *para_index,
+                        "paragraph_text": paragraph_text,
+                        "sentence_texts": p.sentences.iter().map(|sentence| sentence.text.clone()).collect::<Vec<_>>(),
+                        "exclamation_count": count_i64,
+                        "max_allowed": max_i64,
+                    })]
+                } else {
+                    Vec::new()
+                };
                 let _result = suite
-                    .expect_value_to_be_at_most(
-                        &format!("exclamation-density-para-{para_idx}"),
-                        count_i64,
-                        max_i64,
+                    .record_custom_values(
+                        &format!("exclamation-density-para-{para_index}"),
+                        count_i64 <= max_i64,
+                        json!({ "max": max_i64 }),
+                        json!(count_i64),
+                        &evidence,
                     )
                     .label("Exclamation Density")
-                    .checking(&format!("paragraph {para_idx} exclamation count"));
-                *para_idx = para_idx.saturating_add(1);
+                    .checking(&format!("paragraph {para_index} exclamation count"));
+                *para_index = para_index.saturating_add(1);
             }
-            Block::BlockQuote(inner) => check_blocks(inner, para_idx, max_i64, suite),
+            Block::BlockQuote(inner) => check_blocks(inner, section_index, para_index, max_i64, suite),
             Block::List(_) | Block::CodeBlock(_) => {}
         }
     }

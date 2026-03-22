@@ -59,6 +59,24 @@ fn triple_same_opener_fails() {
         result.statistics.unsuccessful_expectations, 1,
         "triple repeat should fail"
     );
+    let vr = result.results.get("triple-repeat");
+    assert!(vr.is_some(), "triple-repeat result should exist");
+    if let Some(vr) = vr {
+        let evidence = vr.result.partial_unexpected_list.as_ref();
+        assert!(evidence.is_some(), "evidence should be present");
+        assert_eq!(evidence.and_then(|e| e.first())
+            .and_then(|item| item.get("matched_text"))
+            .and_then(serde_json::Value::as_str), Some("it's"), "matched opener");
+        assert_eq!(evidence.and_then(|e| e.first())
+            .and_then(|item| item.get("sentence"))
+            .and_then(serde_json::Value::as_str), Some("It's fast."), "first sentence");
+        assert_eq!(evidence.and_then(|e| e.first())
+            .and_then(|item| item.get("next_sentence"))
+            .and_then(serde_json::Value::as_str), Some("It's reliable."), "second sentence");
+        assert_eq!(evidence.and_then(|e| e.first())
+            .and_then(|item| item.get("third_sentence"))
+            .and_then(serde_json::Value::as_str), Some("It's revolutionary."), "third sentence");
+    }
 }
 
 #[test]

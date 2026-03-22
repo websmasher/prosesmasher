@@ -44,6 +44,15 @@ fn h1_present_fails() {
         result.statistics.unsuccessful_expectations, 1,
         "H1 in body should fail"
     );
+    let vr = result.results.values().next();
+    assert!(vr.is_some(), "heading hierarchy result should exist");
+    if let Some(vr) = vr {
+        let evidence = vr.result.partial_unexpected_list.as_ref();
+        assert!(evidence.is_some(), "evidence should be present");
+        assert_eq!(evidence.and_then(|e| e.first())
+            .and_then(|item| item.get("heading_text"))
+            .and_then(serde_json::Value::as_str), Some("My Title"), "heading text evidence");
+    }
 }
 
 #[test]

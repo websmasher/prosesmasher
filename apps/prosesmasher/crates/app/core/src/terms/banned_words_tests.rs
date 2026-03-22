@@ -32,6 +32,18 @@ fn banned_word_present_fails() {
     super::BannedWordsCheck.run(&doc, &config, &mut suite);
     let result = suite.into_suite_result();
     assert_eq!(result.statistics.unsuccessful_expectations, 1, "banned word found → fail");
+    let vr = result.results.get("banned-words");
+    assert!(vr.is_some(), "banned-words result should exist");
+    if let Some(vr) = vr {
+        let evidence = vr.result.partial_unexpected_list.as_ref();
+        assert!(evidence.is_some(), "evidence should be present");
+        assert_eq!(evidence.and_then(|e| e.first())
+            .and_then(|item| item.get("matched_text"))
+            .and_then(serde_json::Value::as_str), Some("actually"), "matched text");
+        assert_eq!(evidence.and_then(|e| e.first())
+            .and_then(|item| item.get("sentence"))
+            .and_then(serde_json::Value::as_str), Some("We actually need this."), "sentence evidence");
+    }
 }
 
 #[test]

@@ -71,6 +71,21 @@ fn negation_reframe_detected() {
         result.statistics.unsuccessful_expectations, 1,
         "negation + reframe pair should fail"
     );
+    let vr = result.results.get("negation-reframe");
+    assert!(vr.is_some(), "negation-reframe result should exist");
+    if let Some(vr) = vr {
+        let evidence = vr.result.partial_unexpected_list.as_ref();
+        assert!(evidence.is_some(), "evidence should be present");
+        assert_eq!(evidence.and_then(|e| e.first())
+            .and_then(|item| item.get("matched_text"))
+            .and_then(serde_json::Value::as_str), Some("isn't -> it's"), "matched pattern");
+        assert_eq!(evidence.and_then(|e| e.first())
+            .and_then(|item| item.get("sentence"))
+            .and_then(serde_json::Value::as_str), Some("This isn't defiance."), "first sentence");
+        assert_eq!(evidence.and_then(|e| e.first())
+            .and_then(|item| item.get("next_sentence"))
+            .and_then(serde_json::Value::as_str), Some("It's developmental."), "second sentence");
+    }
 }
 
 #[test]

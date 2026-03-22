@@ -37,6 +37,18 @@ fn title_case_heading_fails() {
         result.statistics.unsuccessful_expectations, 1,
         "title case heading should fail"
     );
+    let vr = result.results.get("sentence-case-Why Saying Nothing Is Bad");
+    assert!(vr.is_some(), "sentence-case result should exist");
+    if let Some(vr) = vr {
+        let evidence = vr.result.partial_unexpected_list.as_ref();
+        assert!(evidence.is_some(), "evidence should be present");
+        assert_eq!(evidence.and_then(|e| e.first())
+            .and_then(|item| item.get("heading_text"))
+            .and_then(serde_json::Value::as_str), Some("Why Saying Nothing Is Bad"), "heading text");
+        assert_eq!(evidence.and_then(|e| e.first())
+            .and_then(|item| item.get("capitalized_non_first_words"))
+            .and_then(serde_json::Value::as_u64), Some(4), "capitalized words after first");
+    }
 }
 
 #[test]

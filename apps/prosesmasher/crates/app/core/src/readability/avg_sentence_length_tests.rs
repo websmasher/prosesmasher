@@ -73,6 +73,15 @@ fn average_over_limit_fails() {
         result.statistics.unsuccessful_expectations, 1,
         "avg 33 > max 25 should fail"
     );
+    let vr = result.results.get("avg-sentence-length");
+    assert!(vr.is_some(), "avg-sentence-length result should exist");
+    if let Some(vr) = vr {
+        let evidence = vr.result.partial_unexpected_list.as_ref();
+        assert!(evidence.is_some(), "evidence should be present");
+        assert_eq!(evidence.and_then(|e| e.first())
+            .and_then(|item| item.get("average_words_per_sentence"))
+            .and_then(serde_json::Value::as_i64), Some(33), "average words per sentence");
+    }
 }
 
 #[test]

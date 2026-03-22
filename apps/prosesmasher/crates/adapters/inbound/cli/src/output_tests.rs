@@ -47,6 +47,12 @@ fn build_file_result_json_serializable() {
     assert_eq!(file_result.evaluated, 1, "1 check");
     assert_eq!(file_result.passed, 1, "1 passed");
     assert_eq!(file_result.failed, 0, "0 failed");
+    assert_eq!(file_result.summary.evaluated, 1, "summary evaluated");
+    assert_eq!(file_result.summary.passed, 1, "summary passed");
+    assert_eq!(file_result.summary.failed, 0, "summary failed");
+    assert!(!file_result.rewrite_needed, "no rewrite needed on success");
+    assert!(file_result.rewrite_brief.is_empty(), "no rewrite brief on success");
+    assert!(file_result.failures.is_empty(), "no failures on success");
     assert_eq!(file_result.file, "test.md", "file path");
     assert_eq!(file_result.checks.len(), 1, "1 check output");
 
@@ -63,4 +69,65 @@ fn build_file_result_json_serializable() {
     let json_str = json.unwrap_or_default();
     assert!(json_str.contains("word-count"), "JSON contains check id");
     assert!(json_str.contains("Word Count"), "JSON contains label");
+    assert!(json_str.contains("rewrite_needed"), "JSON contains rewrite flag");
+}
+
+#[test]
+fn build_file_result_includes_rewrite_guidance_for_failures() {
+    use low_expectations::ExpectationSuite;
+    use std::path::Path;
+
+    let mut suite = ExpectationSuite::new("test");
+    let _word_count_result = suite
+        .expect_value_to_be_between("word-count", 1200, 650, 1000)
+        .label("Word Count");
+    let _em_dash_result = suite
+        .expect_value_to_be_between("em-dashes", 2, 0, 0)
+        .label("No Em-Dashes")
+        .checking("em dash count");
+    let result = suite.into_suite_result();
+    let file_result = build_file_result(Path::new("draft.md"), &result);
+
+    assert!(!file_result.success, "should be failure");
+    assert!(file_result.rewrite_needed, "rewrite should be needed");
+    assert_eq!(file_result.failures.len(), 2, "2 failed checks");
+    assert_eq!(file_result.rewrite_brief.len(), 2, "2 rewrite instructions");
+    assert!(file_result.rewrite_brief.iter().any(|s| s.contains("word-count range")),
+        "word-count rewrite brief present");
+    assert!(file_result.rewrite_brief.iter().any(|s| s.contains("Replace em dashes")),
+        "em-dash rewrite brief present");
+
+    let word_count = file_result.failures.iter().find(|f| f.id == "word-count");
+    assert!(word_count.is_some(), "word-count failure present");
+    if let Some(failure) = word_count {
+        assert_eq!(failure.severity, "error", "word-count severity");
+        assert!(failure.message.contains("outside the configured range"),
+            "word-count message");
+        assert!(failure.checking.is_none(), "no checking on bare test suite value");
+        assert_eq!(failure.expected, Some(serde_json::json!({
+            "min": 650,
+            "max": 1000
+        })), "word-count expected");
+        assert!(failure.rewrite_hint.contains("word-count range"),
+            "word-count hint");
+        assert!(failure.evidence.is_none(), "no evidence for scalar range failure");
+        assert_eq!(failure.observed, Some(serde_json::json!(1200)), "word-count observed");
+    }
+
+    let em_dashes = file_result.failures.iter().find(|f| f.id == "em-dashes");
+    assert!(em_dashes.is_some(), "em-dashes failure present");
+    if let Some(failure) = em_dashes {
+        assert_eq!(failure.label, "No Em-Dashes", "failure label uses check label");
+        assert_eq!(failure.severity, "error", "em-dashes severity");
+        assert!(failure.message.contains("Found em dashes"), "em-dashes message");
+        assert_eq!(failure.checking.as_deref(), Some("em dash count"), "em-dashes checking");
+        assert_eq!(failure.expected, Some(serde_json::json!({
+            "min": 0,
+            "max": 0
+        })), "em-dashes expected");
+        assert!(failure.rewrite_hint.contains("Replace em dashes"),
+            "em-dashes hint");
+        assert!(failure.evidence.is_none(), "no evidence for scalar count failure");
+        assert_eq!(failure.observed, Some(serde_json::json!(2)), "em-dashes observed");
+    }
 }

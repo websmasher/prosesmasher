@@ -21,6 +21,18 @@ fn curly_double_quotes_fail() {
     super::SmartQuotesCheck.run(&doc, &config, &mut suite);
     let result = suite.into_suite_result();
     assert_eq!(result.statistics.unsuccessful_expectations, 1, "curly double quotes should fail");
+    let vr = result.results.get("smart-quotes");
+    assert!(vr.is_some(), "smart-quotes result should exist");
+    if let Some(vr) = vr {
+        let evidence = vr.result.partial_unexpected_list.as_ref();
+        assert!(evidence.is_some(), "evidence should be present");
+        assert_eq!(evidence.and_then(|e| e.first())
+            .and_then(|item| item.get("matched_text"))
+            .and_then(serde_json::Value::as_str), Some("\u{201C}\u{201D}"), "matched quotes");
+        assert_eq!(evidence.and_then(|e| e.first())
+            .and_then(|item| item.get("sentence"))
+            .and_then(serde_json::Value::as_str), Some("He said \u{201C}hello\u{201D} loudly."), "sentence evidence");
+    }
 }
 
 #[test]

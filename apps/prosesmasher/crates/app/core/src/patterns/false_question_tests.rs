@@ -27,6 +27,18 @@ fn false_question_detected() {
         result.statistics.unsuccessful_expectations, 1,
         "false question should fail"
     );
+    let vr = result.results.get("false-question");
+    assert!(vr.is_some(), "false-question result should exist");
+    if let Some(vr) = vr {
+        let evidence = vr.result.partial_unexpected_list.as_ref();
+        assert!(evidence.is_some(), "evidence should be present");
+        assert_eq!(evidence.and_then(|e| e.first())
+            .and_then(|item| item.get("matched_text"))
+            .and_then(serde_json::Value::as_str), Some("isn't that what we all"), "matched phrase");
+        assert_eq!(evidence.and_then(|e| e.first())
+            .and_then(|item| item.get("sentence"))
+            .and_then(serde_json::Value::as_str), Some("And isn't that what we all want?"), "sentence evidence");
+    }
 }
 
 #[test]
