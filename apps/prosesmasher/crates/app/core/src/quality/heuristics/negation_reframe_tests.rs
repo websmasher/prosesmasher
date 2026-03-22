@@ -71,7 +71,7 @@ fn negation_reframe_detected() {
         assert!(evidence.is_some(), "evidence should be present");
         assert_eq!(evidence.and_then(|e| e.first())
             .and_then(|item| item.get("matched_text"))
-            .and_then(serde_json::Value::as_str), Some("isn't -> it's"), "matched pattern");
+            .and_then(serde_json::Value::as_str), Some("not y -> x"), "matched pattern");
         assert_eq!(evidence.and_then(|e| e.first())
             .and_then(|item| item.get("sentence"))
             .and_then(serde_json::Value::as_str), Some("This isn't defiance."), "first sentence");
@@ -79,6 +79,53 @@ fn negation_reframe_detected() {
             .and_then(|item| item.get("next_sentence"))
             .and_then(serde_json::Value::as_str), Some("It's developmental."), "second sentence");
     }
+}
+
+#[test]
+fn inline_corrective_detected() {
+    let doc = make_doc_with_sentences(
+        &["The goal is corrective contrast, not generic negation."],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    let mut suite = ExpectationSuite::new("test");
+    super::NegationReframeCheck.run(&doc, &config, &mut suite);
+    let result = suite.into_suite_result();
+    assert_eq!(
+        result.statistics.unsuccessful_expectations, 1,
+        "inline x-not-y contrast should fail"
+    );
+    let vr = result.results.get("negation-reframe");
+    assert!(vr.is_some(), "negation-reframe result should exist");
+    if let Some(vr) = vr {
+        let evidence = vr.result.partial_unexpected_list.as_ref();
+        assert_eq!(evidence.and_then(|e| e.first())
+            .and_then(|item| item.get("pattern_type"))
+            .and_then(serde_json::Value::as_str), Some("inline"), "pattern type");
+    }
+}
+
+#[test]
+fn action_negation_narration_does_not_trigger() {
+    let doc = make_doc_with_sentences(
+        &[
+            "I could not fix the banana.",
+            "My second instinct was to explain that bananas sometimes break and this is fine and we can eat both pieces.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    let mut suite = ExpectationSuite::new("test");
+    super::NegationReframeCheck.run(&doc, &config, &mut suite);
+    let result = suite.into_suite_result();
+    assert_eq!(
+        result.statistics.successful_expectations, 1,
+        "action negation plus narration should pass"
+    );
+    assert_eq!(
+        result.statistics.unsuccessful_expectations, 0,
+        "banana-style narrative pair must not fail"
+    );
 }
 
 #[test]
