@@ -4,8 +4,6 @@ mod config_dto;
 pub mod config_loader;
 pub mod file_reader;
 
-use std::path::{Path, PathBuf};
-
 pub use config_loader::FsConfigLoader;
 pub use file_reader::FsFileReader;
 
@@ -44,17 +42,18 @@ pub const fn shipped_presets() -> &'static [PresetInfo] {
 }
 
 #[must_use]
-pub fn preset_path(name: &str) -> Option<PathBuf> {
-    let preset = PRESETS.iter().find(|preset| preset.name == name)?;
-    Some(presets_dir().join(format!("{}.json", preset.name)))
+pub fn preset_contents(name: &str) -> Option<&'static str> {
+    match name {
+        "general-en" => Some(include_str!("../../../../../presets/general-en.json")),
+        "article-en" => Some(include_str!("../../../../../presets/article-en.json")),
+        "substack-en" => Some(include_str!("../../../../../presets/substack-en.json")),
+        "email-en" => Some(include_str!("../../../../../presets/email-en.json")),
+        "tweet-en" => Some(include_str!("../../../../../presets/tweet-en.json")),
+        _ => None,
+    }
 }
 
 #[must_use]
-pub fn full_config_path() -> PathBuf {
-    presets_dir().join("full-config-en.json")
-}
-
-fn presets_dir() -> PathBuf {
-    Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("../../../../presets")
+pub const fn full_config_contents() -> &'static str {
+    include_str!("../../../../../presets/full-config-en.json")
 }
