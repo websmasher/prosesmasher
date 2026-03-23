@@ -6,13 +6,16 @@ rust-version.workspace = true
 license.workspace = true
 repository.workspace = true
 description = "CLI adapter and composition root for prosesmasher"
+readme = "../../../../README.md"
+keywords = ["markdown", "validation", "writing", "lint"]
+categories = ["command-line-utilities", "text-processing"]
 
 [dependencies]
-prosesmasher-domain-types = { version = "0.1.0", path = "../../../domain/types" }
-prosesmasher-ports-outbound-traits = { version = "0.1.0", path = "../../../ports/outbound/traits" }
-prosesmasher-app-core = { version = "0.1.0", path = "../../../app/core" }
-prosesmasher-adapters-outbound-fs = { version = "0.1.0", path = "../../outbound/fs" }
-prosesmasher-adapters-outbound-parser = { version = "0.1.0", path = "../../outbound/parser" }
+prosesmasher-domain-types = { version = "0.1.1", path = "../../../domain/types" }
+prosesmasher-ports-outbound-traits = { version = "0.1.1", path = "../../../ports/outbound/traits" }
+prosesmasher-app-core = { version = "0.1.1", path = "../../../app/core" }
+prosesmasher-adapters-outbound-fs = { version = "0.1.1", path = "../../outbound/fs" }
+prosesmasher-adapters-outbound-parser = { version = "0.1.1", path = "../../outbound/parser" }
 clap = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }

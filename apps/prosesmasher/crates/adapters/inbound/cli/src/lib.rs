@@ -65,6 +65,12 @@ pub fn main_entry() -> ExitCode {
 }
 
 /// Run the CLI with already-parsed args.
+///
+/// # Errors
+///
+/// Returns an error when argument combinations are invalid, input files or
+/// configs cannot be read, markdown cannot be parsed, or one or more selected
+/// checks fail.
 pub fn run(args: Args) -> CliResult {
     match args.command {
         Command::Check {

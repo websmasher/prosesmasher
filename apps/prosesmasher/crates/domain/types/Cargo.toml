@@ -6,6 +6,9 @@ rust-version.workspace = true
 license.workspace = true
 repository.workspace = true
 description = "Domain types for prosesmasher prose validation"
+readme = "../../../README.md"
+keywords = ["markdown", "validation", "writing", "lint"]
+categories = ["text-processing", "development-tools"]
 
 [lints]
 workspace = true

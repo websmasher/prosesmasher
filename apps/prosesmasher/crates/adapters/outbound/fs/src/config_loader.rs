@@ -12,6 +12,12 @@ use crate::config_dto::ConfigDto;
 use crate::file_reader::FsFileReader;
 use prosesmasher_ports_outbound_traits::FileReader;
 
+/// Parse canonical JSON config content into the domain config model.
+///
+/// # Errors
+///
+/// Returns [`ConfigError`] when the JSON is malformed, fails DTO validation,
+/// or cannot be converted into the canonical domain configuration.
 pub fn parse_config_json(content: &str) -> Result<CheckConfig, ConfigError> {
     #[allow(clippy::disallowed_methods)] // reason: centralized deserialization point
     let dto: ConfigDto = serde_json::from_str(content)
