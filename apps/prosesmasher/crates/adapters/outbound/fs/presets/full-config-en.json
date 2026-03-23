@@ -1,0 +1,109 @@
+{
+  "locale": "en",
+  "quality": {
+    "lexical": {
+      "prohibitedTerms": {
+        "defaults": true,
+        "add": [
+          "live coaching calls",
+          "weekly expert q&as"
+        ],
+        "remove": [
+          "actually"
+        ]
+      },
+      "prohibitedSubstrings": {
+        "defaults": false,
+        "add": [
+          "—"
+        ],
+        "remove": []
+      },
+      "requiredTerms": [
+        "ownership",
+        "borrowing"
+      ],
+      "requiredSubstrings": [
+        "memory safety"
+      ],
+      "recommendedTerms": {
+        "terms": [
+          "ownership",
+          "borrowing",
+          "lifetimes",
+          "traits",
+          "async"
+        ],
+        "minCount": 3,
+        "allowInflections": true
+      },
+      "simplicityPairs": {
+        "defaults": true,
+        "add": [
+          ["showcase", "show"]
+        ],
+        "remove": [
+          ["implement", "do"]
+        ]
+      }
+    },
+    "heuristics": {
+      "emDashes": { "enabled": true },
+      "smartQuotes": { "enabled": true },
+      "exclamationDensity": {
+        "enabled": true,
+        "maxPerParagraph": 1
+      },
+      "hedgeStacking": {
+        "enabled": true,
+        "maxPerSentence": 1
+      },
+      "negationReframe": { "enabled": true },
+      "tripleRepeat": { "enabled": true },
+      "fakeTimestamps": { "enabled": true },
+      "colonDramatic": { "enabled": true },
+      "llmOpeners": { "enabled": true },
+      "affirmationClosers": { "enabled": true },
+      "summativeCloser": { "enabled": true },
+      "falseQuestion": { "enabled": true },
+      "humbleBragger": { "enabled": true },
+      "jargonFaker": { "enabled": true },
+      "wordRepetition": {
+        "enabled": true,
+        "max": 5,
+        "excludedTerms": {
+          "defaults": true,
+          "add": [
+            "rust"
+          ],
+          "remove": [
+            "that"
+          ]
+        }
+      },
+      "paragraphLength": {
+        "enabled": true,
+        "maxSentences": 6
+      },
+      "readability": {
+        "enabled": true,
+        "defaults": true,
+        "fleschKincaidMin": 50.0,
+        "gunningFogMax": 14.0,
+        "colemanLiauMax": 12.5,
+        "avgSentenceLengthMax": 24
+      }
+    }
+  },
+  "documentPolicy": {
+    "wordCount": { "min": 900, "max": 1800 },
+    "headingCounts": {
+      "h2": { "min": 3, "max": 7 },
+      "h3Min": 1
+    },
+    "headingHierarchy": { "enabled": true },
+    "sentenceCaseHeadings": { "enabled": true },
+    "boldDensity": { "min": 2 },
+    "codeFences": { "allowed": false }
+  }
+}
