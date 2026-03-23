@@ -29,6 +29,8 @@ impl Default for CheckConfig {
 pub struct QualityConfig {
     pub lexical: LexicalConfig,
     pub heuristics: HeuristicsConfig,
+    pub flow: FlowConfig,
+    pub readability: ReadabilityConfig,
 }
 
 #[derive(Debug, Clone, Default)]
@@ -74,9 +76,6 @@ pub struct HeuristicsConfig {
     pub false_question: EnabledCheck,
     pub humble_bragger: EnabledCheck,
     pub jargon_faker: EnabledCheck,
-    pub word_repetition: WordRepetitionConfig,
-    pub paragraph_length: ParagraphLengthConfig,
-    pub readability: ReadabilityConfig,
 }
 
 impl Default for HeuristicsConfig {
@@ -102,11 +101,14 @@ impl Default for HeuristicsConfig {
             false_question: EnabledCheck { enabled: true },
             humble_bragger: EnabledCheck { enabled: true },
             jargon_faker: EnabledCheck { enabled: true },
-            word_repetition: WordRepetitionConfig::default(),
-            paragraph_length: ParagraphLengthConfig::default(),
-            readability: ReadabilityConfig::default(),
         }
     }
+}
+
+#[derive(Debug, Clone, Default)]
+pub struct FlowConfig {
+    pub word_repetition: WordRepetitionConfig,
+    pub paragraph_length: ParagraphLengthConfig,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -267,6 +269,8 @@ pub fn default_quality_for_locale(locale: Locale) -> QualityConfig {
             simplicity_pairs: OverrideList::default(),
         },
         heuristics: HeuristicsConfig::default(),
+        flow: FlowConfig::default(),
+        readability: ReadabilityConfig::default(),
     };
 
     quality.lexical.prohibited_substrings.defaults = false;
@@ -297,7 +301,7 @@ pub fn default_quality_for_locale(locale: Locale) -> QualityConfig {
             SimplePair { complex: "numerous".to_owned(), simple: "many".to_owned() },
             SimplePair { complex: "commence".to_owned(), simple: "start".to_owned() },
         ];
-        quality.heuristics.word_repetition.excluded_terms.add = vec![
+        quality.flow.word_repetition.excluded_terms.add = vec![
             "the".to_owned(),
             "a".to_owned(),
             "an".to_owned(),
@@ -312,7 +316,7 @@ pub fn default_quality_for_locale(locale: Locale) -> QualityConfig {
     } else {
         quality.lexical.prohibited_terms.defaults = false;
         quality.lexical.simplicity_pairs.defaults = false;
-        quality.heuristics.word_repetition.excluded_terms.defaults = false;
+        quality.flow.word_repetition.excluded_terms.defaults = false;
     }
 
     quality

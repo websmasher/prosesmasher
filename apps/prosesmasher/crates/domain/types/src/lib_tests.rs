@@ -86,9 +86,9 @@ fn check_config_default_locale_is_en() {
 fn check_config_default_has_canonical_defaults() {
     let config = CheckConfig::default();
     assert!(config.quality.heuristics.em_dashes.enabled, "em dashes enabled");
-    assert!(config.quality.heuristics.readability.enabled, "readability enabled");
+    assert!(config.quality.readability.enabled, "readability enabled");
     assert_eq!(
-        config.quality.heuristics.paragraph_length.max_sentences,
+        config.quality.flow.paragraph_length.max_sentences,
         6,
         "paragraph length default"
     );

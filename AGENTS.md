@@ -150,7 +150,9 @@ Canonical shape:
     },
     "heuristics": {
       "exclamationDensity": { "maxPerParagraph": 1 },
-      "hedgeStacking": { "maxPerSentence": 2 },
+      "hedgeStacking": { "maxPerSentence": 2 }
+    },
+    "flow": {
       "wordRepetition": {
         "max": 5,
         "excludedTerms": {
@@ -159,13 +161,13 @@ Canonical shape:
           "remove": []
         }
       },
-      "paragraphLength": { "maxSentences": 6 },
-      "readability": {
-        "fleschKincaidMin": 50.0,
-        "gunningFogMax": 14.0,
-        "avgSentenceLengthMax": 25,
-        "colemanLiauMax": 12.5
-      }
+      "paragraphLength": { "maxSentences": 6 }
+    },
+    "readability": {
+      "fleschKincaidMin": 50.0,
+      "gunningFogMax": 14.0,
+      "avgSentenceLengthMax": 25,
+      "colemanLiauMax": 12.5
     }
   },
   "documentPolicy": {

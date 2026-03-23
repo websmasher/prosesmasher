@@ -43,7 +43,7 @@ fn config_with_avg_max(max: usize) -> CheckConfig {
         locale: Locale::En,
         ..CheckConfig::default()
     };
-    config.quality.heuristics.readability.avg_sentence_length_max = Some(max);
+    config.quality.readability.avg_sentence_length_max = Some(max);
     config
 }
 

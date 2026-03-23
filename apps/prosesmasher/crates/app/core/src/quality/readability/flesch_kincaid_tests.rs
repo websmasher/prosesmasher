@@ -49,7 +49,7 @@ fn config_with_fk_min(min: f64) -> CheckConfig {
         locale: Locale::En,
         ..CheckConfig::default()
     };
-    config.quality.heuristics.readability.flesch_kincaid_min = Some(min);
+    config.quality.readability.flesch_kincaid_min = Some(min);
     config
 }
 
@@ -144,7 +144,7 @@ fn zero_words_nonzero_sentences_skips() {
         },
     };
     let mut config = CheckConfig::default();
-    config.quality.heuristics.readability.flesch_kincaid_min = Some(50.0);
+    config.quality.readability.flesch_kincaid_min = Some(50.0);
     let mut suite = ExpectationSuite::new("test");
     super::FleschKincaidCheck.run(&doc, &config, &mut suite);
     let result = suite.into_suite_result();

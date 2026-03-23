@@ -67,7 +67,9 @@
       "summativeCloser": { "enabled": true },
       "falseQuestion": { "enabled": true },
       "humbleBragger": { "enabled": true },
-      "jargonFaker": { "enabled": true },
+      "jargonFaker": { "enabled": true }
+    },
+    "flow": {
       "wordRepetition": {
         "enabled": true,
         "max": 5,
@@ -84,15 +86,15 @@
       "paragraphLength": {
         "enabled": true,
         "maxSentences": 6
-      },
-      "readability": {
-        "enabled": true,
-        "defaults": true,
-        "fleschKincaidMin": 50.0,
-        "gunningFogMax": 14.0,
-        "colemanLiauMax": 12.5,
-        "avgSentenceLengthMax": 24
       }
+    },
+    "readability": {
+      "enabled": true,
+      "defaults": true,
+      "fleschKincaidMin": 50.0,
+      "gunningFogMax": 14.0,
+      "colemanLiauMax": 12.5,
+      "avgSentenceLengthMax": 24
     }
   },
   "documentPolicy": {
