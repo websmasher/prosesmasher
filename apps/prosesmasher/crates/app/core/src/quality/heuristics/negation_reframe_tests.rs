@@ -225,6 +225,46 @@ fn technical_explanation_without_same_root_does_not_trigger() {
 }
 
 #[test]
+fn internal_state_expression_contrast_detected() {
+    let doc = make_doc_with_sentences(
+        &[
+            "Kids who learn that crying gets no response don't stop having feelings.",
+            "They stop showing them.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    let mut suite = ExpectationSuite::new("test");
+    super::NegationReframeCheck.run(&doc, &config, &mut suite);
+    let result = suite.into_suite_result();
+    assert_eq!(result.statistics.unsuccessful_expectations, 1);
+    let vr = result.results.get("negation-reframe");
+    assert!(vr.is_some());
+    if let Some(vr) = vr {
+        let evidence = vr.result.partial_unexpected_list.as_ref();
+        assert_eq!(evidence.and_then(|e| e.first())
+            .and_then(|item| item.get("matched_text"))
+            .and_then(serde_json::Value::as_str), Some("don't x -> they y"));
+    }
+}
+
+#[test]
+fn normal_behavioral_followup_does_not_trigger() {
+    let doc = make_doc_with_sentences(
+        &[
+            "Children don't stop at the corner.",
+            "They turn left instead.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    let mut suite = ExpectationSuite::new("test");
+    super::NegationReframeCheck.run(&doc, &config, &mut suite);
+    let result = suite.into_suite_result();
+    assert_eq!(result.statistics.unsuccessful_expectations, 0);
+}
+
+#[test]
 fn no_pattern_passes() {
     let doc = make_doc_with_sentences(
         &[
