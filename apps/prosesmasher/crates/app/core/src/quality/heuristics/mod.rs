@@ -4,6 +4,7 @@ pub mod em_dashes;
 pub mod exclamation_density;
 pub mod fake_timestamps;
 pub mod false_question;
+pub mod fragment_stacking;
 pub mod humble_bragger;
 pub mod jargon_faker;
 pub mod llm_openers;
@@ -18,6 +19,7 @@ pub use em_dashes::EmDashCheck;
 pub use exclamation_density::ExclamationDensityCheck;
 pub use fake_timestamps::FakeTimestampCheck;
 pub use false_question::FalseQuestionCheck;
+pub use fragment_stacking::FragmentStackingCheck;
 pub use humble_bragger::HumbleBraggerCheck;
 pub use jargon_faker::JargonFakerCheck;
 pub use llm_openers::LlmOpenersCheck;
@@ -43,6 +45,7 @@ pub fn all_checks() -> Vec<BoxedCheck> {
         Box::new(SmartQuotesCheck),
         Box::new(ExclamationDensityCheck),
         Box::new(NegationReframeCheck),
+        Box::new(FragmentStackingCheck),
         Box::new(TripleRepeatCheck),
         Box::new(FakeTimestampCheck),
         Box::new(ColonDramaticCheck),

@@ -85,6 +85,9 @@ pub struct HeuristicsDto {
     pub negation_reframe: Option<EnabledDto>,
     #[garde(skip)]
     #[serde(default)]
+    pub fragment_stacking: Option<EnabledDto>,
+    #[garde(skip)]
+    #[serde(default)]
     pub triple_repeat: Option<EnabledDto>,
     #[garde(skip)]
     #[serde(default)]
@@ -387,6 +390,9 @@ const fn apply_toggle_heuristics(
     }
     if let Some(enabled) = dto.negation_reframe {
         heuristics.negation_reframe.enabled = enabled.enabled;
+    }
+    if let Some(enabled) = dto.fragment_stacking {
+        heuristics.fragment_stacking.enabled = enabled.enabled;
     }
     if let Some(enabled) = dto.triple_repeat {
         heuristics.triple_repeat.enabled = enabled.enabled;

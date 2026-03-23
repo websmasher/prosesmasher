@@ -100,8 +100,8 @@ fn inline_corrective_detected() {
     if let Some(vr) = vr {
         let evidence = vr.result.partial_unexpected_list.as_ref();
         assert_eq!(evidence.and_then(|e| e.first())
-            .and_then(|item| item.get("pattern_type"))
-            .and_then(serde_json::Value::as_str), Some("inline"), "pattern type");
+            .and_then(|item| item.get("matched_text"))
+            .and_then(serde_json::Value::as_str), Some("x, not y"), "inline pattern");
     }
 }
 
@@ -126,6 +126,102 @@ fn action_negation_narration_does_not_trigger() {
         result.statistics.unsuccessful_expectations, 0,
         "banana-style narrative pair must not fail"
     );
+}
+
+#[test]
+fn infinitive_contrast_detected() {
+    let doc = make_doc_with_sentences(
+        &[
+            "Not to act on the anger.",
+            "To notice you're assembling a bonfire and stop adding to it.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    let mut suite = ExpectationSuite::new("test");
+    super::NegationReframeCheck.run(&doc, &config, &mut suite);
+    let result = suite.into_suite_result();
+    assert_eq!(result.statistics.unsuccessful_expectations, 1);
+    let vr = result.results.get("negation-reframe");
+    assert!(vr.is_some());
+    if let Some(vr) = vr {
+        let evidence = vr.result.partial_unexpected_list.as_ref();
+        assert_eq!(evidence.and_then(|e| e.first())
+            .and_then(|item| item.get("matched_text"))
+            .and_then(serde_json::Value::as_str), Some("not to x -> to y"));
+    }
+}
+
+#[test]
+fn meaning_contrast_detected() {
+    let doc = make_doc_with_sentences(
+        &[
+            "That does not mean you're failing.",
+            "It means your alarm system is miscalibrated.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    let mut suite = ExpectationSuite::new("test");
+    super::NegationReframeCheck.run(&doc, &config, &mut suite);
+    let result = suite.into_suite_result();
+    assert_eq!(result.statistics.unsuccessful_expectations, 1);
+    let vr = result.results.get("negation-reframe");
+    assert!(vr.is_some());
+    if let Some(vr) = vr {
+        let evidence = vr.result.partial_unexpected_list.as_ref();
+        assert_eq!(evidence.and_then(|e| e.first())
+            .and_then(|item| item.get("matched_text"))
+            .and_then(serde_json::Value::as_str), Some("does not x -> it xs"));
+    }
+}
+
+#[test]
+fn same_root_framing_contrast_detected() {
+    let doc = make_doc_with_sentences(
+        &[
+            "That does not reflect defiance.",
+            "It reflects overload.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    let mut suite = ExpectationSuite::new("test");
+    super::NegationReframeCheck.run(&doc, &config, &mut suite);
+    let result = suite.into_suite_result();
+    assert_eq!(result.statistics.unsuccessful_expectations, 1);
+}
+
+#[test]
+fn same_root_non_framing_pair_does_not_trigger() {
+    let doc = make_doc_with_sentences(
+        &[
+            "That does not make the tantrums fun.",
+            "It does make them easier to read.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    let mut suite = ExpectationSuite::new("test");
+    super::NegationReframeCheck.run(&doc, &config, &mut suite);
+    let result = suite.into_suite_result();
+    assert_eq!(result.statistics.unsuccessful_expectations, 0);
+}
+
+#[test]
+fn technical_explanation_without_same_root_does_not_trigger() {
+    let doc = make_doc_with_sentences(
+        &[
+            "That does not mean the server is healthy.",
+            "It needs a deeper health check.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    let mut suite = ExpectationSuite::new("test");
+    super::NegationReframeCheck.run(&doc, &config, &mut suite);
+    let result = suite.into_suite_result();
+    assert_eq!(result.statistics.unsuccessful_expectations, 0);
 }
 
 #[test]
