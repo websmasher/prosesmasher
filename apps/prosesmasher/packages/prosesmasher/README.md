@@ -2,7 +2,7 @@
 
 Deterministic prose linting for markdown and short-form text.
 
-`prosesmasher` checks writing with fixed rules, not an LLM judge. It is built for teams that want repeatable prose checks in CI, editor tooling, and content pipelines. The tool is English-first and intentionally opinionated about AI-style boilerplate, readability, and markdown structure.
+`prosesmasher` is a CLI for deterministic prose linting. It is built for teams that want repeatable prose checks in CI, editor tooling, and content pipelines. The tool is English-first and intentionally opinionated about AI-style boilerplate, readability, and markdown structure.
 
 It covers four broad areas:
 

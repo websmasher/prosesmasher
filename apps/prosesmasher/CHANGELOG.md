@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.6
+
+- Refreshed the GitHub-facing and crates.io-facing README copy after the public repo launch.
+- Tightened the opener and command walkthrough text so the docs read like product documentation instead of generic tool boilerplate.
+- Removed the stale `CLAUDE.md` repo note from version control.
+
 ## 0.1.5
 
 - Extended `negation-reframe` with a narrow internal-state corrective branch so it catches patterns like:
