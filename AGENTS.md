@@ -264,3 +264,4 @@ Potential improvements not yet implemented:
 - **Fix colon-dramatic** — improve heuristic to skip factual label:value patterns
 - **`walkdir` error handling** — warn on permission errors instead of silently skipping
 - **Additional checks** — more AI slop patterns as they're discovered in the wild
+- **Profession-specific product modes** — marketable writing modes like legal/policy/technical review, likely implemented as `prosesmasher` guardrails plus LLM prompting for domain-specific rewrite guidance rather than trying to encode every profession in heuristics
