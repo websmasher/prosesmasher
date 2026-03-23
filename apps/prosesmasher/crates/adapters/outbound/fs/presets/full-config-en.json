@@ -59,6 +59,7 @@
         "maxPerSentence": 1
       },
       "negationReframe": { "enabled": true },
+      "fragmentStacking": { "enabled": true },
       "tripleRepeat": { "enabled": true },
       "fakeTimestamps": { "enabled": true },
       "colonDramatic": { "enabled": true },

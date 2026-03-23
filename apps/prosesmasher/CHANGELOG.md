@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.1.4
+
+- Added a new `fragment-stacking` heuristic to catch clipped cadence runs such as `Short. Short. Longer payoff.` without emitting overlapping duplicate hits.
+- Broadened affirmation-closer detection to catch short standalone `That's the ...` formula sentences.
+- Tightened corrective-negation detection:
+  - still catches `Not to X. To Y.`
+  - still catches `This isn't X. It's Y.`
+  - now also catches curated same-root framing pairs like `does not mean -> it means`
+  - avoids broad generic same-root matches outside the framing verb family
+- Updated the `substack-en` preset word-count envelope to `500..1000`.
+
 ## 0.1.3
 
 - Realigned the canonical config taxonomy with the public check families:

@@ -54,6 +54,17 @@ const AFFIRMATIVE_REFRAME_STARTS: &[&str] = &[
     "we're ",
     "we are ",
 ];
+const INFINITIVE_NEGATION_STARTS: &[&str] = &["not to "];
+const INFINITIVE_REFRAME_STARTS: &[&str] = &["to "];
+type FramingVerb = (&'static str, &'static str);
+
+const FRAMING_VERBS: &[FramingVerb] = &[
+    ("mean", "means"),
+    ("reflect", "reflects"),
+    ("indicate", "indicates"),
+    ("signal", "signals"),
+    ("suggest", "suggests"),
+];
 
 /// Detects corrective contrast rather than generic negation:
 /// - inline "X, not Y"
@@ -183,9 +194,9 @@ fn collect_negation_reframe_evidence_from_paragraph(
 
 fn inline_corrective_evidence(
     sentence: &Sentence,
-    section_index: usize,
-    paragraph_index: usize,
-    sentence_index: usize,
+    _section_index: usize,
+    _paragraph_index: usize,
+    _sentence_index: usize,
 ) -> Option<Value> {
     let text = normalize_text(&sentence.text);
     if !looks_like_inline_corrective(&text, sentence.word_count()) {
@@ -193,26 +204,41 @@ fn inline_corrective_evidence(
     }
 
     Some(json!({
-        "section_index": section_index,
-        "paragraph_index": paragraph_index,
-        "sentence_index": sentence_index,
         "matched_text": "x, not y",
         "sentence": sentence.text,
-        "pattern_type": "inline",
     }))
 }
 
 fn adjacent_corrective_evidence(
     a: &Sentence,
     b: &Sentence,
-    section_index: usize,
-    paragraph_index: usize,
-    sentence_index: usize,
+    _section_index: usize,
+    _paragraph_index: usize,
+    _sentence_index: usize,
 ) -> Option<Value> {
     let a_text = normalize_text(&a.text);
     let b_text = normalize_text(&b.text);
 
     if !looks_like_negated_label_sentence(&a_text, a.word_count()) {
+        if looks_like_infinitive_negation_sentence(&a_text, a.word_count())
+            && looks_like_infinitive_reframe_sentence(&b_text, b.word_count())
+        {
+            return Some(json!({
+                "matched_text": "not to x -> to y",
+                "sentence": a.text,
+                "next_sentence": b.text,
+            }));
+        }
+        let negated_framing_verb = looks_like_framing_negation_sentence(&a_text, a.word_count());
+        if negated_framing_verb.is_some()
+            && framing_reframe_verb(&b_text, b.word_count()) == negated_framing_verb
+        {
+            return Some(json!({
+                "matched_text": "does not x -> it xs",
+                "sentence": a.text,
+                "next_sentence": b.text,
+            }));
+        }
         return None;
     }
     if !looks_like_affirmative_relabel_sentence(&b_text, b.word_count()) {
@@ -220,14 +246,9 @@ fn adjacent_corrective_evidence(
     }
 
     Some(json!({
-        "section_index": section_index,
-        "paragraph_index": paragraph_index,
-        "sentence_index": sentence_index,
-        "sentence_index_next": sentence_index.saturating_add(1),
         "matched_text": "not y -> x",
         "sentence": a.text,
         "next_sentence": b.text,
-        "pattern_type": "adjacent",
     }))
 }
 
@@ -249,6 +270,9 @@ fn looks_like_negated_label_sentence(text: &str, word_count: usize) -> bool {
     if word_count > 12 || contains_action_negation(text) {
         return false;
     }
+    if text.starts_with("not to ") {
+        return false;
+    }
 
     text.starts_with("not ")
         || COPULAR_NEGATION_STARTS.iter().any(|prefix| text.starts_with(prefix))
@@ -263,6 +287,45 @@ fn looks_like_affirmative_relabel_sentence(text: &str, word_count: usize) -> boo
         .iter()
         .any(|prefix| text.starts_with(prefix))
         || is_short_nominal_label(text, word_count)
+}
+
+fn looks_like_infinitive_negation_sentence(text: &str, word_count: usize) -> bool {
+    word_count <= 8 && INFINITIVE_NEGATION_STARTS.iter().any(|prefix| text.starts_with(prefix))
+}
+
+fn looks_like_infinitive_reframe_sentence(text: &str, word_count: usize) -> bool {
+    word_count <= 16 && INFINITIVE_REFRAME_STARTS.iter().any(|prefix| text.starts_with(prefix))
+}
+
+fn looks_like_framing_negation_sentence(text: &str, word_count: usize) -> Option<&'static str> {
+    if word_count > 20 {
+        return None;
+    }
+
+    FRAMING_VERBS.iter().find_map(|(base, _third_person)| {
+        [
+            format!("does not {base} "),
+            format!("doesn't {base} "),
+            format!("did not {base} "),
+        ]
+        .iter()
+        .any(|pattern| text.contains(pattern))
+        .then_some(*base)
+    })
+}
+
+fn framing_reframe_verb(text: &str, word_count: usize) -> Option<&'static str> {
+    if word_count > 18 {
+        return None;
+    }
+
+    FRAMING_VERBS.iter().find_map(|(base, third_person)| {
+        ["it ", "this ", "that "]
+            .iter()
+            .map(|subject| format!("{subject}{third_person} "))
+            .any(|pattern| text.starts_with(&pattern))
+            .then_some(*base)
+    })
 }
 
 fn contains_action_negation(text: &str) -> bool {

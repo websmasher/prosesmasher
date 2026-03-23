@@ -173,7 +173,7 @@ fn tweet_preset_targets_shorter_copy_than_substack() {
     let substack = load_preset_ok("substack-en");
 
     assert_eq!(tweet.document_policy.word_count.map(prosesmasher_domain_types::Range::max), Some(60));
-    assert_eq!(substack.document_policy.word_count.map(prosesmasher_domain_types::Range::min), Some(1200));
+    assert_eq!(substack.document_policy.word_count.map(prosesmasher_domain_types::Range::min), Some(500));
 }
 
 #[test]
