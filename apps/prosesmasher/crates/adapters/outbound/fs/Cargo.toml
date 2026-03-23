@@ -11,8 +11,8 @@ keywords = ["markdown", "validation", "writing", "lint"]
 categories = ["text-processing", "development-tools"]
 
 [dependencies]
-prosesmasher-domain-types = { version = "0.1.4", path = "../../../domain/types" }
-prosesmasher-ports-outbound-traits = { version = "0.1.4", path = "../../../ports/outbound/traits" }
+prosesmasher-domain-types = { version = "0.1.5", path = "../../../domain/types" }
+prosesmasher-ports-outbound-traits = { version = "0.1.5", path = "../../../ports/outbound/traits" }
 serde = { workspace = true }
 serde_json = { workspace = true }
 garde = { workspace = true }

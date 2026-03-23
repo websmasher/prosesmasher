@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.5
+
+- Extended `negation-reframe` with a narrow internal-state corrective branch so it catches patterns like:
+  - `don't stop having feelings`
+  - `they stop showing them`
+- Kept that branch narrow enough to avoid generic behavioral follow-up pairs such as `Children don't stop at the corner. They turn left instead.`
+
 ## 0.1.4
 
 - Added a new `fragment-stacking` heuristic to catch clipped cadence runs such as `Short. Short. Longer payoff.` without emitting overlapping duplicate hits.

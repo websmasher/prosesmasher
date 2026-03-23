@@ -57,6 +57,38 @@ const AFFIRMATIVE_REFRAME_STARTS: &[&str] = &[
 const INFINITIVE_NEGATION_STARTS: &[&str] = &["not to "];
 const INFINITIVE_REFRAME_STARTS: &[&str] = &["to "];
 type FramingVerb = (&'static str, &'static str);
+const CORRECTIVE_PRONOUN_REFRAME_STARTS: &[&str] = &[
+    "they ",
+    "you ",
+    "we ",
+    "he ",
+    "she ",
+    "it ",
+];
+const INTERNAL_STATE_TERMS: &[&str] = &[
+    "feeling",
+    "feelings",
+    "emotion",
+    "emotions",
+    "distress",
+    "fear",
+    "anger",
+    "sadness",
+    "grief",
+    "pain",
+];
+const EXPRESSION_REFRAME_PHRASES: &[&str] = &[
+    "stop showing",
+    "hide it",
+    "hide them",
+    "start hiding",
+    "keep it in",
+    "keep them in",
+    "bottle it",
+    "bottle them",
+    "suppress it",
+    "suppress them",
+];
 
 const FRAMING_VERBS: &[FramingVerb] = &[
     ("mean", "means"),
@@ -239,6 +271,15 @@ fn adjacent_corrective_evidence(
                 "next_sentence": b.text,
             }));
         }
+        if looks_like_internal_state_negation_sentence(&a_text, a.word_count())
+            && looks_like_expression_reframe_sentence(&b_text, b.word_count())
+        {
+            return Some(json!({
+                "matched_text": "don't x -> they y",
+                "sentence": a.text,
+                "next_sentence": b.text,
+            }));
+        }
         return None;
     }
     if !looks_like_affirmative_relabel_sentence(&b_text, b.word_count()) {
@@ -326,6 +367,31 @@ fn framing_reframe_verb(text: &str, word_count: usize) -> Option<&'static str> {
             .any(|pattern| text.starts_with(&pattern))
             .then_some(*base)
     })
+}
+
+fn looks_like_internal_state_negation_sentence(text: &str, word_count: usize) -> bool {
+    if word_count > 16 {
+        return false;
+    }
+
+    (text.contains("don't stop ") || text.contains("do not stop "))
+        && INTERNAL_STATE_TERMS
+            .iter()
+            .any(|term| text.contains(term))
+}
+
+fn looks_like_expression_reframe_sentence(text: &str, word_count: usize) -> bool {
+    if word_count > 8
+        || !CORRECTIVE_PRONOUN_REFRAME_STARTS
+            .iter()
+            .any(|prefix| text.starts_with(prefix))
+    {
+        return false;
+    }
+
+    EXPRESSION_REFRAME_PHRASES
+        .iter()
+        .any(|phrase| text.contains(phrase))
 }
 
 fn contains_action_negation(text: &str) -> bool {
