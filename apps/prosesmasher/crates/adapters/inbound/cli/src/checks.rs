@@ -1,8 +1,23 @@
 //! Check collection — gathers all checks, optionally filtered by group or ID.
 
-use prosesmasher_app_core::check::BoxedCheck;
+use prosesmasher_app_core::check::{BoxedCheck, Check};
+use prosesmasher_domain_types::Locale;
+use serde::Serialize;
 
 type CheckResult = Result<Vec<BoxedCheck>, String>;
+type CheckCatalogResult = Result<Vec<CheckCatalogEntry>, String>;
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+pub struct CheckCatalogEntry {
+    pub id: String,
+    pub label: String,
+    pub group: String,
+    pub kind: String,
+    pub default_enabled: bool,
+    pub supported_locales: Vec<String>,
+}
+
+const VALID_GROUPS: &str = "quality, document-policy, lexical, heuristics, flow, readability";
 
 /// Collect checks, optionally filtered by group name.
 ///
@@ -24,8 +39,62 @@ pub fn collect_checks(group: Option<&str>) -> CheckResult {
             Ok(all)
         }
         Some(unknown) => Err(format!(
-            "Unknown check group: {unknown}. Valid groups: quality, document-policy, lexical, heuristics, flow, readability"
+            "Unknown check group: {unknown}. Valid groups: {VALID_GROUPS}"
         )),
+    }
+}
+
+#[must_use]
+pub fn check_kind(id: &str) -> &'static str {
+    match id {
+        "prohibited-terms" | "hedge-stacking" | "simplicity" | "required-terms"
+        | "recommended-terms" => "lexical",
+        "paragraph-length" | "word-repetition" => "flow",
+        "flesch-kincaid" | "gunning-fog" | "coleman-liau" | "avg-sentence-length" => {
+            "readability"
+        }
+        "word-count" | "heading-hierarchy" | "h2-count" | "h3-count" | "bold-density"
+        | "sentence-case" | "code-fences" => "document-policy",
+        _ => "heuristics",
+    }
+}
+
+/// List check metadata, optionally filtered by group.
+///
+/// # Errors
+///
+/// Returns `Err` if an unknown group name is provided.
+pub fn list_checks(group: Option<&str>) -> CheckCatalogResult {
+    let checks = collect_checks(group)?;
+    Ok(checks
+        .iter()
+        .map(|check| CheckCatalogEntry {
+            id: check.id().to_owned(),
+            label: check.label().to_owned(),
+            group: check_kind(check.id()).to_owned(),
+            kind: check_kind(check.id()).to_owned(),
+            default_enabled: check_kind(check.id()) != "document-policy",
+            supported_locales: supported_locale_codes(check.as_ref()),
+        })
+        .collect())
+}
+
+fn supported_locale_codes(check: &dyn Check) -> Vec<String> {
+    check.supported_locales().map_or_else(
+        || vec!["all".to_owned()],
+        |locales| locales.iter().map(|locale| locale_code(*locale).to_owned()).collect(),
+    )
+}
+
+const fn locale_code(locale: Locale) -> &'static str {
+    match locale {
+        Locale::En => "en",
+        Locale::Ru => "ru",
+        Locale::De => "de",
+        Locale::Es => "es",
+        Locale::Pt => "pt",
+        Locale::Fr => "fr",
+        Locale::Id => "id",
     }
 }
 

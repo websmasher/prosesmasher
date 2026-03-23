@@ -11,11 +11,11 @@ keywords = ["markdown", "validation", "writing", "lint"]
 categories = ["command-line-utilities", "text-processing"]
 
 [dependencies]
-prosesmasher-domain-types = { version = "0.1.1", path = "../../../domain/types" }
-prosesmasher-ports-outbound-traits = { version = "0.1.1", path = "../../../ports/outbound/traits" }
-prosesmasher-app-core = { version = "0.1.1", path = "../../../app/core" }
-prosesmasher-adapters-outbound-fs = { version = "0.1.1", path = "../../outbound/fs" }
-prosesmasher-adapters-outbound-parser = { version = "0.1.1", path = "../../outbound/parser" }
+prosesmasher-domain-types = { version = "0.1.2", path = "../../../domain/types" }
+prosesmasher-ports-outbound-traits = { version = "0.1.2", path = "../../../ports/outbound/traits" }
+prosesmasher-app-core = { version = "0.1.2", path = "../../../app/core" }
+prosesmasher-adapters-outbound-fs = { version = "0.1.2", path = "../../outbound/fs" }
+prosesmasher-adapters-outbound-parser = { version = "0.1.2", path = "../../outbound/parser" }
 clap = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }

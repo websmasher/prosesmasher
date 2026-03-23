@@ -7,13 +7,20 @@ use low_expectations::types::{Severity, SuiteValidationResult, ValidationResult}
 use serde_json::{Map, Number, Value};
 use serde::Serialize;
 
-use crate::args::OutputFormat;
+use crate::args::{OutputFormat, TextMode};
+use crate::checks::{CheckCatalogEntry, check_kind};
+
+const SCHEMA_VERSION: u32 = 1;
 
 /// A file's check results — the top-level JSON output object.
 #[derive(Debug, Serialize)]
 pub struct FileResult {
+    /// Stable output schema version.
+    pub schema_version: u32,
     /// Path to the file that was checked.
     pub file: String,
+    /// Why this result exited the way it did.
+    pub exit_reason: String,
     /// Whether all checks passed.
     pub success: bool,
     /// Number of checks evaluated.
@@ -53,6 +60,8 @@ pub struct CheckOutput {
     pub id: String,
     /// Human-readable label.
     pub label: String,
+    /// Stable check family.
+    pub kind: String,
     /// Whether this check passed.
     pub success: bool,
     /// The observed value (if any).
@@ -67,6 +76,8 @@ pub struct FailureOutput {
     pub id: String,
     /// Human-readable label.
     pub label: String,
+    /// Stable check family.
+    pub kind: String,
     /// Severity for orchestration layers.
     pub severity: &'static str,
     /// Deterministic explanation of the failure.
@@ -100,42 +111,64 @@ pub fn output_result(
     file: &Path,
     result: &SuiteValidationResult,
     format: &OutputFormat,
+    text_mode: &TextMode,
     include_checks: bool,
 ) {
     match format {
-        OutputFormat::Text => print_text(file, result),
+        OutputFormat::Text => print_text(file, result, text_mode),
         OutputFormat::Json => print_json(file, result, include_checks),
     }
 }
 
 #[allow(clippy::print_stdout)]
-fn print_text(file: &Path, result: &SuiteValidationResult) {
-    println!("{}", file.display());
-
-    for (column, vr) in &result.results {
-        let label = vr
-            .expectation_config
-            .meta
-            .get("label")
-            .and_then(|v| v.as_str())
-            .unwrap_or(column);
-        let observed = vr
-            .result
-            .observed_value
-            .as_ref()
-            .map(|value| sanitize_value(value.clone()).to_string())
-            .unwrap_or_default();
-
-        println!("{}", format_line(vr.success, label, &observed));
-    }
-
+fn print_text(file: &Path, result: &SuiteValidationResult, text_mode: &TextMode) {
     let stats = &result.statistics;
-    println!(
-        "\n{} checks: {} passed, {} failed\n",
+    let summary = format!(
+        "{} checks: {} passed, {} failed",
         stats.evaluated_expectations,
         stats.successful_expectations,
         stats.unsuccessful_expectations,
     );
+
+    match text_mode {
+        TextMode::Paths => {
+            if !result.success {
+                println!("{}", file.display());
+            }
+        }
+        TextMode::Summary => {
+            let outcome = if result.success { "PASS" } else { "FAIL" };
+            println!("{outcome}  {}  {summary}", file.display());
+        }
+        TextMode::Failures => {
+            println!("{}", file.display());
+            for (column, vr) in result.results.iter().filter(|(_, vr)| !vr.success) {
+                let label = check_label(column, &vr.expectation_config.meta);
+                let observed = vr
+                    .result
+                    .observed_value
+                    .as_ref()
+                    .map(|value| sanitize_value(value.clone()).to_string())
+                    .unwrap_or_default();
+                println!("{}", format_line(false, label, &observed));
+            }
+            println!("\n{summary}\n");
+        }
+        TextMode::Full => {
+            println!("{}", file.display());
+            for (column, vr) in &result.results {
+                let label = check_label(column, &vr.expectation_config.meta);
+                let observed = vr
+                    .result
+                    .observed_value
+                    .as_ref()
+                    .map(|value| sanitize_value(value.clone()).to_string())
+                    .unwrap_or_default();
+                println!("{}", format_line(vr.success, label, &observed));
+            }
+            println!("\n{summary}\n");
+        }
+    }
 }
 
 #[allow(clippy::print_stdout, clippy::disallowed_methods)] // JSON serialization output
@@ -166,6 +199,7 @@ pub fn build_file_result(
                     CheckOutput {
                         id: column.clone(),
                         label,
+                        kind: check_kind(column).to_owned(),
                         success: vr.success,
                         observed,
                     }
@@ -189,6 +223,7 @@ pub fn build_file_result(
             FailureOutput {
                 id: column.clone(),
                 label,
+                kind: check_kind(column).to_owned(),
                 severity: failure_severity(vr),
                 message,
                 checking: check_checking(&vr.expectation_config.meta),
@@ -208,7 +243,13 @@ pub fn build_file_result(
     };
 
     FileResult {
+        schema_version: SCHEMA_VERSION,
         file: file.display().to_string(),
+        exit_reason: if result.success {
+            "success".to_owned()
+        } else {
+            "check-failures".to_owned()
+        },
         success: result.success,
         evaluated: summary.evaluated,
         passed: summary.passed,
@@ -218,6 +259,41 @@ pub fn build_file_result(
         rewrite_brief,
         failures,
         checks,
+    }
+}
+
+#[derive(Debug, Serialize)]
+struct CheckCatalogOutput<'a> {
+    schema_version: u32,
+    entries: &'a [CheckCatalogEntry],
+}
+
+#[allow(clippy::print_stdout)]
+pub fn print_check_catalog(entries: &[CheckCatalogEntry], format: &OutputFormat) {
+    match format {
+        OutputFormat::Text => {
+            println!("Available checks:");
+            for entry in entries {
+                println!(
+                    "  {:<22} {:<28} group={} default_enabled={} locales={}",
+                    entry.id,
+                    entry.label,
+                    entry.group,
+                    entry.default_enabled,
+                    entry.supported_locales.join(","),
+                );
+            }
+        }
+        #[allow(clippy::disallowed_methods)]
+        OutputFormat::Json => {
+            let payload = CheckCatalogOutput {
+                schema_version: SCHEMA_VERSION,
+                entries,
+            };
+            if let Ok(json) = serde_json::to_string_pretty(&payload) {
+                println!("{json}");
+            }
+        }
     }
 }
 

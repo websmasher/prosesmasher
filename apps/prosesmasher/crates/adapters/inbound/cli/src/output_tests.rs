@@ -43,7 +43,9 @@ fn build_file_result_json_serializable() {
     let result = suite.into_suite_result();
     let file_result = build_file_result(Path::new("test.md"), &result, true);
 
+    assert_eq!(file_result.schema_version, 1, "schema version");
     assert!(file_result.success, "should be success");
+    assert_eq!(file_result.exit_reason, "success", "success exit reason");
     assert_eq!(file_result.evaluated, 1, "1 check");
     assert_eq!(file_result.passed, 1, "1 passed");
     assert_eq!(file_result.failed, 0, "0 failed");
@@ -59,6 +61,7 @@ fn build_file_result_json_serializable() {
     if let Some(check) = file_result.checks.as_ref().and_then(|checks| checks.first()) {
         assert_eq!(check.id, "word-count", "check id");
         assert_eq!(check.label, "Word Count", "check label");
+        assert_eq!(check.kind, "document-policy", "check kind");
         assert!(check.success, "check success");
     }
 
@@ -89,6 +92,7 @@ fn build_file_result_includes_rewrite_guidance_for_failures() {
     let file_result = build_file_result(Path::new("draft.md"), &result, false);
 
     assert!(!file_result.success, "should be failure");
+    assert_eq!(file_result.exit_reason, "check-failures", "failure exit reason");
     assert!(file_result.rewrite_needed, "rewrite should be needed");
     assert_eq!(file_result.failures.len(), 2, "2 failed checks");
     assert_eq!(file_result.rewrite_brief.len(), 2, "2 rewrite instructions");
@@ -102,6 +106,7 @@ fn build_file_result_includes_rewrite_guidance_for_failures() {
     assert!(word_count.is_some(), "word-count failure present");
     if let Some(failure) = word_count {
         assert_eq!(failure.severity, "error", "word-count severity");
+        assert_eq!(failure.kind, "document-policy", "word-count kind");
         assert!(failure.message.contains("outside the configured range"),
             "word-count message");
         assert!(failure.checking.is_none(), "no checking on bare test suite value");
@@ -119,6 +124,7 @@ fn build_file_result_includes_rewrite_guidance_for_failures() {
     assert!(em_dashes.is_some(), "em-dashes failure present");
     if let Some(failure) = em_dashes {
         assert_eq!(failure.label, "No Em-Dashes", "failure label uses check label");
+        assert_eq!(failure.kind, "heuristics", "em-dashes kind");
         assert_eq!(failure.severity, "error", "em-dashes severity");
         assert!(failure.message.contains("Found em dashes"), "em-dashes message");
         assert_eq!(failure.checking.as_deref(), Some("em dash count"), "em-dashes checking");
