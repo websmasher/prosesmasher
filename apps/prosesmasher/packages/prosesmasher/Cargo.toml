@@ -15,7 +15,7 @@ name = "prosesmasher"
 path = "src/main.rs"
 
 [dependencies]
-prosesmasher-adapters-inbound-cli = { version = "0.1.0", path = "../../crates/adapters/inbound/cli" }
+prosesmasher-adapters-inbound-cli = { version = "0.1.1", path = "../../crates/adapters/inbound/cli" }
 
 [lints]
 workspace = true

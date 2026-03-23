@@ -45,7 +45,7 @@ pub struct Sentence {
 impl Sentence {
     /// Word count derived from the words vec — single source of truth.
     #[must_use]
-    pub const fn word_count(&self) -> usize {
+    pub fn word_count(&self) -> usize {
         self.words.len()
     }
 }
