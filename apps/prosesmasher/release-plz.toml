@@ -8,9 +8,30 @@ changelog_config = "cliff.toml"
 git_release_enable = true
 release_always = false
 
-# One entry per publishable package
 [[package]]
-name = "your-crate-name"
+name = "prosesmasher-domain-types"
 publish = true
 
-# Add more [[package]] entries for workspaces with multiple publishable crates
+[[package]]
+name = "prosesmasher-ports-outbound-traits"
+publish = true
+
+[[package]]
+name = "prosesmasher-adapters-outbound-fs"
+publish = true
+
+[[package]]
+name = "prosesmasher-adapters-outbound-parser"
+publish = true
+
+[[package]]
+name = "prosesmasher-app-core"
+publish = true
+
+[[package]]
+name = "prosesmasher-adapters-inbound-cli"
+publish = true
+
+[[package]]
+name = "prosesmasher"
+publish = true
