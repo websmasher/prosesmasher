@@ -1,12 +1,7 @@
 use super::*;
 use prosesmasher_domain_types::Locale;
 use std::path::Path;
-
-fn preset_path(name: &str) -> std::path::PathBuf {
-    Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("../../../../presets")
-        .join(name)
-}
+use crate::{full_config_contents, preset_contents};
 
 fn write_temp(name: &str, content: &str) -> std::path::PathBuf {
     use std::sync::atomic::{AtomicU64, Ordering};
@@ -52,10 +47,8 @@ fn load_json_err(json: &str) -> ConfigError {
 
 #[allow(clippy::panic)]
 fn load_preset_ok(name: &str) -> prosesmasher_domain_types::CheckConfig {
-    match FsConfigLoader.load_config(&preset_path(name)) {
-        Ok(config) => config,
-        Err(e) => panic!("failed to load preset {name}: {e}"),
-    }
+    let json = preset_contents(name).unwrap_or_else(|| panic!("missing preset {name}"));
+    parse_config_json(json).unwrap_or_else(|e| panic!("failed to load preset {name}: {e}"))
 }
 
 #[test]
@@ -138,13 +131,19 @@ fn canonical_config_normalizes() {
 }
 
 #[test]
+fn full_config_embedded_is_valid() {
+    let config = parse_config_json(full_config_contents());
+    assert!(config.is_ok(), "full config should parse");
+}
+
+#[test]
 fn all_curated_presets_load() {
     for name in [
-        "general-en.json",
-        "article-en.json",
-        "substack-en.json",
-        "email-en.json",
-        "tweet-en.json",
+        "general-en",
+        "article-en",
+        "substack-en",
+        "email-en",
+        "tweet-en",
     ] {
         let config = load_preset_ok(name);
         assert_eq!(config.locale, Locale::En, "{name}: locale should be en");
@@ -153,8 +152,8 @@ fn all_curated_presets_load() {
 
 #[test]
 fn presets_keep_shared_quality_defaults() {
-    let article = load_preset_ok("article-en.json");
-    let general = load_preset_ok("general-en.json");
+    let article = load_preset_ok("article-en");
+    let general = load_preset_ok("general-en");
 
     assert_eq!(article.quality.heuristics.exclamation_density.max_per_paragraph, 1);
     assert_eq!(general.quality.heuristics.exclamation_density.max_per_paragraph, 1);
@@ -164,8 +163,8 @@ fn presets_keep_shared_quality_defaults() {
 
 #[test]
 fn tweet_preset_targets_shorter_copy_than_substack() {
-    let tweet = load_preset_ok("tweet-en.json");
-    let substack = load_preset_ok("substack-en.json");
+    let tweet = load_preset_ok("tweet-en");
+    let substack = load_preset_ok("substack-en");
 
     assert_eq!(tweet.document_policy.word_count.map(prosesmasher_domain_types::Range::max), Some(60));
     assert_eq!(substack.document_policy.word_count.map(prosesmasher_domain_types::Range::min), Some(1200));
@@ -173,7 +172,7 @@ fn tweet_preset_targets_shorter_copy_than_substack() {
 
 #[test]
 fn general_preset_keeps_document_policy_off() {
-    let general = load_preset_ok("general-en.json");
+    let general = load_preset_ok("general-en");
 
     assert!(general.document_policy.word_count.is_none());
     assert!(general.document_policy.heading_counts.h2.is_none());
@@ -182,10 +181,10 @@ fn general_preset_keeps_document_policy_off() {
 
 #[test]
 fn article_and_substack_use_heading_policy_but_email_and_tweet_do_not() {
-    let article = load_preset_ok("article-en.json");
-    let substack = load_preset_ok("substack-en.json");
-    let email = load_preset_ok("email-en.json");
-    let tweet = load_preset_ok("tweet-en.json");
+    let article = load_preset_ok("article-en");
+    let substack = load_preset_ok("substack-en");
+    let email = load_preset_ok("email-en");
+    let tweet = load_preset_ok("tweet-en");
 
     assert_eq!(article.document_policy.heading_counts.h2.map(prosesmasher_domain_types::Range::min), Some(3));
     assert_eq!(substack.document_policy.heading_counts.h2.map(prosesmasher_domain_types::Range::min), Some(1));
@@ -200,9 +199,9 @@ fn article_and_substack_use_heading_policy_but_email_and_tweet_do_not() {
 
 #[test]
 fn email_is_longer_than_tweet_but_shorter_than_article() {
-    let tweet = load_preset_ok("tweet-en.json");
-    let email = load_preset_ok("email-en.json");
-    let article = load_preset_ok("article-en.json");
+    let tweet = load_preset_ok("tweet-en");
+    let email = load_preset_ok("email-en");
+    let article = load_preset_ok("article-en");
 
     assert_eq!(tweet.document_policy.word_count.map(prosesmasher_domain_types::Range::min), Some(8));
     assert_eq!(email.document_policy.word_count.map(prosesmasher_domain_types::Range::min), Some(80));

@@ -12,6 +12,18 @@ use crate::config_dto::ConfigDto;
 use crate::file_reader::FsFileReader;
 use prosesmasher_ports_outbound_traits::FileReader;
 
+pub fn parse_config_json(content: &str) -> Result<CheckConfig, ConfigError> {
+    #[allow(clippy::disallowed_methods)] // reason: centralized deserialization point
+    let dto: ConfigDto = serde_json::from_str(content)
+        .map_err(|e| ConfigError::InvalidJson(e.to_string()))?;
+
+    dto.validate().map_err(|e| {
+        ConfigError::ValidationFailed(e.to_string())
+    })?;
+
+    dto.into_domain()
+}
+
 /// Filesystem-backed config loader.
 #[derive(Debug)]
 pub struct FsConfigLoader;
@@ -27,19 +39,7 @@ impl ConfigLoader for FsConfigLoader {
                     ConfigError::NotFound(format!("cannot read config: {msg}"))
                 }
             })?;
-
-        // 2. Deserialize JSON into DTO
-        #[allow(clippy::disallowed_methods)] // reason: centralized deserialization point
-        let dto: ConfigDto = serde_json::from_str(&content)
-            .map_err(|e| ConfigError::InvalidJson(e.to_string()))?;
-
-        // 3. Validate with garde
-        dto.validate().map_err(|e| {
-            ConfigError::ValidationFailed(e.to_string())
-        })?;
-
-        // 4. Convert DTO → domain
-        dto.into_domain()
+        parse_config_json(&content)
     }
 }
 

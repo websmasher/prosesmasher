@@ -18,8 +18,9 @@ use crate::args::{Args, Command, OutputFormat};
 use crate::checks::{collect_checks, filter_checks_by_id};
 use crate::output::output_result;
 use prosesmasher_adapters_outbound_fs::{
-    FsConfigLoader, FsFileReader, full_config_path, preset_path, shipped_presets,
+    FsConfigLoader, FsFileReader, full_config_contents, preset_contents, shipped_presets,
 };
+use prosesmasher_adapters_outbound_fs::config_loader::parse_config_json;
 use prosesmasher_adapters_outbound_parser::MarkdownParser;
 use prosesmasher_app_core::check::Check;
 use prosesmasher_app_core::runner::run_checks;
@@ -152,9 +153,9 @@ fn load_check_config(
     match (config_path, preset_name) {
         (Some(path), None) => Ok(config_loader.load_config(path)?),
         (None, Some(name)) => {
-            let preset = preset_path(name)
+            let preset = preset_contents(name)
                 .ok_or_else(|| format!("Unknown preset: {name}. Run `prosesmasher list-presets`."))?;
-            Ok(config_loader.load_config(&preset)?)
+            Ok(parse_config_json(preset)?)
         }
         (None, None) => Err("Use exactly one config source: --preset <name> or --config <path>.".into()),
         (Some(_), Some(_)) => Err("Use either --config or --preset, not both.".into()),
@@ -173,14 +174,13 @@ fn run_dump_config_command(
     preset_name: Option<&str>,
     full_config: bool,
 ) -> CliResult {
-    let path = match (preset_name, full_config) {
-        (Some(name), false) => preset_path(name)
+    let content = match (preset_name, full_config) {
+        (Some(name), false) => preset_contents(name)
             .ok_or_else(|| format!("Unknown preset: {name}. Run `prosesmasher list-presets`."))?,
-        (None, true) => full_config_path(),
+        (None, true) => full_config_contents(),
         _ => return Err("Use exactly one dump source: --preset <name> or --full-config.".into()),
     };
 
-    let content = FsFileReader.read_to_string(&path)?;
     let mut stdout = io::stdout();
     stdout.write_all(content.as_bytes())?;
     Ok(())
