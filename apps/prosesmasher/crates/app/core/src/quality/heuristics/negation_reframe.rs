@@ -89,6 +89,25 @@ const EXPRESSION_REFRAME_PHRASES: &[&str] = &[
     "suppress it",
     "suppress them",
 ];
+const LIFECYCLE_NEGATION_CUES: &[&str] = &[
+    "doesn't begin ",
+    "does not begin ",
+    "doesn't start ",
+    "does not start ",
+];
+const LIFECYCLE_REFRAME_STARTS: &[&str] = &["it ends ", "that ends ", "this ends "];
+const FRAME_BLOCKING_PREPOSITIONS: &[&str] = &[
+    "on ",
+    "at ",
+    "by ",
+    "after ",
+    "before ",
+    "when ",
+    "during ",
+    "with ",
+];
+const LESS_LIKE_STARTS: &[&str] = &["less like "];
+const MORE_LIKE_STARTS: &[&str] = &["more like "];
 
 const FRAMING_VERBS: &[FramingVerb] = &[
     ("mean", "means"),
@@ -252,35 +271,7 @@ fn adjacent_corrective_evidence(
     let b_text = normalize_text(&b.text);
 
     if !looks_like_negated_label_sentence(&a_text, a.word_count()) {
-        if looks_like_infinitive_negation_sentence(&a_text, a.word_count())
-            && looks_like_infinitive_reframe_sentence(&b_text, b.word_count())
-        {
-            return Some(json!({
-                "matched_text": "not to x -> to y",
-                "sentence": a.text,
-                "next_sentence": b.text,
-            }));
-        }
-        let negated_framing_verb = looks_like_framing_negation_sentence(&a_text, a.word_count());
-        if negated_framing_verb.is_some()
-            && framing_reframe_verb(&b_text, b.word_count()) == negated_framing_verb
-        {
-            return Some(json!({
-                "matched_text": "does not x -> it xs",
-                "sentence": a.text,
-                "next_sentence": b.text,
-            }));
-        }
-        if looks_like_internal_state_negation_sentence(&a_text, a.word_count())
-            && looks_like_expression_reframe_sentence(&b_text, b.word_count())
-        {
-            return Some(json!({
-                "matched_text": "don't x -> they y",
-                "sentence": a.text,
-                "next_sentence": b.text,
-            }));
-        }
-        return None;
+        return non_copular_corrective_evidence(a, b, &a_text, &b_text);
     }
     if !looks_like_affirmative_relabel_sentence(&b_text, b.word_count()) {
         return None;
@@ -291,6 +282,81 @@ fn adjacent_corrective_evidence(
         "sentence": a.text,
         "next_sentence": b.text,
     }))
+}
+
+fn non_copular_corrective_evidence(
+    a: &Sentence,
+    b: &Sentence,
+    a_text: &str,
+    b_text: &str,
+) -> Option<Value> {
+    if looks_like_infinitive_negation_sentence(a_text, a.word_count())
+        && looks_like_infinitive_reframe_sentence(b_text, b.word_count())
+    {
+        return Some(json!({
+            "matched_text": "not to x -> to y",
+            "sentence": a.text,
+            "next_sentence": b.text,
+        }));
+    }
+
+    let negated_framing_verb = looks_like_framing_negation_sentence(a_text, a.word_count());
+    if negated_framing_verb.is_some()
+        && framing_reframe_verb(b_text, b.word_count()) == negated_framing_verb
+    {
+        return Some(json!({
+            "matched_text": "does not x -> it xs",
+            "sentence": a.text,
+            "next_sentence": b.text,
+        }));
+    }
+
+    if looks_like_internal_state_negation_sentence(a_text, a.word_count())
+        && looks_like_expression_reframe_sentence(b_text, b.word_count())
+    {
+        return Some(json!({
+            "matched_text": "don't x -> they y",
+            "sentence": a.text,
+            "next_sentence": b.text,
+        }));
+    }
+
+    if looks_like_lifecycle_frame_reversal(a_text, b_text, a.word_count(), b.word_count()) {
+        return Some(json!({
+            "matched_text": "doesn't begin x -> it ends y",
+            "sentence": a.text,
+            "next_sentence": b.text,
+        }));
+    }
+
+    if shared_progressive_corrective_verb(a_text, b_text, a.word_count(), b.word_count())
+        .is_some()
+    {
+        return Some(json!({
+            "matched_text": "i was not x -> i was x",
+            "sentence": a.text,
+            "next_sentence": b.text,
+        }));
+    }
+
+    if looks_like_explicit_make_contrast_sentence(a_text, b_text, a.word_count(), b.word_count())
+    {
+        return Some(json!({
+            "matched_text": "doesn't make x -> but it makes y",
+            "sentence": a.text,
+            "next_sentence": b.text,
+        }));
+    }
+
+    if looks_like_less_more_like_pair(a_text, b_text, a.word_count(), b.word_count()) {
+        return Some(json!({
+            "matched_text": "less like x -> more like y",
+            "sentence": a.text,
+            "next_sentence": b.text,
+        }));
+    }
+
+    None
 }
 
 fn looks_like_inline_corrective(text: &str, word_count: usize) -> bool {
@@ -392,6 +458,110 @@ fn looks_like_expression_reframe_sentence(text: &str, word_count: usize) -> bool
     EXPRESSION_REFRAME_PHRASES
         .iter()
         .any(|phrase| text.contains(phrase))
+}
+
+fn looks_like_lifecycle_frame_reversal(
+    a_text: &str,
+    b_text: &str,
+    a_word_count: usize,
+    b_word_count: usize,
+) -> bool {
+    if a_word_count > 24 || b_word_count > 8 {
+        return false;
+    }
+
+    let Some(suffix) = LIFECYCLE_NEGATION_CUES
+        .iter()
+        .find_map(|cue| a_text.split_once(cue).map(|(_, rest)| rest))
+    else {
+        return false;
+    };
+
+    if FRAME_BLOCKING_PREPOSITIONS
+        .iter()
+        .any(|prefix| suffix.starts_with(prefix))
+    {
+        return false;
+    }
+
+    LIFECYCLE_REFRAME_STARTS
+        .iter()
+        .any(|prefix| b_text.starts_with(prefix))
+}
+
+fn shared_progressive_corrective_verb(
+    a_text: &str,
+    b_text: &str,
+    a_word_count: usize,
+    b_word_count: usize,
+) -> Option<String> {
+    if a_word_count > 40 || b_word_count > 32 {
+        return None;
+    }
+
+    let a_prefixes = ["i was not ", "we were not ", "they were not "];
+    let b_prefixes = ["i was ", "we were ", "they were "];
+
+    for (a_prefix, b_prefix) in a_prefixes.iter().zip(b_prefixes.iter()) {
+        let Some((_, a_rest)) = a_text.split_once(a_prefix) else {
+            continue;
+        };
+        let Some((_, b_rest)) = b_text.split_once(b_prefix) else {
+            continue;
+        };
+        let Some(a_verb) = a_rest.split_whitespace().next() else {
+            continue;
+        };
+        let Some(b_verb) = b_rest.split_whitespace().next() else {
+            continue;
+        };
+        if a_verb == b_verb && a_verb.ends_with("ing") {
+            return Some(a_verb.to_owned());
+        }
+    }
+
+    None
+}
+
+fn looks_like_explicit_make_contrast_sentence(
+    a_text: &str,
+    b_text: &str,
+    a_word_count: usize,
+    b_word_count: usize,
+) -> bool {
+    if a_word_count > 10 || b_word_count > 10 {
+        return false;
+    }
+
+    [
+        "that doesn't make ",
+        "that does not make ",
+        "this doesn't make ",
+        "this does not make ",
+        "it doesn't make ",
+        "it does not make ",
+    ]
+    .iter()
+    .any(|prefix| a_text.starts_with(prefix))
+        && [
+            "but it makes ",
+            "but this makes ",
+            "but that makes ",
+        ]
+        .iter()
+        .any(|prefix| b_text.starts_with(prefix))
+}
+
+fn looks_like_less_more_like_pair(
+    a_text: &str,
+    b_text: &str,
+    a_word_count: usize,
+    b_word_count: usize,
+) -> bool {
+    a_word_count <= 6
+        && b_word_count <= 18
+        && LESS_LIKE_STARTS.iter().any(|prefix| a_text.starts_with(prefix))
+        && MORE_LIKE_STARTS.iter().any(|prefix| b_text.starts_with(prefix))
 }
 
 fn contains_action_negation(text: &str) -> bool {

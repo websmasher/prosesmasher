@@ -265,6 +265,126 @@ fn normal_behavioral_followup_does_not_trigger() {
 }
 
 #[test]
+fn narrative_frame_contrast_detected() {
+    let doc = make_doc_with_sentences(
+        &[
+            "It doesn't begin the story.",
+            "It ends the buildup.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    let mut suite = ExpectationSuite::new("test");
+    super::NegationReframeCheck.run(&doc, &config, &mut suite);
+    let result = suite.into_suite_result();
+    assert_eq!(result.statistics.unsuccessful_expectations, 1);
+    let vr = result.results.get("negation-reframe");
+    assert!(vr.is_some());
+    if let Some(vr) = vr {
+        let evidence = vr.result.partial_unexpected_list.as_ref();
+        assert_eq!(evidence.and_then(|e| e.first())
+            .and_then(|item| item.get("matched_text"))
+            .and_then(serde_json::Value::as_str), Some("doesn't begin x -> it ends y"));
+    }
+}
+
+#[test]
+fn shared_progressive_corrective_detected() {
+    let doc = make_doc_with_sentences(
+        &[
+            "I was not living with a tiny chaos agent who woke up each day searching for weak points in my character.",
+            "I was living with a child who keeps hitting the edge of her capacity and does not know that is what is happening.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    let mut suite = ExpectationSuite::new("test");
+    super::NegationReframeCheck.run(&doc, &config, &mut suite);
+    let result = suite.into_suite_result();
+    assert_eq!(result.statistics.unsuccessful_expectations, 1);
+}
+
+#[test]
+fn explicit_make_contrast_detected() {
+    let doc = make_doc_with_sentences(
+        &[
+            "That doesn't make the meltdowns fun.",
+            "But it makes them something I can read.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    let mut suite = ExpectationSuite::new("test");
+    super::NegationReframeCheck.run(&doc, &config, &mut suite);
+    let result = suite.into_suite_result();
+    assert_eq!(result.statistics.unsuccessful_expectations, 1);
+    let vr = result.results.get("negation-reframe");
+    assert!(vr.is_some());
+    if let Some(vr) = vr {
+        let evidence = vr.result.partial_unexpected_list.as_ref();
+        assert_eq!(evidence.and_then(|e| e.first())
+            .and_then(|item| item.get("matched_text"))
+            .and_then(serde_json::Value::as_str), Some("doesn't make x -> but it makes y"));
+    }
+}
+
+#[test]
+fn less_more_like_pair_detected() {
+    let doc = make_doc_with_sentences(
+        &[
+            "Less like a judge.",
+            "More like someone who got there late and is trying to understand what happened before she arrived.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    let mut suite = ExpectationSuite::new("test");
+    super::NegationReframeCheck.run(&doc, &config, &mut suite);
+    let result = suite.into_suite_result();
+    assert_eq!(result.statistics.unsuccessful_expectations, 1);
+}
+
+#[test]
+fn ordinary_begin_end_pair_does_not_trigger() {
+    let doc = make_doc_with_sentences(
+        &[
+            "The meeting doesn't begin on time.",
+            "It ends at five.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    let mut suite = ExpectationSuite::new("test");
+    super::NegationReframeCheck.run(&doc, &config, &mut suite);
+    let result = suite.into_suite_result();
+    assert_eq!(result.statistics.unsuccessful_expectations, 0);
+}
+
+#[test]
+fn lifecycle_frame_reversal_detected() {
+    let doc = make_doc_with_sentences(
+        &[
+            "And when I miss the signs I try to remember that the screaming doesn't begin the story.",
+            "It ends the buildup.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    let mut suite = ExpectationSuite::new("test");
+    super::NegationReframeCheck.run(&doc, &config, &mut suite);
+    let result = suite.into_suite_result();
+    assert_eq!(result.statistics.unsuccessful_expectations, 1);
+    let vr = result.results.get("negation-reframe");
+    assert!(vr.is_some());
+    if let Some(vr) = vr {
+        let evidence = vr.result.partial_unexpected_list.as_ref();
+        assert_eq!(evidence.and_then(|e| e.first())
+            .and_then(|item| item.get("matched_text"))
+            .and_then(serde_json::Value::as_str), Some("doesn't begin x -> it ends y"));
+    }
+}
+
+#[test]
 fn no_pattern_passes() {
     let doc = make_doc_with_sentences(
         &[

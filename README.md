@@ -278,6 +278,12 @@ prosesmasher check content/ --preset article-en --text-mode paths
 - False positives are possible because several checks are deliberately opinionated.
 - English support is much stronger than support for other locales.
 
-## Changelog
+## Repo layout
 
-See the repo changelog for release notes.
+- `apps/prosesmasher/` is the Rust workspace
+- `crates/` holds the hexagonal app structure
+- `packages/prosesmasher/` is the installable wrapper crate
+
+## License
+
+MIT
