@@ -2,11 +2,14 @@
 name = "prosesmasher-adapters-outbound-fs"
 version.workspace = true
 edition.workspace = true
-publish = false
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Filesystem config and file adapters for prosesmasher"
 
 [dependencies]
-prosesmasher-domain-types = { path = "../../../domain/types" }
-prosesmasher-ports-outbound-traits = { path = "../../../ports/outbound/traits" }
+prosesmasher-domain-types = { version = "0.1.0", path = "../../../domain/types" }
+prosesmasher-ports-outbound-traits = { version = "0.1.0", path = "../../../ports/outbound/traits" }
 serde = { workspace = true }
 serde_json = { workspace = true }
 garde = { workspace = true }

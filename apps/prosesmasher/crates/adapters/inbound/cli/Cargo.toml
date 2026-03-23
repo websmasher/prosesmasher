@@ -2,19 +2,22 @@
 name = "prosesmasher-adapters-inbound-cli"
 version.workspace = true
 edition.workspace = true
-publish = false
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "CLI adapter and composition root for prosesmasher"
 
 [dependencies]
-prosesmasher-domain-types = { path = "../../../domain/types" }
-prosesmasher-ports-outbound-traits = { path = "../../../ports/outbound/traits" }
-prosesmasher-app-core = { path = "../../../app/core" }
-prosesmasher-adapters-outbound-fs = { path = "../../outbound/fs" }
-prosesmasher-adapters-outbound-parser = { path = "../../outbound/parser" }
+prosesmasher-domain-types = { version = "0.1.0", path = "../../../domain/types" }
+prosesmasher-ports-outbound-traits = { version = "0.1.0", path = "../../../ports/outbound/traits" }
+prosesmasher-app-core = { version = "0.1.0", path = "../../../app/core" }
+prosesmasher-adapters-outbound-fs = { version = "0.1.0", path = "../../outbound/fs" }
+prosesmasher-adapters-outbound-parser = { version = "0.1.0", path = "../../outbound/parser" }
 clap = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 walkdir = { workspace = true }
-low-expectations = { path = "../../../../../../../low-expectations/crates/low-expectations" }
+low-expectations.workspace = true
 
 [lints]
 workspace = true

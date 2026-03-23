@@ -6,12 +6,16 @@ members = [
     "crates/adapters/inbound/cli",
     "crates/adapters/outbound/fs",
     "crates/adapters/outbound/parser",
+    "packages/prosesmasher",
 ]
 resolver = "2"
 
 [workspace.package]
 version = "0.1.0"
 edition = "2024"
+rust-version = "1.85"
+license = "MIT"
+repository = "https://github.com/websmasher/prosesmasher"
 
 [workspace.lints.rust]
 unsafe_code = "forbid"
@@ -69,6 +73,7 @@ icu_segmenter = "1"
 icu_casemap = "1"
 hyphenation = { version = "0.8", features = ["embed_all"] }
 walkdir = "2"
+low-expectations = { version = "0.1.0", path = "../../../low-expectations/crates/low-expectations" }
 
 [profile.mutants]
 inherits = "dev"
