@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.3
+
+- Realigned the canonical config taxonomy with the public check families:
+  - `quality.heuristics` for rhetorical/style heuristics
+  - `quality.flow` for paragraph and repetition controls
+  - `quality.readability` for readability thresholds
+- Updated the domain config model, JSON loader, full config example, shipped preset assets, fixtures, and docs to use the new shape.
+- Removed the remaining drift where flow/readability settings were still nested under `quality.heuristics`.
+
 ## 0.1.2
 
 - Added clean machine-readable CLI semantics:
