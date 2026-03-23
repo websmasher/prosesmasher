@@ -44,16 +44,16 @@ pub const fn shipped_presets() -> &'static [PresetInfo] {
 #[must_use]
 pub fn preset_contents(name: &str) -> Option<&'static str> {
     match name {
-        "general-en" => Some(include_str!("../../../../../presets/general-en.json")),
-        "article-en" => Some(include_str!("../../../../../presets/article-en.json")),
-        "substack-en" => Some(include_str!("../../../../../presets/substack-en.json")),
-        "email-en" => Some(include_str!("../../../../../presets/email-en.json")),
-        "tweet-en" => Some(include_str!("../../../../../presets/tweet-en.json")),
+        "general-en" => Some(include_str!("../presets/general-en.json")),
+        "article-en" => Some(include_str!("../presets/article-en.json")),
+        "substack-en" => Some(include_str!("../presets/substack-en.json")),
+        "email-en" => Some(include_str!("../presets/email-en.json")),
+        "tweet-en" => Some(include_str!("../presets/tweet-en.json")),
         _ => None,
     }
 }
 
 #[must_use]
 pub const fn full_config_contents() -> &'static str {
-    include_str!("../../../../../presets/full-config-en.json")
+    include_str!("../presets/full-config-en.json")
 }
