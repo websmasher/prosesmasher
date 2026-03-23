@@ -10,8 +10,8 @@ use clap::{ArgGroup, Parser};
     name = "prosesmasher",
     version,
     about = "Validate prose quality in markdown and short-form text using deterministic checks.",
-    long_about = "Validate prose quality in markdown and short-form text using deterministic checks.\n\nTop-level workflow:\n- run `list-presets` to see shipped presets\n- run `dump-config --preset <name>` to inspect a preset\n- run `dump-config --full-config` to print the full editable config\n- run `check <path> --preset <name>` to validate with a shipped preset\n- run `check <path> --config <path>` to validate with your own config\n\nRules:\n- `check` requires exactly one config source: either `--preset` or `--config`\n- `dump-config` requires exactly one source: either `--preset <name>` or `--full-config`\n- presets keep shared quality defaults and differ only by document structure",
-    after_help = "Commands and common combinations:\n  prosesmasher list-presets\n      Show all shipped preset names and what each one is for.\n\n  prosesmasher dump-config --full-config\n      Print the full config surface to stdout so you can save and edit it.\n\n  prosesmasher dump-config --preset article-en\n      Print one shipped preset to stdout so you can inspect or copy it.\n\n  prosesmasher check draft.md --preset article-en\n      Validate one markdown file with a shipped preset.\n\n  prosesmasher check drafts/ --preset substack-en --group quality\n      Validate a directory recursively, but only run quality checks.\n\n  prosesmasher check draft.md --config my-config.json --format json\n      Validate with your own config and emit machine-readable JSON.\n\n  prosesmasher check draft.md --config my-config.json --format json --include-checks\n      Include the full per-check results array in JSON output.\n\n  prosesmasher check draft.md --config my-config.json --check prohibited-terms,em-dashes\n      Validate with your own config but only run specific checks."
+    long_about = "Validate prose quality in markdown and short-form text using deterministic checks.\n\nThe tool is English-first and opinionated about AI-slop, salesy boilerplate, readability, and markdown structure.\n\nConfig model:\n- JSON config uses camelCase keys\n- top-level shape is `locale`, `quality`, and `documentPolicy`\n- `quality.lexical` is mostly override/merge-driven policy\n- `quality.heuristics` carries built-in defaults, with overrides where needed\n- `documentPolicy` is opt-in structural policy; omitted fields stay off\n- `defaults: true` means merge with built-in defaults; `defaults: false` means replace them\n\nPreset model:\n- presets are partial policy profiles with shared quality defaults and different structural envelopes\n- `dump-config --full-config` prints the full editable schema example",
+    after_help = "Commands and common combinations:\n  prosesmasher list-presets\n      Show shipped preset names and what each one is for.\n\n  prosesmasher dump-config --full-config\n      Print the full editable config example to stdout.\n\n  prosesmasher dump-config --preset article-en\n      Print a shipped preset profile to stdout.\n\n  prosesmasher check --list-checks\n      List all available checks with IDs, groups, default-enabled state, and locale support.\n\n  prosesmasher check --list-checks --group readability --format json\n      List only readability checks in machine-readable form.\n\n  prosesmasher check draft.md --preset article-en\n      Validate one markdown file with a shipped preset.\n\n  prosesmasher check drafts/ --preset substack-en --group quality\n      Validate a directory recursively, but only run quality checks.\n\n  prosesmasher check draft.md --config my-config.json --format json\n      Emit JSON only on stdout. Exit 1 means check failures; exit 2 means operational failure.\n\n  prosesmasher check draft.md --config my-config.json --format json --include-checks\n      Include the full per-check results array in JSON output.\n\n  prosesmasher check draft.md --preset article-en --text-mode summary\n      Print one summary line per file.\n\n  prosesmasher check draft.md --preset article-en --text-mode paths\n      Print only failing file paths."
 )]
 pub struct Args {
     #[command(subcommand)]
@@ -25,18 +25,26 @@ pub enum Command {
     #[command(group(
         ArgGroup::new("config_source")
             .args(["config", "preset"])
-            .required(true)
+            .required(false)
             .multiple(false)
     ))]
     Check {
         /// File or directory to check (recursively finds .md files in directories).
-        path: PathBuf,
+        ///
+        /// Required unless `--list-checks` is used.
+        path: Option<PathBuf>,
+
+        /// List available checks instead of validating files.
+        #[arg(long)]
+        list_checks: bool,
 
         /// Config file (JSON) to use for validation.
+        ///
+        /// Uses canonical camelCase config with `locale`, `quality`, and `documentPolicy`.
         #[arg(long)]
         config: Option<PathBuf>,
 
-        /// Shipped preset name to use instead of --config.
+        /// Shipped preset policy profile to use instead of --config.
         #[arg(long)]
         preset: Option<String>,
 
@@ -52,6 +60,10 @@ pub enum Command {
         /// Output format: text (human-readable) or json (machine-readable).
         #[arg(long, default_value = "text")]
         format: OutputFormat,
+
+        /// Text output mode for human-readable runs.
+        #[arg(long, default_value = "failures")]
+        text_mode: TextMode,
 
         /// Include the full per-check results array in JSON output.
         #[arg(long)]
@@ -69,11 +81,11 @@ pub enum Command {
             .multiple(false)
     ))]
     DumpConfig {
-        /// Dump a shipped preset by name.
+        /// Dump a shipped preset profile by name.
         #[arg(long)]
         preset: Option<String>,
 
-        /// Dump the full editable config.
+        /// Dump the full editable config example.
         #[arg(long = "full-config")]
         full_config: bool,
     },
@@ -86,6 +98,19 @@ pub enum OutputFormat {
     Text,
     /// Machine-readable JSON output.
     Json,
+}
+
+/// Text verbosity / shape for `--format text`.
+#[derive(Debug, Clone, clap::ValueEnum)]
+pub enum TextMode {
+    /// Print only failing checks plus a summary.
+    Failures,
+    /// Print every check line and a summary.
+    Full,
+    /// Print one summary line per file.
+    Summary,
+    /// Print only failing file paths.
+    Paths,
 }
 
 #[cfg(test)]

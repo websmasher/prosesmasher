@@ -10,19 +10,23 @@ fn parse_check_with_file() {
     match args.command {
         Command::Check {
             path,
+            list_checks,
             config,
             preset,
             group,
             check,
             format,
+            text_mode,
             include_checks,
         } => {
-            assert_eq!(path.to_str(), Some("foo.md"), "path");
+            assert_eq!(path.as_deref().and_then(std::path::Path::to_str), Some("foo.md"), "path");
+            assert!(!list_checks, "not list checks");
             assert!(config.is_none(), "no config");
             assert_eq!(preset.as_deref(), Some("general-en"), "preset");
             assert!(group.is_none(), "no group");
             assert!(check.is_none(), "no check filter");
             assert!(matches!(format, OutputFormat::Text), "default format is text");
+            assert!(matches!(text_mode, TextMode::Failures), "default text mode is failures");
             assert!(!include_checks, "checks hidden by default");
         }
         Command::ListPresets | Command::DumpConfig { .. } => panic!("expected check command"),
@@ -101,13 +105,13 @@ fn parse_check_with_group() {
 #[test]
 fn parse_check_requires_config_source() {
     let args = Args::try_parse_from(["prosesmasher", "check", "foo.md"]);
-    assert!(args.is_err(), "check should require preset or config");
+    assert!(args.is_ok(), "clap allows later validation");
 }
 
 #[test]
 fn parse_missing_path_fails() {
     let args = Args::try_parse_from(["prosesmasher", "check"]);
-    assert!(args.is_err(), "missing path should fail");
+    assert!(args.is_ok(), "clap allows check --list-checks without path");
 }
 
 #[test]
@@ -178,6 +182,43 @@ fn parse_check_with_include_checks() {
     match args.command {
         Command::Check { include_checks, .. } => {
             assert!(include_checks, "include checks flag");
+        }
+        Command::ListPresets | Command::DumpConfig { .. } => panic!("expected check command"),
+    }
+}
+
+#[test]
+#[allow(clippy::panic)]
+fn parse_check_list_checks() {
+    let args = Args::try_parse_from(["prosesmasher", "check", "--list-checks"]);
+    assert!(args.is_ok(), "should parse");
+    let args = args.unwrap_or_else(|e| panic!("parse failed: {e}"));
+    match args.command {
+        Command::Check { list_checks, path, .. } => {
+            assert!(list_checks, "list checks flag");
+            assert!(path.is_none(), "no path required");
+        }
+        Command::ListPresets | Command::DumpConfig { .. } => panic!("expected check command"),
+    }
+}
+
+#[test]
+#[allow(clippy::panic)]
+fn parse_check_with_text_mode() {
+    let args = Args::try_parse_from([
+        "prosesmasher",
+        "check",
+        "foo.md",
+        "--preset",
+        "general-en",
+        "--text-mode",
+        "summary",
+    ]);
+    assert!(args.is_ok(), "should parse");
+    let args = args.unwrap_or_else(|e| panic!("parse failed: {e}"));
+    match args.command {
+        Command::Check { text_mode, .. } => {
+            assert!(matches!(text_mode, TextMode::Summary), "summary text mode");
         }
         Command::ListPresets | Command::DumpConfig { .. } => panic!("expected check command"),
     }

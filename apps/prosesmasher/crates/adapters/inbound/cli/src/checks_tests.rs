@@ -162,3 +162,15 @@ fn collect_document_policy_returns_6() {
     let checks = collect_checks(Some("document-policy")).unwrap_or_else(|e| panic!("collect failed: {e}"));
     assert_eq!(checks.len(), 6, "document-policy check count");
 }
+
+#[test]
+#[allow(clippy::panic)]
+fn list_checks_returns_catalog_metadata() {
+    let entries = list_checks(Some("readability")).unwrap_or_else(|e| panic!("{e}"));
+    assert_eq!(entries.len(), 4, "readability catalog count");
+    let first = entries.first().unwrap_or_else(|| panic!("missing first entry"));
+    assert_eq!(first.group, "readability");
+    assert_eq!(first.kind, "readability");
+    assert!(first.default_enabled, "readability checks enabled by default");
+    assert!(!first.supported_locales.is_empty(), "supported locales present");
+}

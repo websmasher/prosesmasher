@@ -11,12 +11,12 @@ pub mod checks;
 pub mod output;
 
 type BoxError = Box<dyn std::error::Error>;
-type CliResult = Result<(), BoxError>;
+type CliResult = Result<CliExit, BoxError>;
 type ConfigResult = Result<prosesmasher_domain_types::CheckConfig, BoxError>;
 
-use crate::args::{Args, Command, OutputFormat};
-use crate::checks::{collect_checks, filter_checks_by_id};
-use crate::output::output_result;
+use crate::args::{Args, Command, OutputFormat, TextMode};
+use crate::checks::{collect_checks, filter_checks_by_id, list_checks};
+use crate::output::{output_result, print_check_catalog};
 use prosesmasher_adapters_outbound_fs::{
     FsConfigLoader, FsFileReader, full_config_contents, preset_contents, shipped_presets,
 };
@@ -25,6 +25,25 @@ use prosesmasher_adapters_outbound_parser::MarkdownParser;
 use prosesmasher_app_core::check::Check;
 use prosesmasher_app_core::runner::run_checks;
 use prosesmasher_ports_outbound_traits::{ConfigLoader, DocumentParser, FileReader};
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum CliExit {
+    Success,
+    CheckFailures,
+}
+
+#[derive(Debug, Clone, Copy)]
+struct CheckCommandInput<'a> {
+    path: Option<&'a std::path::Path>,
+    list_checks_only: bool,
+    config_path: Option<&'a std::path::Path>,
+    preset_name: Option<&'a str>,
+    group: Option<&'a str>,
+    check_ids: Option<&'a str>,
+    format: &'a OutputFormat,
+    text_mode: &'a TextMode,
+    include_checks: bool,
+}
 
 /// Collect markdown files from a path.
 ///
@@ -56,10 +75,11 @@ pub fn main_entry() -> ExitCode {
     let args = Args::parse();
 
     match run(args) {
-        Ok(()) => ExitCode::SUCCESS,
+        Ok(CliExit::Success) => ExitCode::SUCCESS,
+        Ok(CliExit::CheckFailures) => ExitCode::from(1),
         Err(e) => {
             eprintln!("Error: {e}");
-            ExitCode::FAILURE
+            ExitCode::from(2)
         }
     }
 }
@@ -75,24 +95,28 @@ pub fn run(args: Args) -> CliResult {
     match args.command {
         Command::Check {
             path,
+            list_checks,
             config,
             preset,
             group,
             check,
             format,
+            text_mode,
             include_checks,
-        } => run_check_command(
-            &path,
-            config.as_deref(),
-            preset.as_deref(),
-            group.as_deref(),
-            check.as_deref(),
-            &format,
+        } => run_check_command(CheckCommandInput {
+            path: path.as_deref(),
+            list_checks_only: list_checks,
+            config_path: config.as_deref(),
+            preset_name: preset.as_deref(),
+            group: group.as_deref(),
+            check_ids: check.as_deref(),
+            format: &format,
+            text_mode: &text_mode,
             include_checks,
-        ),
+        }),
         Command::ListPresets => {
             run_list_presets_command();
-            Ok(())
+            Ok(CliExit::Success)
         }
         Command::DumpConfig { preset, full_config } => {
             run_dump_config_command(preset.as_deref(), full_config)
@@ -100,31 +124,37 @@ pub fn run(args: Args) -> CliResult {
     }
 }
 
-fn run_check_command(
-    path: &std::path::Path,
-    config_path: Option<&std::path::Path>,
-    preset_name: Option<&str>,
-    group: Option<&str>,
-    check_ids: Option<&str>,
-    format: &OutputFormat,
-    include_checks: bool,
-) -> CliResult {
+fn run_check_command(input: CheckCommandInput<'_>) -> CliResult {
+    if input.list_checks_only {
+        if input.path.is_some() {
+            return Err("Do not pass a path with --list-checks.".into());
+        }
+        if input.config_path.is_some() || input.preset_name.is_some() || input.check_ids.is_some() {
+            return Err("Use --list-checks by itself, optionally with --group and --format.".into());
+        }
+        let entries = list_checks(input.group).map_err(|e| -> Box<dyn std::error::Error> { e.into() })?;
+        print_check_catalog(&entries, input.format);
+        return Ok(CliExit::Success);
+    }
+
+    let path = input.path.ok_or("Missing path. Pass a file or directory, or use --list-checks.")?;
+
     let file_reader = FsFileReader;
     let config_loader = FsConfigLoader;
     let parser = MarkdownParser;
 
-    let check_config = load_check_config(&config_loader, config_path, preset_name)?;
+    let check_config = load_check_config(&config_loader, input.config_path, input.preset_name)?;
 
     let files = collect_files(path);
     if files.is_empty() {
         return Err("No .md files found".into());
     }
 
-    let mut all_checks = collect_checks(group).map_err(|e| -> Box<dyn std::error::Error> {
+    let mut all_checks = collect_checks(input.group).map_err(|e| -> Box<dyn std::error::Error> {
         e.into()
     })?;
 
-    if let Some(ids) = check_ids {
+    if let Some(ids) = input.check_ids {
         all_checks = filter_checks_by_id(all_checks, ids).map_err(|e| -> Box<dyn std::error::Error> {
             e.into()
         })?;
@@ -137,7 +167,7 @@ fn run_check_command(
         let check_refs: Vec<&dyn Check> = all_checks.iter().map(AsRef::as_ref).collect();
         let result = run_checks(&check_refs, &doc, &check_config);
 
-        output_result(file, &result, format, include_checks);
+        output_result(file, &result, input.format, input.text_mode, input.include_checks);
 
         if !result.success {
             any_failed = true;
@@ -145,10 +175,10 @@ fn run_check_command(
     }
 
     if any_failed {
-        return Err("One or more checks failed".into());
+        return Ok(CliExit::CheckFailures);
     }
 
-    Ok(())
+    Ok(CliExit::Success)
 }
 
 fn load_check_config(
@@ -189,7 +219,7 @@ fn run_dump_config_command(
 
     let mut stdout = io::stdout();
     stdout.write_all(content.as_bytes())?;
-    Ok(())
+    Ok(CliExit::Success)
 }
 
 #[cfg(test)]
