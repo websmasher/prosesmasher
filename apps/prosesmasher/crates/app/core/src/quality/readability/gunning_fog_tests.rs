@@ -49,7 +49,7 @@ fn config_with_fog_max(max: f64) -> CheckConfig {
         locale: Locale::En,
         ..CheckConfig::default()
     };
-    config.quality.heuristics.readability.gunning_fog_max = Some(max);
+    config.quality.readability.gunning_fog_max = Some(max);
     config
 }
 

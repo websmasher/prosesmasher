@@ -106,7 +106,9 @@ Top-level shape:
 Important semantics:
 
 - `quality.lexical` is mostly merge-driven override policy
-- `quality.heuristics` contains built-in defaults with per-check overrides
+- `quality.heuristics` contains rhetorical and style heuristics
+- `quality.flow` contains paragraph and repetition controls
+- `quality.readability` contains readability thresholds
 - `documentPolicy` is opt-in; omitted fields stay off
 - override lists use `defaults`, `add`, and `remove`
 - `defaults: true` means merge with built-in defaults
@@ -127,9 +129,17 @@ Example:
       }
     },
     "heuristics": {
+      "llmOpeners": {
+        "enabled": true
+      }
+    },
+    "flow": {
       "paragraphLength": {
         "maxSentences": 6
       }
+    },
+    "readability": {
+      "avgSentenceLengthMax": 24
     }
   },
   "documentPolicy": {

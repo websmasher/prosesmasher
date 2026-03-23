@@ -31,10 +31,10 @@ impl Check for FleschKincaidCheck {
     }
 
     fn run(&self, doc: &Document, config: &CheckConfig, suite: &mut ExpectationSuite) {
-        if !config.quality.heuristics.readability.enabled {
+        if !config.quality.readability.enabled {
             return;
         }
-        let Some(min) = config.quality.heuristics.readability.flesch_kincaid_min else {
+        let Some(min) = config.quality.readability.flesch_kincaid_min else {
             return;
         };
 

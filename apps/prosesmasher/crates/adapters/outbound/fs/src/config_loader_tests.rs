@@ -52,6 +52,7 @@ fn load_preset_ok(name: &str) -> prosesmasher_domain_types::CheckConfig {
 }
 
 #[test]
+#[allow(clippy::too_many_lines)]
 fn canonical_config_normalizes() {
     let config = load_json_ok(
         r#"{
@@ -64,9 +65,14 @@ fn canonical_config_normalizes() {
               "simplicityPairs":{"defaults":false,"add":[["utilize","use"]],"remove":[]}
             },
             "heuristics":{
+              "exclamationDensity":{"maxPerParagraph":1}
+            },
+            "flow":{
               "wordRepetition":{"max":7,"excludedTerms":{"defaults":false,"add":["ownership"],"remove":[]}},
-              "paragraphLength":{"maxSentences":5},
-              "readability":{"fleschKincaidMin":44.0}
+              "paragraphLength":{"maxSentences":5}
+            },
+            "readability":{
+              "fleschKincaidMin":44.0
             }
           },
           "documentPolicy":{
@@ -105,15 +111,15 @@ fn canonical_config_normalizes() {
         Some(1)
     );
     assert_eq!(
-        config.quality.heuristics.word_repetition.max,
+        config.quality.flow.word_repetition.max,
         7
     );
     assert_eq!(
-        config.quality.heuristics.paragraph_length.max_sentences,
+        config.quality.flow.paragraph_length.max_sentences,
         5
     );
     assert_eq!(
-        config.quality.heuristics.readability.flesch_kincaid_min,
+        config.quality.readability.flesch_kincaid_min,
         Some(44.0)
     );
     assert_eq!(
@@ -157,8 +163,8 @@ fn presets_keep_shared_quality_defaults() {
 
     assert_eq!(article.quality.heuristics.exclamation_density.max_per_paragraph, 1);
     assert_eq!(general.quality.heuristics.exclamation_density.max_per_paragraph, 1);
-    assert_eq!(article.quality.heuristics.paragraph_length.max_sentences, 6);
-    assert_eq!(general.quality.heuristics.paragraph_length.max_sentences, 6);
+    assert_eq!(article.quality.flow.paragraph_length.max_sentences, 6);
+    assert_eq!(general.quality.flow.paragraph_length.max_sentences, 6);
 }
 
 #[test]

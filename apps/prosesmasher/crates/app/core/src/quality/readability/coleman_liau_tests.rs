@@ -50,7 +50,7 @@ fn config_with_cl_max(max: f64) -> CheckConfig {
         locale: Locale::En,
         ..CheckConfig::default()
     };
-    config.quality.heuristics.readability.coleman_liau_max = Some(max);
+    config.quality.readability.coleman_liau_max = Some(max);
     config
 }
 

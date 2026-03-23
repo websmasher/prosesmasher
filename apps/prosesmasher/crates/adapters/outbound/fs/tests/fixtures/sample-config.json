@@ -14,9 +14,11 @@
       }
     },
     "heuristics": {
-      "paragraphLength": { "maxSentences": 6 },
       "exclamationDensity": { "maxPerParagraph": 1 },
-      "hedgeStacking": { "maxPerSentence": 1 },
+      "hedgeStacking": { "maxPerSentence": 1 }
+    },
+    "flow": {
+      "paragraphLength": { "maxSentences": 6 },
       "wordRepetition": {
         "max": 5,
         "excludedTerms": {
@@ -24,12 +26,12 @@
           "add": ["the", "a", "is", "in", "to", "and"],
           "remove": []
         }
-      },
-      "readability": {
-        "fleschKincaidMin": 50.0,
-        "gunningFogMax": 14.0,
-        "avgSentenceLengthMax": 25
       }
+    },
+    "readability": {
+      "fleschKincaidMin": 50.0,
+      "gunningFogMax": 14.0,
+      "avgSentenceLengthMax": 25
     }
   },
   "documentPolicy": {

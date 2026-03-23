@@ -9,8 +9,11 @@
       }
     },
     "heuristics": {
-      "paragraphLength": { "maxSentences": 5 },
       "exclamationDensity": { "maxPerParagraph": 1 },
+      "hedgeStacking": { "maxPerSentence": 2 }
+    },
+    "flow": {
+      "paragraphLength": { "maxSentences": 5 },
       "wordRepetition": {
         "max": 5,
         "excludedTerms": {
@@ -18,11 +21,10 @@
           "add": ["the", "a", "is", "in", "to", "and", "of", "for"],
           "remove": []
         }
-      },
-      "readability": {
-        "avgSentenceLengthMax": 30
-      },
-      "hedgeStacking": { "maxPerSentence": 2 }
+      }
+    },
+    "readability": {
+      "avgSentenceLengthMax": 30
     }
   },
   "documentPolicy": {

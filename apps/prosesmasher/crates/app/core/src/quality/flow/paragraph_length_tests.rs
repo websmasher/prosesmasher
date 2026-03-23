@@ -133,6 +133,6 @@ fn config_with_max_sentences(max_sentences: usize) -> CheckConfig {
         locale: Locale::En,
         ..CheckConfig::default()
     };
-    config.quality.heuristics.paragraph_length.max_sentences = max_sentences;
+    config.quality.flow.paragraph_length.max_sentences = max_sentences;
     config
 }

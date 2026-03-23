@@ -32,6 +32,12 @@ pub struct QualityDto {
     #[garde(dive)]
     #[serde(default)]
     pub heuristics: HeuristicsDto,
+    #[garde(dive)]
+    #[serde(default)]
+    pub flow: FlowDto,
+    #[garde(dive)]
+    #[serde(default)]
+    pub readability: ReadabilityDto,
 }
 
 #[derive(Deserialize, Validate, Default)]
@@ -104,15 +110,18 @@ pub struct HeuristicsDto {
     #[garde(skip)]
     #[serde(default)]
     pub jargon_faker: Option<EnabledDto>,
+}
+
+#[derive(Deserialize, Validate, Default)]
+#[serde(rename_all = "camelCase")]
+#[serde(deny_unknown_fields)]
+pub struct FlowDto {
     #[garde(skip)]
     #[serde(default)]
     pub word_repetition: Option<WordRepetitionDto>,
     #[garde(skip)]
     #[serde(default)]
     pub paragraph_length: Option<ParagraphLengthDto>,
-    #[garde(skip)]
-    #[serde(default)]
-    pub readability: Option<ReadabilityDto>,
 }
 
 #[derive(Deserialize, Validate, Default)]
@@ -225,17 +234,23 @@ pub struct ParagraphLengthDto {
     pub max_sentences: Option<usize>,
 }
 
-#[derive(Deserialize, Default)]
+#[derive(Deserialize, Validate, Default)]
 #[serde(rename_all = "camelCase")]
 #[serde(deny_unknown_fields)]
 pub struct ReadabilityDto {
+    #[garde(skip)]
     #[serde(default = "default_true")]
     pub enabled: bool,
+    #[garde(skip)]
     #[serde(default = "default_true")]
     pub defaults: bool,
+    #[garde(skip)]
     pub flesch_kincaid_min: Option<f64>,
+    #[garde(skip)]
     pub gunning_fog_max: Option<f64>,
+    #[garde(skip)]
     pub coleman_liau_max: Option<f64>,
+    #[garde(skip)]
     pub avg_sentence_length_max: Option<usize>,
 }
 
@@ -316,7 +331,9 @@ fn parse_locale(s: &str) -> Result<Locale, ConfigError> {
 
 fn apply_quality_dto(config: &mut CheckConfig, dto: QualityDto) {
     apply_lexical_dto(config, dto.lexical);
-    apply_heuristics_dto(config, dto.heuristics);
+    apply_heuristics_dto(config, &dto.heuristics);
+    apply_flow_dto(config, dto.flow);
+    apply_readability_dto(config, &dto.readability);
 }
 
 fn apply_lexical_dto(config: &mut CheckConfig, dto: LexicalDto) {
@@ -340,11 +357,10 @@ fn apply_lexical_dto(config: &mut CheckConfig, dto: LexicalDto) {
     }
 }
 
-fn apply_heuristics_dto(config: &mut CheckConfig, dto: HeuristicsDto) {
+const fn apply_heuristics_dto(config: &mut CheckConfig, dto: &HeuristicsDto) {
     let heuristics = &mut config.quality.heuristics;
 
-    apply_toggle_heuristics(heuristics, &dto);
-    apply_threshold_heuristics(heuristics, dto);
+    apply_toggle_heuristics(heuristics, dto);
 }
 
 const fn apply_toggle_heuristics(
@@ -401,40 +417,42 @@ const fn apply_toggle_heuristics(
     }
 }
 
-fn apply_threshold_heuristics(
-    heuristics: &mut prosesmasher_domain_types::HeuristicsConfig,
-    dto: HeuristicsDto,
-) {
+fn apply_flow_dto(config: &mut CheckConfig, dto: FlowDto) {
+    let flow = &mut config.quality.flow;
+
     if let Some(word_repetition) = dto.word_repetition {
-        heuristics.word_repetition.enabled = word_repetition.enabled;
+        flow.word_repetition.enabled = word_repetition.enabled;
         if let Some(max) = word_repetition.max {
-            heuristics.word_repetition.max = max;
+            flow.word_repetition.max = max;
         }
         if let Some(excluded_terms) = word_repetition.excluded_terms {
-            heuristics.word_repetition.excluded_terms = convert_string_override(excluded_terms);
+            flow.word_repetition.excluded_terms = convert_string_override(excluded_terms);
         }
     }
     if let Some(paragraph_length) = dto.paragraph_length {
-        heuristics.paragraph_length.enabled = paragraph_length.enabled;
+        flow.paragraph_length.enabled = paragraph_length.enabled;
         if let Some(max) = paragraph_length.max_sentences {
-            heuristics.paragraph_length.max_sentences = max;
+            flow.paragraph_length.max_sentences = max;
         }
     }
-    if let Some(readability) = dto.readability {
-        heuristics.readability.enabled = readability.enabled;
-        heuristics.readability.defaults = readability.defaults;
-        if readability.flesch_kincaid_min.is_some() {
-            heuristics.readability.flesch_kincaid_min = readability.flesch_kincaid_min;
-        }
-        if readability.gunning_fog_max.is_some() {
-            heuristics.readability.gunning_fog_max = readability.gunning_fog_max;
-        }
-        if readability.coleman_liau_max.is_some() {
-            heuristics.readability.coleman_liau_max = readability.coleman_liau_max;
-        }
-        if readability.avg_sentence_length_max.is_some() {
-            heuristics.readability.avg_sentence_length_max = readability.avg_sentence_length_max;
-        }
+}
+
+const fn apply_readability_dto(config: &mut CheckConfig, dto: &ReadabilityDto) {
+    let readability = &mut config.quality.readability;
+
+    readability.enabled = dto.enabled;
+    readability.defaults = dto.defaults;
+    if dto.flesch_kincaid_min.is_some() {
+        readability.flesch_kincaid_min = dto.flesch_kincaid_min;
+    }
+    if dto.gunning_fog_max.is_some() {
+        readability.gunning_fog_max = dto.gunning_fog_max;
+    }
+    if dto.coleman_liau_max.is_some() {
+        readability.coleman_liau_max = dto.coleman_liau_max;
+    }
+    if dto.avg_sentence_length_max.is_some() {
+        readability.avg_sentence_length_max = dto.avg_sentence_length_max;
     }
 }
 

@@ -64,7 +64,7 @@ fn config_with_repetition_max(max: usize) -> CheckConfig {
         locale: Locale::En,
         ..CheckConfig::default()
     };
-    config.quality.heuristics.word_repetition.max = max;
+    config.quality.flow.word_repetition.max = max;
     config
 }
 
@@ -126,7 +126,7 @@ fn short_words_ignored() {
 fn stop_words_ignored() {
     let doc = doc_with_repeated_word("that", 10);
     let mut config = config_with_repetition_max(5);
-    config.quality.heuristics.word_repetition.excluded_terms.add = vec!["that".to_owned()];
+    config.quality.flow.word_repetition.excluded_terms.add = vec!["that".to_owned()];
     let mut suite = ExpectationSuite::new("test");
     super::WordRepetitionCheck.run(&doc, &config, &mut suite);
     let result = suite.into_suite_result();
