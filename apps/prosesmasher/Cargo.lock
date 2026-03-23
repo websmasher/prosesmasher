@@ -372,6 +372,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "prosesmasher"
+version = "0.1.0"
+dependencies = [
+ "prosesmasher-adapters-inbound-cli",
+]
+
+[[package]]
 name = "prosesmasher-adapters-inbound-cli"
 version = "0.1.0"
 dependencies = [

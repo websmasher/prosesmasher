@@ -2,11 +2,14 @@
 name = "prosesmasher-adapters-outbound-parser"
 version.workspace = true
 edition.workspace = true
-publish = false
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Markdown parsing and segmentation adapters for prosesmasher"
 
 [dependencies]
-prosesmasher-domain-types = { path = "../../../domain/types" }
-prosesmasher-ports-outbound-traits = { path = "../../../ports/outbound/traits" }
+prosesmasher-domain-types = { version = "0.1.0", path = "../../../domain/types" }
+prosesmasher-ports-outbound-traits = { version = "0.1.0", path = "../../../ports/outbound/traits" }
 hyphenation = { workspace = true }
 icu_segmenter = { workspace = true }
 pulldown-cmark = { workspace = true }

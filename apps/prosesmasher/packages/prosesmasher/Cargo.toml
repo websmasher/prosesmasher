@@ -1,0 +1,21 @@
+[package]
+name = "prosesmasher"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Deterministic prose quality validator for markdown and short-form text"
+readme = "README.md"
+keywords = ["cli", "markdown", "validation", "writing", "lint"]
+categories = ["command-line-utilities", "text-processing"]
+
+[[bin]]
+name = "prosesmasher"
+path = "src/main.rs"
+
+[dependencies]
+prosesmasher-adapters-inbound-cli = { version = "0.1.0", path = "../../crates/adapters/inbound/cli" }
+
+[lints]
+workspace = true
