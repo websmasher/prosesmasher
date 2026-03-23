@@ -2,7 +2,7 @@
 
 ## What This Is
 
-CLI tool that validates prose quality in markdown files. Deterministic AI slop detection — no LLM calls, no regex, all checks are composable and config-driven. Takes a markdown file + a JSON config → parses → runs checks → outputs structured results (text or JSON).
+CLI tool that validates prose quality in markdown files. Deterministic AI slop detection, no LLM calls, no regex, all checks are composable and config-driven. Takes a markdown file + a JSON config → parses → runs checks → outputs structured results (text or JSON).
 
 ```bash
 prosesmasher check article.md --config config.json --format json
@@ -12,7 +12,7 @@ prosesmasher check article.md --check prohibited-terms,em-dashes,word-count
 
 ## Current Status
 
-**Fully functional.** The library is canonical-only: config is `quality` + `documentPolicy`, removed `terms` / `thresholds` input is rejected, and the active public surface is stable. 30 active checks, 541+ tests (all passing, 1 ignored for known colon-dramatic false positive). Every module converged under 4-angle adversarial test attacks.
+**Fully functional and public.** The library is canonical-only: config is `quality` + `documentPolicy`, removed `terms` / `thresholds` input is rejected, the repo is public at `websmasher/prosesmasher`, and the crates.io package is live. The active public surface is stable. 31 active checks are shipped, and the full suite is green with 1 ignored colon-dramatic false-positive test. Every module converged under repeated adversarial test attacks.
 
 ## Architecture
 
@@ -76,7 +76,7 @@ English, Russian, German, French, Spanish, Portuguese, Indonesian. Locale affect
 | Required Terms | `required-terms` | ALL configured terms must appear |
 | Recommended Terms | `recommended-terms` | At least N from pool must appear (with optional stem matching) |
 
-### Quality: Heuristics / Patterns (13)
+### Quality: Heuristics / Patterns (14)
 
 | Check | ID | What it catches |
 |---|---|---|
@@ -84,6 +84,7 @@ English, Russian, German, French, Spanish, Portuguese, Indonesian. Locale affect
 | Smart Quotes | `smart-quotes` | Curly quote characters |
 | Exclamation Density | `exclamation-density` | Too many `!` per paragraph |
 | Negation-Reframe | `negation-reframe` | "Not X. It's Y." rhetorical pattern |
+| Fragment Stacking | `fragment-stacking` | Clipped cadence runs like "Short. Short. Longer payoff." |
 | Triple Repeat | `triple-repeat` | "It's X. It's Y. It's Z." opener repetition |
 | Fake Timestamps | `fake-timestamps` | "5:47 PM" fabricated specificity (English only) |
 | Colon Dramatic | `colon-dramatic` | "And then: everything changed." |
@@ -184,7 +185,7 @@ Canonical shape:
 }
 ```
 
-Config uses camelCase (JSON convention). Domain types use snake_case. DTO layer in the FS adapter handles conversion and rejects unknown fields, including the removed legacy `terms` / `thresholds` schema. Serde stays out of domain types — they're pure.
+Config uses camelCase (JSON convention). Domain types use snake_case. DTO layer in the FS adapter handles conversion and rejects unknown fields, including the removed legacy `terms` / `thresholds` schema. Serde stays out of domain types. They are pure.
 
 ## Test Infrastructure
 
@@ -258,10 +259,8 @@ Potential improvements not yet implemented:
 
 - **Colored terminal output** — PASS in green, FAIL in red
 - **Default config discovery** — auto-find `.prosesmasher.json` in cwd/parent dirs
-- **`prosesmasher init`** — generate a starter config
 - **CI integration** — GitHub Action wrapper
 - **Dictionary caching** — load hyphenation dictionaries once per locale, not per word
 - **Fix colon-dramatic** — improve heuristic to skip factual label:value patterns
-- **Publishing** — crates.io / binary releases
 - **`walkdir` error handling** — warn on permission errors instead of silently skipping
 - **Additional checks** — more AI slop patterns as they're discovered in the wild
