@@ -240,9 +240,14 @@ jobs:
           RELEASE_COMMIT: ${{ github.sha }}
         run: |
           echo "$ANNOUNCEMENT_BODY" > "$RUNNER_TEMP/notes.txt"
+          mapfile -t release_files < <(find ../../artifacts -maxdepth 1 -type f | sort)
+          if [ "${#release_files[@]}" -eq 0 ]; then
+            echo "No release artifact files found in ../../artifacts" >&2
+            exit 1
+          fi
           if gh release view "${{ inputs.tag }}" >/dev/null 2>&1; then
-            gh release upload "${{ inputs.tag }}" ../../artifacts/* --clobber
+            gh release upload "${{ inputs.tag }}" "${release_files[@]}" --clobber
             gh release edit "${{ inputs.tag }}" $PRERELEASE_FLAG --title "$ANNOUNCEMENT_TITLE" --notes-file "$RUNNER_TEMP/notes.txt"
           else
-            gh release create "${{ inputs.tag }}" --target "$RELEASE_COMMIT" $PRERELEASE_FLAG --title "$ANNOUNCEMENT_TITLE" --notes-file "$RUNNER_TEMP/notes.txt" ../../artifacts/*
+            gh release create "${{ inputs.tag }}" --target "$RELEASE_COMMIT" $PRERELEASE_FLAG --title "$ANNOUNCEMENT_TITLE" --notes-file "$RUNNER_TEMP/notes.txt" "${release_files[@]}"
           fi
