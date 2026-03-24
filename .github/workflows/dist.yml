@@ -112,9 +112,18 @@ jobs:
         name: Post-build
         shell: bash
         run: |
+          normalize_upload_path() {
+            case "$1" in
+              [A-Za-z]:[\\/]*|/*|apps/prosesmasher/*) printf '%s\n' "$1" ;;
+              *) printf 'apps/prosesmasher/%s\n' "$1" ;;
+            esac
+          }
+
           cp dist-manifest.json "$BUILD_MANIFEST_NAME"
           echo "paths<<EOF" >> "$GITHUB_OUTPUT"
-          dist print-upload-files-from-manifest --manifest dist-manifest.json | sed 's#^#apps/prosesmasher/#' >> "$GITHUB_OUTPUT"
+          while IFS= read -r path; do
+            normalize_upload_path "$path" >> "$GITHUB_OUTPUT"
+          done < <(dist print-upload-files-from-manifest --manifest dist-manifest.json)
           echo "apps/prosesmasher/$BUILD_MANIFEST_NAME" >> "$GITHUB_OUTPUT"
           echo "EOF" >> "$GITHUB_OUTPUT"
 
@@ -161,11 +170,20 @@ jobs:
       - id: cargo-dist
         shell: bash
         run: |
+          normalize_upload_path() {
+            case "$1" in
+              [A-Za-z]:[\\/]*|/*|apps/prosesmasher/*) printf '%s\n' "$1" ;;
+              *) printf 'apps/prosesmasher/%s\n' "$1" ;;
+            esac
+          }
+
           dist build ${{ needs.plan.outputs.tag_flag }} --output-format=json "--artifacts=global" > dist-manifest.json
           cp dist-manifest.json "$BUILD_MANIFEST_NAME"
 
           echo "paths<<EOF" >> "$GITHUB_OUTPUT"
-          jq --raw-output ".upload_files[]" dist-manifest.json | sed 's#^#apps/prosesmasher/#' >> "$GITHUB_OUTPUT"
+          while IFS= read -r path; do
+            normalize_upload_path "$path" >> "$GITHUB_OUTPUT"
+          done < <(jq --raw-output ".upload_files[]" dist-manifest.json)
           echo "apps/prosesmasher/$BUILD_MANIFEST_NAME" >> "$GITHUB_OUTPUT"
           echo "EOF" >> "$GITHUB_OUTPUT"
 
