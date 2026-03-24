@@ -22,12 +22,22 @@ jobs:
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
 
+      - name: Enable manual release mode
+        run: |
+          cp apps/prosesmasher/release-plz.toml apps/prosesmasher/release-plz.manual.toml
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path("apps/prosesmasher/release-plz.manual.toml")
+          text = path.read_text()
+          path.write_text(text.replace("release_always = false", "release_always = true", 1))
+          PY
+
       - name: Release-plz release
         id: release
         uses: release-plz/action@v0.5
         with:
           command: release
-          config: apps/prosesmasher/release-plz.toml
+          config: apps/prosesmasher/release-plz.manual.toml
           manifest_path: apps/prosesmasher/Cargo.toml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
