@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.7
+
+- Preserve visible text inside raw HTML embedded in markdown instead of dropping it. This fixes aside-heavy content copied from tools like Notion.
+- Narrow the em-dash heuristic so it flags only closed em dashes like `word—word`, while allowing spaced forms like `word — word`.
+- Reclassify `sentence-case` as a general quality heuristic while keeping its current heading-targeted behavior.
+- Clarify internal crate metadata on crates.io and tighten the release/distribution plumbing around the public `prosesmasher` package.
+
 ## 0.1.6
 
 - Refreshed the GitHub-facing and crates.io-facing README copy after the public repo launch.
