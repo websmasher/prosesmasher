@@ -54,7 +54,7 @@ pub fn check_kind(id: &str) -> &'static str {
             "readability"
         }
         "word-count" | "heading-hierarchy" | "h2-count" | "h3-count" | "bold-density"
-        | "sentence-case" | "code-fences" => "document-policy",
+        | "code-fences" => "document-policy",
         _ => "heuristics",
     }
 }

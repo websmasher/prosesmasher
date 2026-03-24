@@ -12,7 +12,7 @@ fn collect_all_returns_32() {
 #[allow(clippy::panic)] // test assertion
 fn collect_quality_returns_24() {
     let checks = collect_checks(Some("quality")).unwrap_or_else(|e| panic!("collect failed: {e}"));
-    assert_eq!(checks.len(), 25, "quality check count");
+    assert_eq!(checks.len(), 26, "quality check count");
 }
 
 #[test]
@@ -26,7 +26,7 @@ fn collect_lexical_returns_5() {
 #[allow(clippy::panic)] // test assertion
 fn collect_heuristics_returns_13() {
     let checks = collect_checks(Some("heuristics")).unwrap_or_else(|e| panic!("collect failed: {e}"));
-    assert_eq!(checks.len(), 14, "heuristics check count");
+    assert_eq!(checks.len(), 15, "heuristics check count");
 }
 
 #[test]
@@ -160,7 +160,7 @@ fn filter_check_not_in_group_errors() {
 #[allow(clippy::panic)] // test assertion
 fn collect_document_policy_returns_6() {
     let checks = collect_checks(Some("document-policy")).unwrap_or_else(|e| panic!("collect failed: {e}"));
-    assert_eq!(checks.len(), 6, "document-policy check count");
+    assert_eq!(checks.len(), 5, "document-policy check count");
 }
 
 #[test]

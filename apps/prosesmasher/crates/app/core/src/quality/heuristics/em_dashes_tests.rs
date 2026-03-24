@@ -14,8 +14,21 @@ fn no_em_dashes_passes() {
 }
 
 #[test]
-fn one_em_dash_fails() {
+fn spaced_em_dash_passes() {
     let doc = make_doc("Hello \u{2014} world.", Locale::En);
+    let config = CheckConfig::default();
+    let mut suite = ExpectationSuite::new("test");
+    super::EmDashCheck.run(&doc, &config, &mut suite);
+    let result = suite.into_suite_result();
+    assert_eq!(
+        result.statistics.successful_expectations, 1,
+        "spaced em-dash should pass"
+    );
+}
+
+#[test]
+fn closed_em_dash_fails() {
+    let doc = make_doc("Hello\u{2014}world.", Locale::En);
     let config = CheckConfig::default();
     let mut suite = ExpectationSuite::new("test");
     super::EmDashCheck.run(&doc, &config, &mut suite);
@@ -31,13 +44,13 @@ fn one_em_dash_fails() {
             .and_then(serde_json::Value::as_u64), Some(1), "match count");
         assert_eq!(evidence.and_then(|e| e.first())
             .and_then(|item| item.get("sentence"))
-            .and_then(serde_json::Value::as_str), Some("Hello \u{2014} world."), "sentence evidence");
+            .and_then(serde_json::Value::as_str), Some("Hello\u{2014}world."), "sentence evidence");
     }
 }
 
 #[test]
-fn multiple_em_dashes_fail() {
-    let doc = make_doc("First \u{2014} second \u{2014} third \u{2014} end.", Locale::En);
+fn multiple_closed_em_dashes_fail() {
+    let doc = make_doc("First\u{2014}second\u{2014}third\u{2014}end.", Locale::En);
     let config = CheckConfig::default();
     let mut suite = ExpectationSuite::new("test");
     super::EmDashCheck.run(&doc, &config, &mut suite);
@@ -70,14 +83,14 @@ fn regular_hyphen_does_not_trigger() {
 fn check_id_and_label() {
     let check = super::EmDashCheck;
     assert_eq!(check.id(), "em-dashes", "id");
-    assert_eq!(check.label(), "No Em-Dashes", "label");
+    assert_eq!(check.label(), "No Closed Em-Dashes", "label");
     assert!(check.supported_locales().is_none(), "supports all locales");
 }
 
 #[test]
-fn em_dash_inside_blockquote_detected() {
+fn closed_em_dash_inside_blockquote_detected() {
     let doc = crate::test_helpers::make_doc_in_blockquote(
-        "Hello \u{2014} world.", Locale::En,
+        "Hello\u{2014}world.", Locale::En,
     );
     let config = CheckConfig::default();
     let mut suite = ExpectationSuite::new("test");
@@ -103,7 +116,7 @@ fn em_dash_in_code_block_not_detected() {
 #[test]
 fn em_dash_across_multiple_sections() {
     let doc = crate::test_helpers::make_doc_multi_section(
-        &["No dashes here.", "Hello \u{2014} world.", "Clean text."],
+        &["No dashes here.", "Hello\u{2014}world.", "Clean text."],
         Locale::En,
     );
     let config = CheckConfig::default();
@@ -112,4 +125,17 @@ fn em_dash_across_multiple_sections() {
     let result = suite.into_suite_result();
     assert_eq!(result.statistics.unsuccessful_expectations, 1,
         "em-dash in second section must be detected");
+}
+
+#[test]
+fn one_sided_spaced_em_dash_passes() {
+    let doc = make_doc("Hello \u{2014}world.", Locale::En);
+    let config = CheckConfig::default();
+    let mut suite = ExpectationSuite::new("test");
+    super::EmDashCheck.run(&doc, &config, &mut suite);
+    let result = suite.into_suite_result();
+    assert_eq!(
+        result.statistics.successful_expectations, 1,
+        "one-sided spaced em-dash should pass"
+    );
 }

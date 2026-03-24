@@ -86,8 +86,8 @@ fn build_file_result_includes_rewrite_guidance_for_failures() {
         .label("Word Count");
     let _em_dash_result = suite
         .expect_value_to_be_between("em-dashes", 2, 0, 0)
-        .label("No Em-Dashes")
-        .checking("em dash count");
+        .label("No Closed Em-Dashes")
+        .checking("closed em dash count");
     let result = suite.into_suite_result();
     let file_result = build_file_result(Path::new("draft.md"), &result, false);
 
@@ -98,7 +98,7 @@ fn build_file_result_includes_rewrite_guidance_for_failures() {
     assert_eq!(file_result.rewrite_brief.len(), 2, "2 rewrite instructions");
     assert!(file_result.rewrite_brief.iter().any(|s| s.contains("word-count range")),
         "word-count rewrite brief present");
-    assert!(file_result.rewrite_brief.iter().any(|s| s.contains("Replace em dashes")),
+    assert!(file_result.rewrite_brief.iter().any(|s| s.contains("Replace closed em dashes")),
         "em-dash rewrite brief present");
     assert!(file_result.checks.is_none(), "checks hidden by default");
 
@@ -123,16 +123,16 @@ fn build_file_result_includes_rewrite_guidance_for_failures() {
     let em_dashes = file_result.failures.iter().find(|f| f.id == "em-dashes");
     assert!(em_dashes.is_some(), "em-dashes failure present");
     if let Some(failure) = em_dashes {
-        assert_eq!(failure.label, "No Em-Dashes", "failure label uses check label");
+        assert_eq!(failure.label, "No Closed Em-Dashes", "failure label uses check label");
         assert_eq!(failure.kind, "heuristics", "em-dashes kind");
         assert_eq!(failure.severity, "error", "em-dashes severity");
-        assert!(failure.message.contains("Found em dashes"), "em-dashes message");
-        assert_eq!(failure.checking.as_deref(), Some("em dash count"), "em-dashes checking");
+        assert!(failure.message.contains("Found closed em dashes"), "em-dashes message");
+        assert_eq!(failure.checking.as_deref(), Some("closed em dash count"), "em-dashes checking");
         assert_eq!(failure.expected, Some(serde_json::json!({
             "min": 0,
             "max": 0
         })), "em-dashes expected");
-        assert!(failure.rewrite_hint.contains("Replace em dashes"),
+        assert!(failure.rewrite_hint.contains("Replace closed em dashes"),
             "em-dashes hint");
         assert!(failure.evidence.is_none(), "no evidence for scalar count failure");
         assert_eq!(failure.observed, Some(serde_json::json!(2)), "em-dashes observed");

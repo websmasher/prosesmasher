@@ -5,12 +5,13 @@
 //! with sentence/word segmentation, formatting flags, links,
 //! lists, block quotes, and code blocks.
 
-use pulldown_cmark::{Event, Options, Parser, Tag, TagEnd, TextMergeStream};
 use prosesmasher_domain_types::{
-    Block, Document, DocumentMetadata, Heading, HeadingCounts, Link, ListBlock, Locale,
-    Paragraph, Section,
+    Block, Document, DocumentMetadata, Heading, HeadingCounts, Link, ListBlock, Locale, Paragraph,
+    Section,
 };
+use pulldown_cmark::{Event, Options, Parser, Tag, TagEnd, TextMergeStream};
 
+use crate::html_text::{extract_html_block_paragraphs, extract_inline_html_text};
 use crate::segmenter::segment_paragraph;
 
 /// Parse a markdown string into a `Document`.
@@ -95,6 +96,10 @@ struct DocumentBuilder {
 
     // H3+ headings tracked for metadata (not section headings)
     sub_headings: Vec<Heading>,
+
+    // Raw HTML block tracking — preserve visible text from block HTML
+    in_html_block: bool,
+    html_block_content: String,
 }
 
 impl DocumentBuilder {
@@ -127,6 +132,8 @@ impl DocumentBuilder {
             heading_text: String::new(),
             in_image: false,
             sub_headings: Vec::new(),
+            in_html_block: false,
+            html_block_content: String::new(),
         }
     }
 
@@ -136,10 +143,10 @@ impl DocumentBuilder {
             Event::End(tag_end) => self.handle_end(tag_end),
             Event::Text(text) => self.handle_text(&text),
             Event::Code(code) => self.handle_code(&code),
+            Event::Html(html) => self.handle_html(&html),
+            Event::InlineHtml(html) => self.handle_inline_html(&html),
             Event::SoftBreak | Event::HardBreak => self.handle_break(),
             Event::Rule
-            | Event::Html(_)
-            | Event::InlineHtml(_)
             | Event::FootnoteReference(_)
             | Event::InlineMath(_)
             | Event::DisplayMath(_)
@@ -210,8 +217,11 @@ impl DocumentBuilder {
             | Tag::MetadataBlock(_)
             | Tag::DefinitionList
             | Tag::DefinitionListTitle
-            | Tag::DefinitionListDefinition
-            | Tag::HtmlBlock => {}
+            | Tag::DefinitionListDefinition => {}
+            Tag::HtmlBlock => {
+                self.in_html_block = true;
+                self.html_block_content.clear();
+            }
         }
     }
 
@@ -300,12 +310,20 @@ impl DocumentBuilder {
             | TagEnd::MetadataBlock(_)
             | TagEnd::DefinitionList
             | TagEnd::DefinitionListTitle
-            | TagEnd::DefinitionListDefinition
-            | TagEnd::HtmlBlock => {}
+            | TagEnd::DefinitionListDefinition => {}
+            TagEnd::HtmlBlock => {
+                self.in_html_block = false;
+                self.flush_html_block();
+            }
         }
     }
 
     fn handle_text(&mut self, text: &str) {
+        if self.in_html_block {
+            self.html_block_content.push_str(text);
+            return;
+        }
+
         if self.in_code_block {
             self.code_block_text.push_str(text);
             return;
@@ -349,6 +367,24 @@ impl DocumentBuilder {
         }
     }
 
+    fn handle_html(&mut self, html: &str) {
+        if self.in_html_block {
+            self.html_block_content.push_str(html);
+            return;
+        }
+
+        self.handle_inline_html(html);
+    }
+
+    fn handle_inline_html(&mut self, html: &str) {
+        let extracted = extract_inline_html_text(html);
+        if extracted.is_empty() {
+            return;
+        }
+
+        self.handle_text(&extracted);
+    }
+
     fn handle_break(&mut self) {
         if self.in_paragraph {
             self.para_text.push(' ');
@@ -390,6 +426,40 @@ impl DocumentBuilder {
         self.para_links.clear();
     }
 
+    fn flush_html_block(&mut self) {
+        let paragraphs = extract_html_block_paragraphs(&self.html_block_content);
+        for paragraph_text in paragraphs {
+            self.push_paragraph_from_text(&paragraph_text, false, false, Vec::new());
+        }
+        self.html_block_content.clear();
+    }
+
+    fn push_paragraph_from_text(
+        &mut self,
+        text: &str,
+        has_bold: bool,
+        has_italic: bool,
+        links: Vec<Link>,
+    ) {
+        let trimmed = text.trim();
+        if trimmed.is_empty() {
+            return;
+        }
+
+        let sentences = segment_paragraph(trimmed, self.locale);
+        if sentences.is_empty() {
+            return;
+        }
+
+        let paragraph = Paragraph {
+            sentences,
+            has_bold,
+            has_italic,
+            links,
+        };
+        self.push_block(Block::Paragraph(paragraph));
+    }
+
     fn push_block(&mut self, block: Block) {
         if self.blockquote_depth > 0 {
             if let Some(inner) = self.blockquote_blocks.last_mut() {
@@ -412,6 +482,10 @@ impl DocumentBuilder {
     fn finish(mut self) -> Document {
         if self.in_paragraph {
             self.end_paragraph();
+        }
+
+        if self.in_html_block {
+            self.flush_html_block();
         }
 
         self.flush_section();
@@ -477,9 +551,8 @@ fn count_blocks(blocks: &[Block], meta: &mut DocumentMetadata) {
                     meta.total_sentences = meta.total_sentences.saturating_add(1);
                     meta.total_words = meta.total_words.saturating_add(sentence.words.len());
                     for word in &sentence.words {
-                        meta.total_syllables = meta
-                            .total_syllables
-                            .saturating_add(word.syllable_count);
+                        meta.total_syllables =
+                            meta.total_syllables.saturating_add(word.syllable_count);
                     }
                 }
             }

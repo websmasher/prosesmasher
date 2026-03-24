@@ -2,14 +2,12 @@ pub mod bold_density;
 pub mod code_fences;
 pub mod heading_counts;
 pub mod heading_hierarchy;
-pub mod sentence_case;
 pub mod word_count;
 
 pub use bold_density::BoldDensityCheck;
 pub use code_fences::CodeFencesCheck;
 pub use heading_counts::HeadingCountsCheck;
 pub use heading_hierarchy::HeadingHierarchyCheck;
-pub use sentence_case::SentenceCaseCheck;
 pub use word_count::WordCountCheck;
 
 use crate::check::BoxedCheck;
@@ -22,7 +20,6 @@ pub fn all_checks() -> Vec<BoxedCheck> {
         Box::new(CodeFencesCheck),
         Box::new(HeadingCountsCheck),
         Box::new(HeadingHierarchyCheck),
-        Box::new(SentenceCaseCheck),
         Box::new(WordCountCheck),
     ]
 }
