@@ -29,9 +29,6 @@ jobs:
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
 
-      - name: Install cargo-semver-checks
-        run: cargo install cargo-semver-checks --locked
-
       - name: Release-plz release-pr
         uses: release-plz/action@v0.5
         with:

@@ -74,7 +74,7 @@ icu_segmenter = "1"
 icu_casemap = "1"
 hyphenation = { version = "0.8", features = ["embed_all"] }
 walkdir = "2"
-low-expectations = { version = "0.1.0", path = "../../../low-expectations/crates/low-expectations" }
+low-expectations = "0.1.0"
 
 [profile.mutants]
 inherits = "dev"
