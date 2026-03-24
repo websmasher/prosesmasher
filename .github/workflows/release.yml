@@ -37,6 +37,7 @@ jobs:
         with:
           command: release-pr
           config: apps/prosesmasher/release-plz.toml
+          manifest_path: apps/prosesmasher/Cargo.toml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -46,6 +47,7 @@ jobs:
         with:
           command: release
           config: apps/prosesmasher/release-plz.toml
+          manifest_path: apps/prosesmasher/Cargo.toml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # Keep the registry token until crates.io Trusted Publishing has been
