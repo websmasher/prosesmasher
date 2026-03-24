@@ -74,14 +74,15 @@ jobs:
       run:
         working-directory: apps/prosesmasher
     steps:
-      - name: Enable Windows long paths
-        run: git config --global core.longpaths true
-
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
           persist-credentials: false
           submodules: recursive
+
+      - name: Enable Windows long paths
+        if: runner.os == 'Windows'
+        run: git config --global core.longpaths true
 
       - name: Install Rust non-interactively if not already installed
         if: ${{ matrix.container }}
