@@ -240,7 +240,10 @@ jobs:
           RELEASE_COMMIT: ${{ github.sha }}
         run: |
           echo "$ANNOUNCEMENT_BODY" > "$RUNNER_TEMP/notes.txt"
-          mapfile -t release_files < <(find ../../artifacts -maxdepth 1 -type f | sort)
+          mapfile -t release_files < <(find ../../artifacts -type f \
+            ! -name '*-dist-manifest.json' \
+            ! -name 'dist-manifest.json' \
+            | sort)
           if [ "${#release_files[@]}" -eq 0 ]; then
             echo "No release artifact files found in ../../artifacts" >&2
             exit 1
