@@ -9,6 +9,7 @@
       }
     },
     "heuristics": {
+      "sentenceCase": { "enabled": true },
       "exclamationDensity": { "maxPerParagraph": 1 },
       "hedgeStacking": { "maxPerSentence": 2 }
     },
@@ -30,7 +31,6 @@
   "documentPolicy": {
     "wordCount": { "min": 10, "max": 500 },
     "headingHierarchy": { "enabled": true },
-    "sentenceCaseHeadings": { "enabled": true },
     "codeFences": { "allowed": false }
   }
 }

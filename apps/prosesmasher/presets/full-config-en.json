@@ -49,6 +49,7 @@
     },
     "heuristics": {
       "emDashes": { "enabled": true },
+      "sentenceCase": { "enabled": true },
       "smartQuotes": { "enabled": true },
       "exclamationDensity": {
         "enabled": true,
@@ -105,7 +106,6 @@
       "h3Min": 1
     },
     "headingHierarchy": { "enabled": true },
-    "sentenceCaseHeadings": { "enabled": true },
     "boldDensity": { "min": 2 },
     "codeFences": { "allowed": false }
   }

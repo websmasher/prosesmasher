@@ -73,6 +73,9 @@ pub struct HeuristicsDto {
     pub em_dashes: Option<EnabledDto>,
     #[garde(skip)]
     #[serde(default)]
+    pub sentence_case: Option<EnabledDto>,
+    #[garde(skip)]
+    #[serde(default)]
     pub smart_quotes: Option<EnabledDto>,
     #[garde(skip)]
     #[serde(default)]
@@ -299,6 +302,7 @@ impl ConfigDto {
     /// or a range has min > max.
     pub fn into_domain(self) -> Result<CheckConfig, ConfigError> {
         let locale = parse_locale(&self.locale)?;
+        let legacy_sentence_case = self.document_policy.sentence_case_headings;
         let mut config = CheckConfig {
             locale,
             quality: default_quality_for_locale(locale),
@@ -310,6 +314,9 @@ impl ConfigDto {
 
         apply_quality_dto(&mut config, self.quality);
         apply_document_policy_dto(&mut config.document_policy, self.document_policy)?;
+        if let Some(enabled) = legacy_sentence_case {
+            config.quality.heuristics.sentence_case.enabled = enabled.enabled;
+        }
 
         Ok(config)
     }
@@ -372,6 +379,9 @@ const fn apply_toggle_heuristics(
 ) {
     if let Some(enabled) = dto.em_dashes {
         heuristics.em_dashes.enabled = enabled.enabled;
+    }
+    if let Some(enabled) = dto.sentence_case {
+        heuristics.sentence_case.enabled = enabled.enabled;
     }
     if let Some(enabled) = dto.smart_quotes {
         heuristics.smart_quotes.enabled = enabled.enabled;
@@ -473,9 +483,6 @@ fn apply_document_policy_dto(
     }
     if let Some(enabled) = dto.heading_hierarchy {
         document_policy.heading_hierarchy = enabled.enabled;
-    }
-    if let Some(enabled) = dto.sentence_case_headings {
-        document_policy.sentence_case_headings = enabled.enabled;
     }
     if let Some(bold_density) = dto.bold_density {
         document_policy.bold_density_min = bold_density.min;

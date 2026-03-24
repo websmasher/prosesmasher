@@ -65,6 +65,7 @@ fn canonical_config_normalizes() {
               "simplicityPairs":{"defaults":false,"add":[["utilize","use"]],"remove":[]}
             },
             "heuristics":{
+              "sentenceCase":{"enabled":true},
               "exclamationDensity":{"maxPerParagraph":1}
             },
             "flow":{
@@ -79,7 +80,6 @@ fn canonical_config_normalizes() {
             "wordCount":{"min":650,"max":1000},
             "headingCounts":{"h2":{"min":2,"max":6},"h3Min":1},
             "headingHierarchy":{"enabled":true},
-            "sentenceCaseHeadings":{"enabled":true},
             "codeFences":{"allowed":false},
             "boldDensity":{"min":3}
           }
@@ -131,7 +131,7 @@ fn canonical_config_normalizes() {
         Some(1)
     );
     assert!(config.document_policy.heading_hierarchy);
-    assert!(config.document_policy.sentence_case_headings);
+    assert!(config.quality.heuristics.sentence_case.enabled);
     assert!(!config.document_policy.allow_code_fences);
     assert_eq!(config.document_policy.bold_density_min, Some(3));
 }
@@ -183,6 +183,20 @@ fn general_preset_keeps_document_policy_off() {
     assert!(general.document_policy.word_count.is_none());
     assert!(general.document_policy.heading_counts.h2.is_none());
     assert!(!general.document_policy.heading_hierarchy);
+    assert!(general.quality.heuristics.sentence_case.enabled);
+}
+
+#[test]
+fn legacy_document_policy_sentence_case_still_maps_to_quality() {
+    let config = load_json_ok(
+        r#"{
+          "locale":"en",
+          "quality":{},
+          "documentPolicy":{"sentenceCaseHeadings":{"enabled":false}}
+        }"#,
+    );
+
+    assert!(!config.quality.heuristics.sentence_case.enabled);
 }
 
 #[test]

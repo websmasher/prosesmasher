@@ -6,8 +6,8 @@ use serde_json::json;
 
 use crate::check::Check;
 
-/// Checks that headings use sentence case. Flags if 3+ non-first words are capitalized
-/// (excluding all-caps acronyms).
+/// Checks that headings use sentence case. This is a style heuristic that targets
+/// heading nodes; it is not a document-structure rule.
 #[derive(Debug)]
 pub struct SentenceCaseCheck;
 
@@ -25,7 +25,7 @@ impl Check for SentenceCaseCheck {
     }
 
     fn run(&self, doc: &Document, config: &CheckConfig, suite: &mut ExpectationSuite) {
-        if !config.document_policy.sentence_case_headings {
+        if !config.quality.heuristics.sentence_case.enabled {
             return;
         }
 

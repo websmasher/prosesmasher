@@ -1,7 +1,7 @@
 use crate::check::Check;
 use low_expectations::ExpectationSuite;
 use prosesmasher_domain_types::{
-    Block, CheckConfig, Document, DocumentMetadata, DocumentPolicyConfig, Heading, Locale,
+    Block, CheckConfig, Document, DocumentMetadata, Heading, Locale,
     Paragraph, Section, Sentence,
 };
 
@@ -28,13 +28,13 @@ fn doc_with_heading(text: &str) -> Document {
 }
 
 fn config_enforcing_sentence_case() -> CheckConfig {
-    CheckConfig {
-        document_policy: DocumentPolicyConfig {
-            sentence_case_headings: true,
-            ..DocumentPolicyConfig::default()
-        },
-        ..CheckConfig::default()
-    }
+    CheckConfig::default()
+}
+
+fn config_disabling_sentence_case() -> CheckConfig {
+    let mut config = CheckConfig::default();
+    config.quality.heuristics.sentence_case.enabled = false;
+    config
 }
 
 #[test]
@@ -119,6 +119,19 @@ fn no_headings_passes() {
     assert_eq!(
         result.statistics.evaluated_expectations, 0,
         "no headings → no expectations"
+    );
+}
+
+#[test]
+fn disabled_check_skips() {
+    let doc = doc_with_heading("Why Saying Nothing Is Bad");
+    let config = config_disabling_sentence_case();
+    let mut suite = ExpectationSuite::new("test");
+    super::SentenceCaseCheck.run(&doc, &config, &mut suite);
+    let result = suite.into_suite_result();
+    assert_eq!(
+        result.statistics.evaluated_expectations, 0,
+        "disabled heuristic should skip"
     );
 }
 

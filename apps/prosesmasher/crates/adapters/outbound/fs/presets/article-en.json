@@ -7,7 +7,6 @@
       "h2": { "min": 3, "max": 7 },
       "h3Min": 1
     },
-    "headingHierarchy": { "enabled": true },
-    "sentenceCaseHeadings": { "enabled": true }
+    "headingHierarchy": { "enabled": true }
   }
 }

@@ -1,8 +1,9 @@
 //! Markdown parser adapter — `DocumentParser` implementation.
 
-mod syllables;
-mod segmenter;
+mod html_text;
 mod markdown;
+mod segmenter;
+mod syllables;
 
 use prosesmasher_domain_types::{Document, Locale, ParseError};
 use prosesmasher_ports_outbound_traits::DocumentParser;

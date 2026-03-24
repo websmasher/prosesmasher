@@ -76,11 +76,12 @@ English, Russian, German, French, Spanish, Portuguese, Indonesian. Locale affect
 | Required Terms | `required-terms` | ALL configured terms must appear |
 | Recommended Terms | `recommended-terms` | At least N from pool must appear (with optional stem matching) |
 
-### Quality: Heuristics / Patterns (14)
+### Quality: Heuristics / Patterns (15)
 
 | Check | ID | What it catches |
 |---|---|---|
 | Em-Dashes | `em-dashes` | U+2014 characters (AI slop signal) |
+| Sentence Case | `sentence-case` | Headings use sentence case (not Title Case) |
 | Smart Quotes | `smart-quotes` | Curly quote characters |
 | Exclamation Density | `exclamation-density` | Too many `!` per paragraph |
 | Negation-Reframe | `negation-reframe` | "Not X. It's Y." rhetorical pattern |
@@ -95,7 +96,7 @@ English, Russian, German, French, Spanish, Portuguese, Indonesian. Locale affect
 | Humble Bragger | `humble-bragger` | "In my experience..." credentialing |
 | Jargon Faker | `jargon-faker` | "debugging your morning routine" |
 
-### Document Policy (6)
+### Document Policy (5)
 
 | Check | ID | What it checks |
 |---|---|---|
@@ -103,7 +104,6 @@ English, Russian, German, French, Spanish, Portuguese, Indonesian. Locale affect
 | Heading Hierarchy | `heading-hierarchy` | No H1 in body, no H4+, no level skips |
 | Heading Counts | `heading-counts` | H2/H3 count within range |
 | Bold Density | `bold-density` | Minimum bold paragraphs for scannability |
-| Sentence Case | `sentence-case` | Headings use sentence case (not Title Case) |
 | Code Fences | `code-fences` | Flags code blocks in prose content |
 
 ### Quality: Flow / Readability Heuristics (6)
@@ -150,6 +150,7 @@ Canonical shape:
       }
     },
     "heuristics": {
+      "sentenceCase": { "enabled": true },
       "exclamationDensity": { "maxPerParagraph": 1 },
       "hedgeStacking": { "maxPerSentence": 2 }
     },
@@ -179,7 +180,6 @@ Canonical shape:
     },
     "boldDensity": { "min": 3 },
     "headingHierarchy": { "enabled": true },
-    "sentenceCaseHeadings": { "enabled": true },
     "codeFences": { "allowed": false }
   }
 }

@@ -9,6 +9,8 @@ pub mod humble_bragger;
 pub mod jargon_faker;
 pub mod llm_openers;
 pub mod negation_reframe;
+#[path = "../../document_policy/sentence_case.rs"]
+pub mod sentence_case;
 pub mod smart_quotes;
 pub mod summative_closer;
 pub mod triple_repeat;
@@ -24,6 +26,7 @@ pub use humble_bragger::HumbleBraggerCheck;
 pub use jargon_faker::JargonFakerCheck;
 pub use llm_openers::LlmOpenersCheck;
 pub use negation_reframe::NegationReframeCheck;
+pub use sentence_case::SentenceCaseCheck;
 pub use smart_quotes::SmartQuotesCheck;
 pub use summative_closer::SummativeCloserCheck;
 pub use triple_repeat::TripleRepeatCheck;
@@ -42,6 +45,7 @@ type SentenceRef<'a> = (&'a str, usize);
 pub fn all_checks() -> Vec<BoxedCheck> {
     vec![
         Box::new(EmDashCheck),
+        Box::new(SentenceCaseCheck),
         Box::new(SmartQuotesCheck),
         Box::new(ExclamationDensityCheck),
         Box::new(NegationReframeCheck),

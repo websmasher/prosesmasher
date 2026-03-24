@@ -63,6 +63,7 @@ impl<T> Default for OverrideList<T> {
 #[derive(Debug, Clone)]
 pub struct HeuristicsConfig {
     pub em_dashes: EnabledCheck,
+    pub sentence_case: EnabledCheck,
     pub smart_quotes: EnabledCheck,
     pub exclamation_density: ExclamationDensityConfig,
     pub hedge_stacking: HedgeStackingConfig,
@@ -83,6 +84,7 @@ impl Default for HeuristicsConfig {
     fn default() -> Self {
         Self {
             em_dashes: EnabledCheck { enabled: true },
+            sentence_case: EnabledCheck { enabled: true },
             smart_quotes: EnabledCheck { enabled: true },
             exclamation_density: ExclamationDensityConfig {
                 enabled: true,
@@ -190,7 +192,6 @@ pub struct DocumentPolicyConfig {
     pub word_count: Option<Range>,
     pub heading_counts: HeadingCountsPolicy,
     pub heading_hierarchy: bool,
-    pub sentence_case_headings: bool,
     pub bold_density_min: Option<usize>,
     pub allow_code_fences: bool,
 }
@@ -201,7 +202,6 @@ impl Default for DocumentPolicyConfig {
             word_count: None,
             heading_counts: HeadingCountsPolicy::default(),
             heading_hierarchy: false,
-            sentence_case_headings: false,
             bold_density_min: None,
             allow_code_fences: true,
         }

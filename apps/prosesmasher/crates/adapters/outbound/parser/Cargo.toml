@@ -5,7 +5,7 @@ edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
 repository.workspace = true
-description = "Markdown parsing and segmentation adapters for prosesmasher"
+description = "Internal parser adapter crate for the prosesmasher workspace. Published to support the workspace dependency graph."
 readme = "../../../../README.md"
 keywords = ["markdown", "validation", "writing", "lint"]
 categories = ["text-processing", "parser-implementations"]
@@ -16,6 +16,7 @@ prosesmasher-ports-outbound-traits = { version = "0.1.6", path = "../../../ports
 hyphenation = { workspace = true }
 icu_segmenter = { workspace = true }
 pulldown-cmark = { workspace = true }
+scraper = { workspace = true }
 
 [lints]
 workspace = true
