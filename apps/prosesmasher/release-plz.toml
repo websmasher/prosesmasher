@@ -4,7 +4,7 @@
 # =============================================================================
 
 [workspace]
-changelog_config = "cliff.toml"
+changelog_config = "apps/prosesmasher/cliff.toml"
 git_release_enable = false
 git_tag_enable = false
 release_always = false
