@@ -5,18 +5,13 @@ edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
 repository.workspace = true
-description = "Internal parser adapter crate for the prosesmasher workspace. Published to support the workspace dependency graph."
+description = "Thin facade parser crate for the prosesmasher workspace."
 readme = "../../../../README.md"
 keywords = ["markdown", "validation", "writing", "lint"]
 categories = ["text-processing", "parser-implementations"]
 
 [dependencies]
-prosesmasher-domain-types = { version = "0.1.7", path = "../../../domain/types" }
-prosesmasher-ports-outbound-traits = { version = "0.1.7", path = "../../../ports/outbound/traits" }
-hyphenation = { workspace = true }
-icu_segmenter = { workspace = true }
-pulldown-cmark = { workspace = true }
-scraper = { workspace = true }
+prosesmasher-adapters-outbound-parser-runtime = { version = "0.1.7", path = "runtime" }
 
 [lints]
 workspace = true

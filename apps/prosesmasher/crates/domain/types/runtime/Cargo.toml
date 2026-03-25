@@ -1,0 +1,17 @@
+[package]
+name = "prosesmasher-domain-types-runtime"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Internal domain types runtime crate for the prosesmasher workspace. Published to support the workspace dependency graph."
+readme = "../../../../README.md"
+keywords = ["markdown", "validation", "writing", "lint"]
+categories = ["text-processing", "development-tools"]
+
+[dev-dependencies]
+prosesmasher-domain-types-assertions = { version = "0.1.7", path = "../assertions" }
+
+[lints]
+workspace = true

@@ -1,0 +1,16 @@
+[package]
+name = "prosesmasher-domain-types-assertions"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish = false
+description = "Reusable assertions for the domain types runtime crate."
+readme = "../../../../README.md"
+
+[dependencies]
+prosesmasher-domain-types-runtime = { version = "0.1.7", path = "../runtime" }
+
+[lints]
+workspace = true

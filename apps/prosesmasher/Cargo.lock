@@ -579,14 +579,32 @@ name = "prosesmasher"
 version = "0.1.7"
 dependencies = [
  "prosesmasher-adapters-inbound-cli",
+ "prosesmasher-assertions",
 ]
 
 [[package]]
 name = "prosesmasher-adapters-inbound-cli"
 version = "0.1.7"
 dependencies = [
+ "prosesmasher-adapters-inbound-cli-runtime",
+]
+
+[[package]]
+name = "prosesmasher-adapters-inbound-cli-assertions"
+version = "0.1.7"
+dependencies = [
  "clap",
  "low-expectations",
+ "prosesmasher-adapters-inbound-cli-runtime",
+]
+
+[[package]]
+name = "prosesmasher-adapters-inbound-cli-runtime"
+version = "0.1.7"
+dependencies = [
+ "clap",
+ "low-expectations",
+ "prosesmasher-adapters-inbound-cli-assertions",
  "prosesmasher-adapters-outbound-fs",
  "prosesmasher-adapters-outbound-parser",
  "prosesmasher-app-checks-catalog-runtime",
@@ -602,8 +620,25 @@ dependencies = [
 name = "prosesmasher-adapters-outbound-fs"
 version = "0.1.7"
 dependencies = [
+ "prosesmasher-adapters-outbound-fs-runtime",
+]
+
+[[package]]
+name = "prosesmasher-adapters-outbound-fs-assertions"
+version = "0.1.7"
+dependencies = [
+ "prosesmasher-adapters-outbound-fs-runtime",
+ "prosesmasher-domain-types-runtime",
+ "prosesmasher-ports-outbound-traits",
+]
+
+[[package]]
+name = "prosesmasher-adapters-outbound-fs-runtime"
+version = "0.1.7"
+dependencies = [
  "garde",
- "prosesmasher-domain-types",
+ "prosesmasher-adapters-outbound-fs-assertions",
+ "prosesmasher-domain-types-runtime",
  "prosesmasher-ports-outbound-traits",
  "serde",
  "serde_json",
@@ -613,8 +648,23 @@ dependencies = [
 name = "prosesmasher-adapters-outbound-parser"
 version = "0.1.7"
 dependencies = [
+ "prosesmasher-adapters-outbound-parser-runtime",
+]
+
+[[package]]
+name = "prosesmasher-adapters-outbound-parser-assertions"
+version = "0.1.7"
+dependencies = [
+ "prosesmasher-domain-types",
+]
+
+[[package]]
+name = "prosesmasher-adapters-outbound-parser-runtime"
+version = "0.1.7"
+dependencies = [
  "hyphenation",
  "icu_segmenter",
+ "prosesmasher-adapters-outbound-parser-assertions",
  "prosesmasher-domain-types",
  "prosesmasher-ports-outbound-traits",
  "pulldown-cmark",
@@ -800,8 +850,29 @@ dependencies = [
 ]
 
 [[package]]
+name = "prosesmasher-assertions"
+version = "0.1.7"
+
+[[package]]
 name = "prosesmasher-domain-types"
 version = "0.1.7"
+dependencies = [
+ "prosesmasher-domain-types-runtime",
+]
+
+[[package]]
+name = "prosesmasher-domain-types-assertions"
+version = "0.1.7"
+dependencies = [
+ "prosesmasher-domain-types-runtime",
+]
+
+[[package]]
+name = "prosesmasher-domain-types-runtime"
+version = "0.1.7"
+dependencies = [
+ "prosesmasher-domain-types-assertions",
+]
 
 [[package]]
 name = "prosesmasher-ports-outbound-traits"

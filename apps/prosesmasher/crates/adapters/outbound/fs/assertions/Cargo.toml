@@ -1,0 +1,18 @@
+[package]
+name = "prosesmasher-adapters-outbound-fs-assertions"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish = false
+description = "Reusable assertions and temp-fixture helpers for the filesystem adapter runtime crate."
+readme = "../../../../../README.md"
+
+[dependencies]
+prosesmasher-adapters-outbound-fs-runtime = { version = "0.1.7", path = "../runtime" }
+prosesmasher-domain-types-runtime = { version = "0.1.7", path = "../../../../domain/types/runtime" }
+prosesmasher-ports-outbound-traits = { version = "0.1.7", path = "../../../../ports/outbound/traits" }
+
+[lints]
+workspace = true
