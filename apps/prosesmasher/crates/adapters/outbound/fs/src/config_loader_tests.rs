@@ -1,7 +1,7 @@
 use super::*;
+use crate::{full_config_contents, preset_contents};
 use prosesmasher_domain_types::Locale;
 use std::path::Path;
-use crate::{full_config_contents, preset_contents};
 
 fn write_temp(name: &str, content: &str) -> std::path::PathBuf {
     use std::sync::atomic::{AtomicU64, Ordering};
@@ -105,31 +105,30 @@ fn canonical_config_normalizes() {
             .iter()
             .any(|term| term == "actually")
     );
-    assert_eq!(config.quality.lexical.required_terms, vec!["ownership".to_owned()]);
     assert_eq!(
-        config.quality.lexical.recommended_terms.as_ref().map(|pool| pool.min_count),
+        config.quality.lexical.required_terms,
+        vec!["ownership".to_owned()]
+    );
+    assert_eq!(
+        config
+            .quality
+            .lexical
+            .recommended_terms
+            .as_ref()
+            .map(|pool| pool.min_count),
         Some(1)
     );
+    assert_eq!(config.quality.flow.word_repetition.max, 7);
+    assert_eq!(config.quality.flow.paragraph_length.max_sentences, 5);
+    assert_eq!(config.quality.readability.flesch_kincaid_min, Some(44.0));
     assert_eq!(
-        config.quality.flow.word_repetition.max,
-        7
-    );
-    assert_eq!(
-        config.quality.flow.paragraph_length.max_sentences,
-        5
-    );
-    assert_eq!(
-        config.quality.readability.flesch_kincaid_min,
-        Some(44.0)
-    );
-    assert_eq!(
-        config.document_policy.word_count.map(prosesmasher_domain_types::Range::min),
+        config
+            .document_policy
+            .word_count
+            .map(prosesmasher_domain_types::Range::min),
         Some(650)
     );
-    assert_eq!(
-        config.document_policy.heading_counts.h3_min,
-        Some(1)
-    );
+    assert_eq!(config.document_policy.heading_counts.h3_min, Some(1));
     assert!(config.document_policy.heading_hierarchy);
     assert!(config.quality.heuristics.sentence_case.enabled);
     assert!(!config.document_policy.allow_code_fences);
@@ -161,8 +160,22 @@ fn presets_keep_shared_quality_defaults() {
     let article = load_preset_ok("article-en");
     let general = load_preset_ok("general-en");
 
-    assert_eq!(article.quality.heuristics.exclamation_density.max_per_paragraph, 1);
-    assert_eq!(general.quality.heuristics.exclamation_density.max_per_paragraph, 1);
+    assert_eq!(
+        article
+            .quality
+            .heuristics
+            .exclamation_density
+            .max_per_paragraph,
+        1
+    );
+    assert_eq!(
+        general
+            .quality
+            .heuristics
+            .exclamation_density
+            .max_per_paragraph,
+        1
+    );
     assert_eq!(article.quality.flow.paragraph_length.max_sentences, 6);
     assert_eq!(general.quality.flow.paragraph_length.max_sentences, 6);
 }
@@ -172,8 +185,20 @@ fn tweet_preset_targets_shorter_copy_than_substack() {
     let tweet = load_preset_ok("tweet-en");
     let substack = load_preset_ok("substack-en");
 
-    assert_eq!(tweet.document_policy.word_count.map(prosesmasher_domain_types::Range::max), Some(60));
-    assert_eq!(substack.document_policy.word_count.map(prosesmasher_domain_types::Range::min), Some(500));
+    assert_eq!(
+        tweet
+            .document_policy
+            .word_count
+            .map(prosesmasher_domain_types::Range::max),
+        Some(60)
+    );
+    assert_eq!(
+        substack
+            .document_policy
+            .word_count
+            .map(prosesmasher_domain_types::Range::min),
+        Some(500)
+    );
 }
 
 #[test]
@@ -206,8 +231,22 @@ fn article_and_substack_use_heading_policy_but_email_and_tweet_do_not() {
     let email = load_preset_ok("email-en");
     let tweet = load_preset_ok("tweet-en");
 
-    assert_eq!(article.document_policy.heading_counts.h2.map(prosesmasher_domain_types::Range::min), Some(3));
-    assert_eq!(substack.document_policy.heading_counts.h2.map(prosesmasher_domain_types::Range::min), Some(1));
+    assert_eq!(
+        article
+            .document_policy
+            .heading_counts
+            .h2
+            .map(prosesmasher_domain_types::Range::min),
+        Some(3)
+    );
+    assert_eq!(
+        substack
+            .document_policy
+            .heading_counts
+            .h2
+            .map(prosesmasher_domain_types::Range::min),
+        Some(1)
+    );
     assert!(article.document_policy.heading_hierarchy);
     assert!(substack.document_policy.heading_hierarchy);
 
@@ -223,9 +262,27 @@ fn email_is_longer_than_tweet_but_shorter_than_article() {
     let email = load_preset_ok("email-en");
     let article = load_preset_ok("article-en");
 
-    assert_eq!(tweet.document_policy.word_count.map(prosesmasher_domain_types::Range::min), Some(8));
-    assert_eq!(email.document_policy.word_count.map(prosesmasher_domain_types::Range::min), Some(80));
-    assert_eq!(article.document_policy.word_count.map(prosesmasher_domain_types::Range::min), Some(1000));
+    assert_eq!(
+        tweet
+            .document_policy
+            .word_count
+            .map(prosesmasher_domain_types::Range::min),
+        Some(8)
+    );
+    assert_eq!(
+        email
+            .document_policy
+            .word_count
+            .map(prosesmasher_domain_types::Range::min),
+        Some(80)
+    );
+    assert_eq!(
+        article
+            .document_policy
+            .word_count
+            .map(prosesmasher_domain_types::Range::min),
+        Some(1000)
+    );
 }
 
 #[test]

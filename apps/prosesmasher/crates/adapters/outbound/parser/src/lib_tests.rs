@@ -14,5 +14,9 @@ fn markdown_parser_implements_trait() {
         metadata: prosesmasher_domain_types::DocumentMetadata::default(),
     });
     assert!(!doc.sections.is_empty(), "should produce sections");
-    assert!(doc.metadata.total_words >= 2, "should have words — got {}", doc.metadata.total_words);
+    assert!(
+        doc.metadata.total_words >= 2,
+        "should have words — got {}",
+        doc.metadata.total_words
+    );
 }

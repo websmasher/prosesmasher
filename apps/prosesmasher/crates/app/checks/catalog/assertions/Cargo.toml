@@ -1,0 +1,16 @@
+[package]
+name = "prosesmasher-app-checks-catalog-assertions"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish = false
+description = "Internal reusable check-catalog assertions for the prosesmasher workspace."
+readme = "../../../../../../README.md"
+
+[dependencies]
+prosesmasher-app-checks-catalog-runtime = { version = "0.1.7", path = "../runtime" }
+
+[lints]
+workspace = true

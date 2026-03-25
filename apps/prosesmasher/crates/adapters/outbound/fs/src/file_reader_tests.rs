@@ -1,6 +1,6 @@
 use super::*;
-use std::path::Path;
 use prosesmasher_ports_outbound_traits::FileReader;
+use std::path::Path;
 
 #[test]
 #[allow(clippy::panic)] // test assertion
@@ -9,7 +9,10 @@ fn read_existing_file() {
     let path = Path::new(env!("CARGO_MANIFEST_DIR")).join("Cargo.toml");
     match reader.read_to_string(&path) {
         Ok(content) => {
-            assert!(content.contains("prosesmasher-adapters-outbound-fs"), "crate name in content");
+            assert!(
+                content.contains("prosesmasher-adapters-outbound-fs"),
+                "crate name in content"
+            );
         }
         Err(e) => panic!("should read existing file — got {e:?}"),
     }
@@ -19,7 +22,10 @@ fn read_existing_file() {
 fn read_nonexistent_file_is_not_found() {
     let reader = FsFileReader;
     let result = reader.read_to_string(Path::new("/nonexistent/path/to/file.txt"));
-    assert!(matches!(result, Err(ReadError::NotFound(_))), "should be NotFound — got {result:?}");
+    assert!(
+        matches!(result, Err(ReadError::NotFound(_))),
+        "should be NotFound — got {result:?}"
+    );
 }
 
 #[test]
@@ -28,11 +34,16 @@ fn not_found_error_contains_path() {
     let result = reader.read_to_string(Path::new("/does/not/exist.json"));
     match result {
         Err(ReadError::NotFound(msg)) => {
-            assert!(msg.contains("exist.json"), "should contain filename — got: {msg}");
+            assert!(
+                msg.contains("exist.json"),
+                "should contain filename — got: {msg}"
+            );
         }
         other => {
-            assert!(matches!(other, Err(ReadError::NotFound(_))),
-                "expected NotFound, got {other:?}");
+            assert!(
+                matches!(other, Err(ReadError::NotFound(_))),
+                "expected NotFound, got {other:?}"
+            );
         }
     }
 }
@@ -59,11 +70,16 @@ fn read_empty_file_returns_empty_string() {
 fn read_directory_returns_error() {
     let reader = FsFileReader;
     let result = reader.read_to_string(Path::new("/tmp"));
-    assert!(result.is_err(), "reading directory should fail — got {result:?}");
+    assert!(
+        result.is_err(),
+        "reading directory should fail — got {result:?}"
+    );
     // Should NOT be NotFound — the path exists, it's just not a file
     // On macOS/Linux this is typically an Io error
-    assert!(!matches!(result, Err(ReadError::NotFound(_))),
-        "directory read should not be NotFound — got {result:?}");
+    assert!(
+        !matches!(result, Err(ReadError::NotFound(_))),
+        "directory read should not be NotFound — got {result:?}"
+    );
 }
 
 #[test]

@@ -297,11 +297,26 @@ pub fn default_quality_for_locale(locale: Locale) -> QualityConfig {
             "in conclusion".to_owned(),
         ];
         quality.lexical.simplicity_pairs.add = vec![
-            SimplePair { complex: "utilize".to_owned(), simple: "use".to_owned() },
-            SimplePair { complex: "implement".to_owned(), simple: "do".to_owned() },
-            SimplePair { complex: "facilitate".to_owned(), simple: "help".to_owned() },
-            SimplePair { complex: "numerous".to_owned(), simple: "many".to_owned() },
-            SimplePair { complex: "commence".to_owned(), simple: "start".to_owned() },
+            SimplePair {
+                complex: "utilize".to_owned(),
+                simple: "use".to_owned(),
+            },
+            SimplePair {
+                complex: "implement".to_owned(),
+                simple: "do".to_owned(),
+            },
+            SimplePair {
+                complex: "facilitate".to_owned(),
+                simple: "help".to_owned(),
+            },
+            SimplePair {
+                complex: "numerous".to_owned(),
+                simple: "many".to_owned(),
+            },
+            SimplePair {
+                complex: "commence".to_owned(),
+                simple: "start".to_owned(),
+            },
         ];
         quality.flow.word_repetition.excluded_terms.add = vec![
             "the".to_owned(),

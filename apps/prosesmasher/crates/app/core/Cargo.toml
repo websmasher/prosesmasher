@@ -11,10 +11,12 @@ keywords = ["markdown", "validation", "writing", "lint"]
 categories = ["text-processing", "development-tools"]
 
 [dependencies]
-prosesmasher-domain-types = { version = "0.1.7", path = "../../domain/types" }
-prosesmasher-ports-outbound-traits = { version = "0.1.7", path = "../../ports/outbound/traits" }
-low-expectations.workspace = true
-serde_json.workspace = true
+prosesmasher-app-checks-core-runtime = { version = "0.1.7", path = "../checks/core/runtime" }
+prosesmasher-app-checks-lexical-runtime = { version = "0.1.7", path = "../checks/lexical/runtime" }
+prosesmasher-app-checks-heuristics-runtime = { version = "0.1.7", path = "../checks/heuristics/runtime" }
+prosesmasher-app-checks-flow-runtime = { version = "0.1.7", path = "../checks/flow/runtime" }
+prosesmasher-app-checks-readability-runtime = { version = "0.1.7", path = "../checks/readability/runtime" }
+prosesmasher-app-checks-document-policy-runtime = { version = "0.1.7", path = "../checks/document-policy/runtime" }
 
 [lints]
 workspace = true

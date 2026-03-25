@@ -335,7 +335,9 @@ fn parse_locale(s: &str) -> Result<Locale, ConfigError> {
         "pt" => Ok(Locale::Pt),
         "fr" => Ok(Locale::Fr),
         "id" => Ok(Locale::Id),
-        _ => Err(ConfigError::ValidationFailed(format!("unknown locale: {s}"))),
+        _ => Err(ConfigError::ValidationFailed(format!(
+            "unknown locale: {s}"
+        ))),
     }
 }
 
@@ -525,10 +527,7 @@ fn convert_term_pool(dto: TermPoolDto) -> TermPool {
     }
 }
 
-fn convert_range(
-    dto: Option<RangeDto>,
-    field: &str,
-) -> RangeResult {
+fn convert_range(dto: Option<RangeDto>, field: &str) -> RangeResult {
     let Some(dto) = dto else {
         return Ok(None);
     };

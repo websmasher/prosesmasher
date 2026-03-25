@@ -17,9 +17,7 @@ impl FileReader for FsFileReader {
             #[allow(clippy::wildcard_enum_match_arm)] // ErrorKind is non-exhaustive
             match e.kind() {
                 std::io::ErrorKind::NotFound => ReadError::NotFound(path_str),
-                std::io::ErrorKind::PermissionDenied => {
-                    ReadError::PermissionDenied(path_str)
-                }
+                std::io::ErrorKind::PermissionDenied => ReadError::PermissionDenied(path_str),
                 _ => ReadError::Io(format!("{path_str}: {e}")),
             }
         })

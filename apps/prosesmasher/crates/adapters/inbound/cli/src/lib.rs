@@ -15,15 +15,14 @@ type CliResult = Result<CliExit, BoxError>;
 type ConfigResult = Result<prosesmasher_domain_types::CheckConfig, BoxError>;
 
 use crate::args::{Args, Command, OutputFormat, TextMode};
-use crate::checks::{collect_checks, filter_checks_by_id, list_checks};
 use crate::output::{output_result, print_check_catalog};
+use prosesmasher_adapters_outbound_fs::config_loader::parse_config_json;
 use prosesmasher_adapters_outbound_fs::{
     FsConfigLoader, FsFileReader, full_config_contents, preset_contents, shipped_presets,
 };
-use prosesmasher_adapters_outbound_fs::config_loader::parse_config_json;
 use prosesmasher_adapters_outbound_parser::MarkdownParser;
-use prosesmasher_app_core::check::Check;
-use prosesmasher_app_core::runner::run_checks;
+use prosesmasher_app_checks_catalog_runtime::{collect_checks, filter_checks_by_id, list_checks};
+use prosesmasher_app_checks_core_runtime::{Check, run_checks};
 use prosesmasher_ports_outbound_traits::{ConfigLoader, DocumentParser, FileReader};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -56,8 +55,7 @@ pub fn collect_files(path: &std::path::Path) -> Vec<PathBuf> {
             .into_iter()
             .filter_map(Result::ok)
             .filter(|e| {
-                e.file_type().is_file()
-                    && e.path().extension().is_some_and(|ext| ext == "md")
+                e.file_type().is_file() && e.path().extension().is_some_and(|ext| ext == "md")
             })
             .map(walkdir::DirEntry::into_path)
             .collect();
@@ -118,9 +116,10 @@ pub fn run(args: Args) -> CliResult {
             run_list_presets_command();
             Ok(CliExit::Success)
         }
-        Command::DumpConfig { preset, full_config } => {
-            run_dump_config_command(preset.as_deref(), full_config)
-        }
+        Command::DumpConfig {
+            preset,
+            full_config,
+        } => run_dump_config_command(preset.as_deref(), full_config),
     }
 }
 
@@ -130,14 +129,19 @@ fn run_check_command(input: CheckCommandInput<'_>) -> CliResult {
             return Err("Do not pass a path with --list-checks.".into());
         }
         if input.config_path.is_some() || input.preset_name.is_some() || input.check_ids.is_some() {
-            return Err("Use --list-checks by itself, optionally with --group and --format.".into());
+            return Err(
+                "Use --list-checks by itself, optionally with --group and --format.".into(),
+            );
         }
-        let entries = list_checks(input.group).map_err(|e| -> Box<dyn std::error::Error> { e.into() })?;
+        let entries =
+            list_checks(input.group).map_err(|e| -> Box<dyn std::error::Error> { e.into() })?;
         print_check_catalog(&entries, input.format);
         return Ok(CliExit::Success);
     }
 
-    let path = input.path.ok_or("Missing path. Pass a file or directory, or use --list-checks.")?;
+    let path = input
+        .path
+        .ok_or("Missing path. Pass a file or directory, or use --list-checks.")?;
 
     let file_reader = FsFileReader;
     let config_loader = FsConfigLoader;
@@ -150,14 +154,12 @@ fn run_check_command(input: CheckCommandInput<'_>) -> CliResult {
         return Err("No .md files found".into());
     }
 
-    let mut all_checks = collect_checks(input.group).map_err(|e| -> Box<dyn std::error::Error> {
-        e.into()
-    })?;
+    let mut all_checks =
+        collect_checks(input.group).map_err(|e| -> Box<dyn std::error::Error> { e.into() })?;
 
     if let Some(ids) = input.check_ids {
-        all_checks = filter_checks_by_id(all_checks, ids).map_err(|e| -> Box<dyn std::error::Error> {
-            e.into()
-        })?;
+        all_checks = filter_checks_by_id(all_checks, ids)
+            .map_err(|e| -> Box<dyn std::error::Error> { e.into() })?;
     }
 
     let mut any_failed = false;
@@ -167,7 +169,13 @@ fn run_check_command(input: CheckCommandInput<'_>) -> CliResult {
         let check_refs: Vec<&dyn Check> = all_checks.iter().map(AsRef::as_ref).collect();
         let result = run_checks(&check_refs, &doc, &check_config);
 
-        output_result(file, &result, input.format, input.text_mode, input.include_checks);
+        output_result(
+            file,
+            &result,
+            input.format,
+            input.text_mode,
+            input.include_checks,
+        );
 
         if !result.success {
             any_failed = true;
@@ -189,11 +197,14 @@ fn load_check_config(
     match (config_path, preset_name) {
         (Some(path), None) => Ok(config_loader.load_config(path)?),
         (None, Some(name)) => {
-            let preset = preset_contents(name)
-                .ok_or_else(|| format!("Unknown preset: {name}. Run `prosesmasher list-presets`."))?;
+            let preset = preset_contents(name).ok_or_else(|| {
+                format!("Unknown preset: {name}. Run `prosesmasher list-presets`.")
+            })?;
             Ok(parse_config_json(preset)?)
         }
-        (None, None) => Err("Use exactly one config source: --preset <name> or --config <path>.".into()),
+        (None, None) => {
+            Err("Use exactly one config source: --preset <name> or --config <path>.".into())
+        }
         (Some(_), Some(_)) => Err("Use either --config or --preset, not both.".into()),
     }
 }
@@ -206,10 +217,7 @@ fn run_list_presets_command() {
     }
 }
 
-fn run_dump_config_command(
-    preset_name: Option<&str>,
-    full_config: bool,
-) -> CliResult {
+fn run_dump_config_command(preset_name: Option<&str>, full_config: bool) -> CliResult {
     let content = match (preset_name, full_config) {
         (Some(name), false) => preset_contents(name)
             .ok_or_else(|| format!("Unknown preset: {name}. Run `prosesmasher list-presets`."))?,
