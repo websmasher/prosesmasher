@@ -1,24 +1,13 @@
 #![allow(clippy::disallowed_methods, clippy::panic)]
 
 use prosesmasher_adapters_inbound_cli as _;
+use prosesmasher_assertions::packaged_cli_smoke::{
+    cargo_bin,
+    fixture_path,
+    workspace_root,
+};
 
-use std::path::{Path, PathBuf};
 use std::process::Command;
-
-fn cargo_bin() -> String {
-    std::env::var("CARGO").unwrap_or_else(|_| "cargo".to_owned())
-}
-
-fn workspace_root() -> PathBuf {
-    Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("../..")
-        .canonicalize()
-        .unwrap_or_else(|e| panic!("workspace root: {e}"))
-}
-
-fn fixture_path() -> PathBuf {
-    workspace_root().join("crates/adapters/inbound/cli/tests/fixtures/test-essay.md")
-}
 
 #[test]
 #[allow(clippy::panic)]
@@ -29,7 +18,7 @@ fn packaged_fs_crate_contains_preset_assets() {
             "package",
             "--list",
             "-p",
-            "prosesmasher-adapters-outbound-fs",
+            "prosesmasher-adapters-outbound-fs-runtime",
         ])
         .output()
         .unwrap_or_else(|e| panic!("cargo package --list failed to start: {e}"));

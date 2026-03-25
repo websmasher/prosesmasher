@@ -1,6 +1,8 @@
 [workspace]
 members = [
     "crates/domain/types",
+    "crates/domain/types/runtime",
+    "crates/domain/types/assertions",
     "crates/ports/outbound/traits",
     "crates/app/core",
     "crates/app/checks/core/runtime",
@@ -19,8 +21,15 @@ members = [
     "crates/app/checks/document-policy/runtime",
     "crates/app/checks/document-policy/assertions",
     "crates/adapters/inbound/cli",
+    "crates/adapters/inbound/cli/runtime",
+    "crates/adapters/inbound/cli/assertions",
     "crates/adapters/outbound/fs",
+    "crates/adapters/outbound/fs/runtime",
+    "crates/adapters/outbound/fs/assertions",
     "crates/adapters/outbound/parser",
+    "crates/adapters/outbound/parser/runtime",
+    "crates/adapters/outbound/parser/assertions",
+    "packages/prosesmasher/assertions",
     "packages/prosesmasher",
 ]
 resolver = "2"

@@ -17,5 +17,8 @@ path = "src/main.rs"
 [dependencies]
 prosesmasher-adapters-inbound-cli = { version = "0.1.7", path = "../../crates/adapters/inbound/cli" }
 
+[dev-dependencies]
+prosesmasher-assertions = { version = "0.1.7", path = "./assertions" }
+
 [lints]
 workspace = true

@@ -1,0 +1,15 @@
+[package]
+name = "prosesmasher-assertions"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Internal packaged-binary assertion helpers for the prosesmasher workspace."
+readme = "../README.md"
+publish = false
+
+[dependencies]
+
+[lints]
+workspace = true

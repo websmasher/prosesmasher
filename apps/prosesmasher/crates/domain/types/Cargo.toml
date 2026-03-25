@@ -5,10 +5,13 @@ edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
 repository.workspace = true
-description = "Internal domain types crate for the prosesmasher workspace. Published to support the workspace dependency graph."
+description = "Compatibility facade over the split domain types runtime crate."
 readme = "../../../README.md"
 keywords = ["markdown", "validation", "writing", "lint"]
 categories = ["text-processing", "development-tools"]
+
+[dependencies]
+prosesmasher-domain-types-runtime = { version = "0.1.7", path = "runtime" }
 
 [lints]
 workspace = true

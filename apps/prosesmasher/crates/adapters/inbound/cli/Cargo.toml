@@ -11,17 +11,7 @@ keywords = ["markdown", "validation", "writing", "lint"]
 categories = ["command-line-utilities", "text-processing"]
 
 [dependencies]
-prosesmasher-domain-types = { version = "0.1.7", path = "../../../domain/types" }
-prosesmasher-ports-outbound-traits = { version = "0.1.7", path = "../../../ports/outbound/traits" }
-prosesmasher-app-checks-core-runtime = { version = "0.1.7", path = "../../../app/checks/core/runtime" }
-prosesmasher-app-checks-catalog-runtime = { version = "0.1.7", path = "../../../app/checks/catalog/runtime" }
-prosesmasher-adapters-outbound-fs = { version = "0.1.7", path = "../../outbound/fs" }
-prosesmasher-adapters-outbound-parser = { version = "0.1.7", path = "../../outbound/parser" }
-clap = { workspace = true }
-serde = { workspace = true }
-serde_json = { workspace = true }
-walkdir = { workspace = true }
-low-expectations.workspace = true
+prosesmasher-adapters-inbound-cli-runtime = { version = "0.1.7", path = "./runtime" }
 
 [lints]
 workspace = true

@@ -1,0 +1,18 @@
+[package]
+name = "prosesmasher-adapters-inbound-cli-assertions"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Internal CLI assertion helpers for the prosesmasher workspace."
+readme = "../../../../../README.md"
+publish = false
+
+[dependencies]
+prosesmasher-adapters-inbound-cli-runtime = { version = "0.1.7", path = "../runtime" }
+low-expectations.workspace = true
+clap.workspace = true
+
+[lints]
+workspace = true

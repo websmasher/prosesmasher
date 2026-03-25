@@ -1,0 +1,24 @@
+[package]
+name = "prosesmasher-adapters-outbound-fs-runtime"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Internal filesystem adapter runtime crate for the prosesmasher workspace. Published to support the workspace dependency graph."
+readme = "../../../../../README.md"
+keywords = ["markdown", "validation", "writing", "lint"]
+categories = ["text-processing", "development-tools"]
+
+[dependencies]
+prosesmasher-domain-types-runtime = { version = "0.1.7", path = "../../../../domain/types/runtime" }
+prosesmasher-ports-outbound-traits = { version = "0.1.7", path = "../../../../ports/outbound/traits" }
+serde = { workspace = true }
+serde_json = { workspace = true }
+garde = { workspace = true }
+
+[dev-dependencies]
+prosesmasher-adapters-outbound-fs-assertions = { version = "0.1.7", path = "../assertions" }
+
+[lints]
+workspace = true
