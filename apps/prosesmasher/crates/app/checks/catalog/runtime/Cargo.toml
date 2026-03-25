@@ -1,0 +1,22 @@
+[package]
+name = "prosesmasher-app-checks-catalog-runtime"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Internal check catalog crate for the prosesmasher workspace."
+readme = "../../../../../../README.md"
+
+[dependencies]
+prosesmasher-domain-types = { version = "0.1.7", path = "../../../../domain/types" }
+prosesmasher-app-checks-core-runtime = { version = "0.1.7", path = "../../core/runtime" }
+prosesmasher-app-checks-lexical-runtime = { version = "0.1.7", path = "../../lexical/runtime" }
+prosesmasher-app-checks-heuristics-runtime = { version = "0.1.7", path = "../../heuristics/runtime" }
+prosesmasher-app-checks-flow-runtime = { version = "0.1.7", path = "../../flow/runtime" }
+prosesmasher-app-checks-readability-runtime = { version = "0.1.7", path = "../../readability/runtime" }
+prosesmasher-app-checks-document-policy-runtime = { version = "0.1.7", path = "../../document-policy/runtime" }
+serde.workspace = true
+
+[lints]
+workspace = true

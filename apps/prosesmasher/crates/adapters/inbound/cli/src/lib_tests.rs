@@ -6,7 +6,11 @@ fn single_file_returns_that_file() {
     let path = Path::new("some/file.md");
     let files = collect_files(path);
     assert_eq!(files.len(), 1, "single file should return one entry");
-    assert_eq!(files.first().map(PathBuf::as_path), Some(path), "should be the same path");
+    assert_eq!(
+        files.first().map(PathBuf::as_path),
+        Some(path),
+        "should be the same path"
+    );
 }
 
 #[test]
@@ -65,7 +69,10 @@ fn directory_skips_non_md() {
     let files = collect_files(&dir);
     assert_eq!(files.len(), 1, "only .md files");
     assert_eq!(
-        files.first().and_then(|p| p.file_name()).and_then(|n| n.to_str()),
+        files
+            .first()
+            .and_then(|p| p.file_name())
+            .and_then(|n| n.to_str()),
         Some("doc.md"),
         "should be the .md file"
     );

@@ -6,7 +6,11 @@ use super::*;
 
 #[test]
 fn locale_default_is_en() {
-    assert_eq!(Locale::default(), Locale::En, "default locale must be English");
+    assert_eq!(
+        Locale::default(),
+        Locale::En,
+        "default locale must be English"
+    );
 }
 
 #[test]
@@ -25,7 +29,15 @@ fn locale_equality_different() {
 
 #[test]
 fn locale_all_variants_are_distinct() {
-    let all = [Locale::En, Locale::Ru, Locale::De, Locale::Es, Locale::Pt, Locale::Fr, Locale::Id];
+    let all = [
+        Locale::En,
+        Locale::Ru,
+        Locale::De,
+        Locale::Es,
+        Locale::Pt,
+        Locale::Fr,
+        Locale::Id,
+    ];
     for (i, a) in all.iter().enumerate() {
         for (j, b) in all.iter().enumerate() {
             if i != j {
@@ -79,20 +91,29 @@ fn heading_counts_default_zeroed() {
 #[test]
 fn check_config_default_locale_is_en() {
     let config = CheckConfig::default();
-    assert_eq!(config.locale, Locale::En, "default config locale must be En");
+    assert_eq!(
+        config.locale,
+        Locale::En,
+        "default config locale must be En"
+    );
 }
 
 #[test]
 fn check_config_default_has_canonical_defaults() {
     let config = CheckConfig::default();
-    assert!(config.quality.heuristics.em_dashes.enabled, "em dashes enabled");
+    assert!(
+        config.quality.heuristics.em_dashes.enabled,
+        "em dashes enabled"
+    );
     assert!(config.quality.readability.enabled, "readability enabled");
     assert_eq!(
-        config.quality.flow.paragraph_length.max_sentences,
-        6,
+        config.quality.flow.paragraph_length.max_sentences, 6,
         "paragraph length default"
     );
-    assert!(config.document_policy.word_count.is_none(), "word_count policy off by default");
+    assert!(
+        config.document_policy.word_count.is_none(),
+        "word_count policy off by default"
+    );
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -113,8 +134,14 @@ fn build_test_document() -> Document {
                         sentences: vec![Sentence {
                             text: "Hello world.".to_owned(),
                             words: vec![
-                                Word { text: "Hello".to_owned(), syllable_count: 2 },
-                                Word { text: "world".to_owned(), syllable_count: 1 },
+                                Word {
+                                    text: "Hello".to_owned(),
+                                    syllable_count: 2,
+                                },
+                                Word {
+                                    text: "world".to_owned(),
+                                    syllable_count: 1,
+                                },
                             ],
                         }],
                         has_bold: true,
@@ -129,14 +156,12 @@ fn build_test_document() -> Document {
                         items: vec!["item one".to_owned(), "item two".to_owned()],
                     }),
                     Block::CodeBlock("fn main() {}".to_owned()),
-                    Block::BlockQuote(vec![
-                        Block::Paragraph(Paragraph {
-                            sentences: vec![],
-                            has_bold: false,
-                            has_italic: true,
-                            links: vec![],
-                        }),
-                    ]),
+                    Block::BlockQuote(vec![Block::Paragraph(Paragraph {
+                        sentences: vec![],
+                        has_bold: false,
+                        has_italic: true,
+                        links: vec![],
+                    })]),
                 ],
             },
             Section {
@@ -148,7 +173,12 @@ fn build_test_document() -> Document {
             total_words: 2,
             total_sentences: 1,
             total_syllables: 3,
-            heading_counts: HeadingCounts { h1: 0, h2: 1, h3: 0, h4_plus: 0 },
+            heading_counts: HeadingCounts {
+                h1: 0,
+                h2: 1,
+                h3: 0,
+                h4_plus: 0,
+            },
             bold_count: 1,
             italic_count: 1,
             paragraph_count: 2,
@@ -181,7 +211,10 @@ fn document_construction_paragraph_block() {
     assert_eq!(heading.text, "Introduction", "heading text");
     assert_eq!(s0.blocks.len(), 4, "block count");
 
-    assert!(matches!(s0.blocks.first(), Some(Block::Paragraph(_))), "blocks[0] must be Paragraph");
+    assert!(
+        matches!(s0.blocks.first(), Some(Block::Paragraph(_))),
+        "blocks[0] must be Paragraph"
+    );
     if let Some(Block::Paragraph(p)) = s0.blocks.first() {
         assert!(p.has_bold, "has_bold");
         assert!(!p.has_italic, "has_italic");
@@ -204,7 +237,10 @@ fn document_construction_list_block() {
         assert!(!doc.sections.is_empty(), "section 0 must exist");
         return;
     };
-    assert!(matches!(s0.blocks.get(1), Some(Block::List(_))), "blocks[1] must be List");
+    assert!(
+        matches!(s0.blocks.get(1), Some(Block::List(_))),
+        "blocks[1] must be List"
+    );
     if let Some(Block::List(list)) = s0.blocks.get(1) {
         assert!(!list.ordered, "unordered list");
         assert_eq!(list.items.len(), 2, "list items");
@@ -227,10 +263,22 @@ fn document_construction_section_without_heading() {
 
 #[test]
 fn word_equality() {
-    let a = Word { text: "hello".to_owned(), syllable_count: 2 };
-    let b = Word { text: "hello".to_owned(), syllable_count: 2 };
-    let c = Word { text: "world".to_owned(), syllable_count: 1 };
-    let d = Word { text: "hello".to_owned(), syllable_count: 3 };
+    let a = Word {
+        text: "hello".to_owned(),
+        syllable_count: 2,
+    };
+    let b = Word {
+        text: "hello".to_owned(),
+        syllable_count: 2,
+    };
+    let c = Word {
+        text: "world".to_owned(),
+        syllable_count: 1,
+    };
+    let d = Word {
+        text: "hello".to_owned(),
+        syllable_count: 3,
+    };
     assert_eq!(a, b, "same word = equal");
     assert_ne!(a, c, "different text = not equal");
     assert_ne!(a, d, "same text, different syllable count = not equal");
@@ -238,7 +286,10 @@ fn word_equality() {
 
 #[test]
 fn word_clone() {
-    let a = Word { text: "test".to_owned(), syllable_count: 1 };
+    let a = Word {
+        text: "test".to_owned(),
+        syllable_count: 1,
+    };
     #[allow(clippy::redundant_clone)] // intentionally testing Clone trait
     let b = a.clone();
     assert_eq!(a, b, "Word must be Clone");
@@ -261,7 +312,10 @@ fn simple_pair_construction() {
 #[test]
 fn range_construction_and_copy() {
     let Some(r) = Range::new(650, 1000) else {
-        assert!(Range::new(650, 1000).is_some(), "valid range must construct");
+        assert!(
+            Range::new(650, 1000).is_some(),
+            "valid range must construct"
+        );
         return;
     };
     let r2 = r; // Copy
@@ -363,40 +417,58 @@ fn config_error_is_send_sync() {
 #[test]
 fn read_error_as_boxed_dyn() {
     let boxed: Box<dyn std::error::Error> = Box::new(ReadError::Io("fail".to_owned()));
-    assert!(boxed.to_string().contains("fail"), "boxed ReadError Display works");
+    assert!(
+        boxed.to_string().contains("fail"),
+        "boxed ReadError Display works"
+    );
 }
 
 #[test]
 fn parse_error_as_boxed_dyn() {
     let boxed: Box<dyn std::error::Error> = Box::new(ParseError::InvalidMarkdown("bad".to_owned()));
-    assert!(boxed.to_string().contains("bad"), "boxed ParseError Display works");
+    assert!(
+        boxed.to_string().contains("bad"),
+        "boxed ParseError Display works"
+    );
 }
 
 #[test]
 fn config_error_as_boxed_dyn() {
     let boxed: Box<dyn std::error::Error> = Box::new(ConfigError::NotFound("missing".to_owned()));
-    assert!(boxed.to_string().contains("missing"), "boxed ConfigError Display works");
+    assert!(
+        boxed.to_string().contains("missing"),
+        "boxed ConfigError Display works"
+    );
 }
 
 #[test]
 fn read_error_source_is_none() {
     use std::error::Error;
     let read_err = ReadError::NotFound("test".to_owned());
-    assert!(read_err.source().is_none(), "ReadError::source() should be None");
+    assert!(
+        read_err.source().is_none(),
+        "ReadError::source() should be None"
+    );
 }
 
 #[test]
 fn parse_error_source_is_none() {
     use std::error::Error;
     let parse_err = ParseError::InvalidMarkdown("test".to_owned());
-    assert!(parse_err.source().is_none(), "ParseError::source() should be None");
+    assert!(
+        parse_err.source().is_none(),
+        "ParseError::source() should be None"
+    );
 }
 
 #[test]
 fn config_error_source_is_none() {
     use std::error::Error;
     let config_err = ConfigError::NotFound("test".to_owned());
-    assert!(config_err.source().is_none(), "ConfigError::source() should be None");
+    assert!(
+        config_err.source().is_none(),
+        "ConfigError::source() should be None"
+    );
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -409,7 +481,12 @@ fn document_metadata_clone() {
         total_words: 100,
         total_sentences: 10,
         total_syllables: 150,
-        heading_counts: HeadingCounts { h1: 1, h2: 3, h3: 5, h4_plus: 0 },
+        heading_counts: HeadingCounts {
+            h1: 1,
+            h2: 3,
+            h3: 5,
+            h4_plus: 0,
+        },
         bold_count: 2,
         italic_count: 1,
         paragraph_count: 8,
@@ -432,8 +509,15 @@ fn check_config_clone() {
     #[allow(clippy::redundant_clone)] // intentionally testing Clone trait
     let cloned = config.clone();
     assert_eq!(cloned.locale, Locale::De, "clone preserves locale");
-    assert_eq!(cloned.quality.lexical.prohibited_terms.add.len(), 1, "clone preserves lexical config");
-    assert!(cloned.document_policy.word_count.is_some(), "clone preserves document policy");
+    assert_eq!(
+        cloned.quality.lexical.prohibited_terms.add.len(),
+        1,
+        "clone preserves lexical config"
+    );
+    assert!(
+        cloned.document_policy.word_count.is_some(),
+        "clone preserves document policy"
+    );
 }
 
 #[test]
@@ -441,7 +525,11 @@ fn read_error_clone() {
     let read_err = ReadError::NotFound("test".to_owned());
     #[allow(clippy::redundant_clone)] // intentionally testing Clone trait
     let cloned = read_err.clone();
-    assert_eq!(read_err.to_string(), cloned.to_string(), "ReadError clone preserves Display");
+    assert_eq!(
+        read_err.to_string(),
+        cloned.to_string(),
+        "ReadError clone preserves Display"
+    );
 }
 
 #[test]
@@ -449,7 +537,11 @@ fn parse_error_clone() {
     let parse_err = ParseError::InvalidMarkdown("test".to_owned());
     #[allow(clippy::redundant_clone)] // intentionally testing Clone trait
     let cloned = parse_err.clone();
-    assert_eq!(parse_err.to_string(), cloned.to_string(), "ParseError clone preserves Display");
+    assert_eq!(
+        parse_err.to_string(),
+        cloned.to_string(),
+        "ParseError clone preserves Display"
+    );
 }
 
 #[test]
@@ -457,7 +549,11 @@ fn config_error_clone() {
     let config_err = ConfigError::NotFound("test".to_owned());
     #[allow(clippy::redundant_clone)] // intentionally testing Clone trait
     let cloned = config_err.clone();
-    assert_eq!(config_err.to_string(), cloned.to_string(), "ConfigError clone preserves Display");
+    assert_eq!(
+        config_err.to_string(),
+        cloned.to_string(),
+        "ConfigError clone preserves Display"
+    );
 }
 
 #[test]
@@ -503,30 +599,54 @@ fn document_debug_non_empty() {
 #[test]
 fn error_debug_contains_variant() {
     let read_dbg = format!("{:?}", ReadError::NotFound("x".to_owned()));
-    assert!(read_dbg.contains("NotFound"), "ReadError debug should contain variant name");
+    assert!(
+        read_dbg.contains("NotFound"),
+        "ReadError debug should contain variant name"
+    );
 
     let parse_dbg = format!("{:?}", ParseError::InvalidMarkdown("x".to_owned()));
-    assert!(parse_dbg.contains("InvalidMarkdown"), "ParseError debug should contain variant name");
+    assert!(
+        parse_dbg.contains("InvalidMarkdown"),
+        "ParseError debug should contain variant name"
+    );
 
     let config_dbg = format!("{:?}", ConfigError::ValidationFailed("x".to_owned()));
-    assert!(config_dbg.contains("ValidationFailed"), "ConfigError debug should contain variant name");
+    assert!(
+        config_dbg.contains("ValidationFailed"),
+        "ConfigError debug should contain variant name"
+    );
 }
 
 #[test]
 fn block_variants_debug() {
     let p = Block::Paragraph(Paragraph {
-        sentences: vec![], has_bold: false, has_italic: false, links: vec![],
+        sentences: vec![],
+        has_bold: false,
+        has_italic: false,
+        links: vec![],
     });
-    assert!(format!("{p:?}").contains("Paragraph"), "Block::Paragraph debug");
+    assert!(
+        format!("{p:?}").contains("Paragraph"),
+        "Block::Paragraph debug"
+    );
 
-    let l = Block::List(ListBlock { ordered: true, items: vec![] });
+    let l = Block::List(ListBlock {
+        ordered: true,
+        items: vec![],
+    });
     assert!(format!("{l:?}").contains("List"), "Block::List debug");
 
     let c = Block::CodeBlock("code".to_owned());
-    assert!(format!("{c:?}").contains("CodeBlock"), "Block::CodeBlock debug");
+    assert!(
+        format!("{c:?}").contains("CodeBlock"),
+        "Block::CodeBlock debug"
+    );
 
     let q = Block::BlockQuote(vec![]);
-    assert!(format!("{q:?}").contains("BlockQuote"), "Block::BlockQuote debug");
+    assert!(
+        format!("{q:?}").contains("BlockQuote"),
+        "Block::BlockQuote debug"
+    );
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -536,7 +656,9 @@ fn block_variants_debug() {
 #[test]
 fn document_construction_sentence_content() {
     let doc = build_test_document();
-    let Some(s0) = doc.sections.first() else { return; };
+    let Some(s0) = doc.sections.first() else {
+        return;
+    };
     if let Some(Block::Paragraph(p)) = s0.blocks.first()
         && let Some(sentence) = p.sentences.first()
     {
@@ -556,7 +678,9 @@ fn document_construction_sentence_content() {
 #[test]
 fn document_construction_link_text() {
     let doc = build_test_document();
-    let Some(s0) = doc.sections.first() else { return; };
+    let Some(s0) = doc.sections.first() else {
+        return;
+    };
     if let Some(Block::Paragraph(p)) = s0.blocks.first()
         && let Some(link) = p.links.first()
     {
@@ -568,7 +692,9 @@ fn document_construction_link_text() {
 #[test]
 fn document_construction_list_items_content() {
     let doc = build_test_document();
-    let Some(s0) = doc.sections.first() else { return; };
+    let Some(s0) = doc.sections.first() else {
+        return;
+    };
     if let Some(Block::List(list)) = s0.blocks.get(1) {
         if let Some(item0) = list.items.first() {
             assert_eq!(item0, "item one", "first list item");
@@ -582,8 +708,13 @@ fn document_construction_list_items_content() {
 #[test]
 fn document_construction_code_block_content() {
     let doc = build_test_document();
-    let Some(s0) = doc.sections.first() else { return; };
-    assert!(matches!(s0.blocks.get(2), Some(Block::CodeBlock(_))), "blocks[2] must be CodeBlock");
+    let Some(s0) = doc.sections.first() else {
+        return;
+    };
+    assert!(
+        matches!(s0.blocks.get(2), Some(Block::CodeBlock(_))),
+        "blocks[2] must be CodeBlock"
+    );
     if let Some(Block::CodeBlock(code)) = s0.blocks.get(2) {
         assert_eq!(code, "fn main() {}", "code block content");
     }
@@ -592,8 +723,13 @@ fn document_construction_code_block_content() {
 #[test]
 fn document_construction_blockquote_content() {
     let doc = build_test_document();
-    let Some(s0) = doc.sections.first() else { return; };
-    assert!(matches!(s0.blocks.get(3), Some(Block::BlockQuote(_))), "blocks[3] must be BlockQuote");
+    let Some(s0) = doc.sections.first() else {
+        return;
+    };
+    assert!(
+        matches!(s0.blocks.get(3), Some(Block::BlockQuote(_))),
+        "blocks[3] must be BlockQuote"
+    );
     if let Some(Block::BlockQuote(inner)) = s0.blocks.get(3) {
         assert_eq!(inner.len(), 1, "blockquote has 1 inner block");
         if let Some(Block::Paragraph(p)) = inner.first() {
@@ -613,9 +749,15 @@ fn lexical_config_with_simplicity_pairs() {
         simplicity_pairs: OverrideList {
             defaults: false,
             add: vec![
-            SimplePair { complex: "utilize".to_owned(), simple: "use".to_owned() },
-            SimplePair { complex: "implement".to_owned(), simple: "do".to_owned() },
-        ],
+                SimplePair {
+                    complex: "utilize".to_owned(),
+                    simple: "use".to_owned(),
+                },
+                SimplePair {
+                    complex: "implement".to_owned(),
+                    simple: "do".to_owned(),
+                },
+            ],
             remove: Vec::new(),
         },
         ..LexicalConfig::default()
@@ -644,7 +786,11 @@ fn readability_config_with_float_values() {
     assert_eq!(t.flesch_kincaid_min, Some(50.0), "flesch_kincaid_min");
     assert_eq!(t.gunning_fog_max, Some(14.0), "gunning_fog_max");
     assert_eq!(t.coleman_liau_max, Some(12.5), "coleman_liau_max");
-    assert_eq!(t.avg_sentence_length_max, Some(25), "avg_sentence_length_max");
+    assert_eq!(
+        t.avg_sentence_length_max,
+        Some(25),
+        "avg_sentence_length_max"
+    );
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -674,7 +820,9 @@ fn range_allows_min_equals_max() {
 
 #[test]
 fn range_allows_zero() {
-    let Some(r) = Range::new(0, 0) else { return; };
+    let Some(r) = Range::new(0, 0) else {
+        return;
+    };
     assert_eq!(r.min(), 0, "zero min");
     assert_eq!(r.max(), 0, "zero max");
 }
@@ -688,8 +836,14 @@ fn sentence_word_count_matches_words_len() {
     let sentence = Sentence {
         text: "Hello world.".to_owned(),
         words: vec![
-            Word { text: "Hello".to_owned(), syllable_count: 2 },
-            Word { text: "world".to_owned(), syllable_count: 1 },
+            Word {
+                text: "Hello".to_owned(),
+                syllable_count: 2,
+            },
+            Word {
+                text: "world".to_owned(),
+                syllable_count: 1,
+            },
         ],
     };
     assert_eq!(sentence.word_count(), 2, "word_count() == words.len()");

@@ -20,12 +20,11 @@ use prosesmasher_ports_outbound_traits::FileReader;
 /// or cannot be converted into the canonical domain configuration.
 pub fn parse_config_json(content: &str) -> Result<CheckConfig, ConfigError> {
     #[allow(clippy::disallowed_methods)] // reason: centralized deserialization point
-    let dto: ConfigDto = serde_json::from_str(content)
-        .map_err(|e| ConfigError::InvalidJson(e.to_string()))?;
+    let dto: ConfigDto =
+        serde_json::from_str(content).map_err(|e| ConfigError::InvalidJson(e.to_string()))?;
 
-    dto.validate().map_err(|e| {
-        ConfigError::ValidationFailed(e.to_string())
-    })?;
+    dto.validate()
+        .map_err(|e| ConfigError::ValidationFailed(e.to_string()))?;
 
     dto.into_domain()
 }
@@ -37,14 +36,12 @@ pub struct FsConfigLoader;
 impl ConfigLoader for FsConfigLoader {
     fn load_config(&self, path: &Path) -> Result<CheckConfig, ConfigError> {
         // 1. Read file — map ReadError variants to appropriate ConfigError
-        let content = FsFileReader
-            .read_to_string(path)
-            .map_err(|e| match e {
-                ReadError::NotFound(msg) => ConfigError::NotFound(msg),
-                ReadError::PermissionDenied(msg) | ReadError::Io(msg) => {
-                    ConfigError::NotFound(format!("cannot read config: {msg}"))
-                }
-            })?;
+        let content = FsFileReader.read_to_string(path).map_err(|e| match e {
+            ReadError::NotFound(msg) => ConfigError::NotFound(msg),
+            ReadError::PermissionDenied(msg) | ReadError::Io(msg) => {
+                ConfigError::NotFound(format!("cannot read config: {msg}"))
+            }
+        })?;
         parse_config_json(&content)
     }
 }

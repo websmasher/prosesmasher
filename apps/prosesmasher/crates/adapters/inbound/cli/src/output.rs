@@ -4,8 +4,8 @@ use std::collections::BTreeSet;
 use std::path::Path;
 
 use low_expectations::types::{Severity, SuiteValidationResult, ValidationResult};
-use serde_json::{Map, Number, Value};
 use serde::Serialize;
+use serde_json::{Map, Number, Value};
 
 use crate::args::{OutputFormat, TextMode};
 use crate::checks::{CheckCatalogEntry, check_kind};
@@ -301,10 +301,7 @@ fn check_label<'a>(
     column: &'a str,
     meta: &'a std::collections::BTreeMap<String, Value>,
 ) -> &'a str {
-    meta
-        .get("label")
-        .and_then(|v| v.as_str())
-        .unwrap_or(column)
+    meta.get("label").and_then(|v| v.as_str()).unwrap_or(column)
 }
 
 fn build_rewrite_brief(failures: &[FailureOutput]) -> Vec<String> {
@@ -370,11 +367,13 @@ fn sanitized_evidence(
         return None;
     }
 
-    let evidence = vr
-        .result
-        .partial_unexpected_list
-        .as_ref()
-        .map(|items| items.iter().cloned().map(sanitize_value).collect::<Vec<_>>())?;
+    let evidence = vr.result.partial_unexpected_list.as_ref().map(|items| {
+        items
+            .iter()
+            .cloned()
+            .map(sanitize_value)
+            .collect::<Vec<_>>()
+    })?;
 
     if evidence.is_empty() {
         return None;
@@ -392,9 +391,7 @@ fn sanitized_evidence(
 fn sanitize_value(value: Value) -> Value {
     match value {
         Value::Object(map) => sanitize_object(map),
-        Value::Array(items) => {
-            Value::Array(items.into_iter().map(sanitize_value).collect())
-        }
+        Value::Array(items) => Value::Array(items.into_iter().map(sanitize_value).collect()),
         other @ (Value::Null | Value::Bool(_) | Value::Number(_) | Value::String(_)) => other,
     }
 }
@@ -425,11 +422,7 @@ fn sanitize_object(map: Map<String, Value>) -> Value {
     Value::Object(sanitized)
 }
 
-fn normalize_x100_threshold(
-    map: &mut Map<String, Value>,
-    x100_key: &str,
-    float_key: &str,
-) {
+fn normalize_x100_threshold(map: &mut Map<String, Value>, x100_key: &str, float_key: &str) {
     let Some(value) = map.remove(x100_key) else {
         return;
     };
@@ -461,7 +454,9 @@ fn failure_message(id: &str, label: &str) -> String {
         "recommended-terms" => "Not enough recommended terms were used.".to_owned(),
         "em-dashes" => "Found closed em dashes.".to_owned(),
         "smart-quotes" => "Found smart quotes.".to_owned(),
-        "exclamation-density" => "One or more paragraphs use too many exclamation marks.".to_owned(),
+        "exclamation-density" => {
+            "One or more paragraphs use too many exclamation marks.".to_owned()
+        }
         "negation-reframe" => "Found negation-reframe rhetoric.".to_owned(),
         "fragment-stacking" => "Found stacked clipped fragments.".to_owned(),
         "triple-repeat" => "Found repeated sentence openers.".to_owned(),
@@ -486,7 +481,9 @@ fn failure_message(id: &str, label: &str) -> String {
         "gunning-fog" | "coleman-liau" => {
             "Readability complexity is above the allowed maximum.".to_owned()
         }
-        "avg-sentence-length" => "Average sentence length exceeds the configured maximum.".to_owned(),
+        "avg-sentence-length" => {
+            "Average sentence length exceeds the configured maximum.".to_owned()
+        }
         _ => format!("{label} failed."),
     }
 }
@@ -498,13 +495,19 @@ fn rewrite_hint(id: &str) -> &'static str {
         "simplicity" => "Replace complex wording with the simpler configured alternatives.",
         "required-terms" => "Add the missing required terms naturally in relevant sections.",
         "recommended-terms" => "Add more recommended terms naturally until the minimum is met.",
-        "em-dashes" => "Replace closed em dashes with spaced em dashes, commas, periods, or cleaner sentence splits.",
+        "em-dashes" => {
+            "Replace closed em dashes with spaced em dashes, commas, periods, or cleaner sentence splits."
+        }
         "smart-quotes" => "Replace smart quotes with straight quotes.",
         "exclamation-density" => "Reduce exclamation marks in the affected paragraphs.",
         "negation-reframe" => "Rewrite the passage without the not-X-it-is-Y pattern.",
-        "fragment-stacking" => "Rewrite the clipped fragment run into full sentences with explicit subjects and verbs.",
+        "fragment-stacking" => {
+            "Rewrite the clipped fragment run into full sentences with explicit subjects and verbs."
+        }
         "triple-repeat" => "Vary sentence openings instead of repeating the same opener pattern.",
-        "fake-timestamps" => "Remove overly specific fabricated-looking timestamps unless they are necessary and real.",
+        "fake-timestamps" => {
+            "Remove overly specific fabricated-looking timestamps unless they are necessary and real."
+        }
         "colon-dramatic" => "Rewrite the sentence without the dramatic colon construction.",
         "llm-openers" => "Replace the generic opener with a direct, specific opening.",
         "affirmation-closers" => "Replace the affirmation-style closer with a concrete ending.",

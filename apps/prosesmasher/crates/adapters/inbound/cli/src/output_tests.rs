@@ -15,20 +15,32 @@ fn format_fail_contains_fail() {
 #[test]
 fn format_line_contains_label() {
     let line = format_line(true, "Word Count", "800");
-    assert!(line.contains("Word Count"), "should contain label — got: {line}");
+    assert!(
+        line.contains("Word Count"),
+        "should contain label — got: {line}"
+    );
 }
 
 #[test]
 fn format_line_contains_observed() {
     let line = format_line(false, "Em Dashes", "3");
-    assert!(line.contains('3'), "should contain observed value — got: {line}");
+    assert!(
+        line.contains('3'),
+        "should contain observed value — got: {line}"
+    );
 }
 
 #[test]
 fn format_line_empty_observed() {
     let line = format_line(true, "Clean", "");
-    assert!(line.contains("PASS"), "should still contain PASS — got: {line}");
-    assert!(line.contains("Clean"), "should still contain label — got: {line}");
+    assert!(
+        line.contains("PASS"),
+        "should still contain PASS — got: {line}"
+    );
+    assert!(
+        line.contains("Clean"),
+        "should still contain label — got: {line}"
+    );
 }
 
 #[test]
@@ -53,12 +65,23 @@ fn build_file_result_json_serializable() {
     assert_eq!(file_result.summary.passed, 1, "summary passed");
     assert_eq!(file_result.summary.failed, 0, "summary failed");
     assert!(!file_result.rewrite_needed, "no rewrite needed on success");
-    assert!(file_result.rewrite_brief.is_empty(), "no rewrite brief on success");
+    assert!(
+        file_result.rewrite_brief.is_empty(),
+        "no rewrite brief on success"
+    );
     assert!(file_result.failures.is_empty(), "no failures on success");
     assert_eq!(file_result.file, "test.md", "file path");
-    assert_eq!(file_result.checks.as_ref().map(Vec::len), Some(1), "1 check output");
+    assert_eq!(
+        file_result.checks.as_ref().map(Vec::len),
+        Some(1),
+        "1 check output"
+    );
 
-    if let Some(check) = file_result.checks.as_ref().and_then(|checks| checks.first()) {
+    if let Some(check) = file_result
+        .checks
+        .as_ref()
+        .and_then(|checks| checks.first())
+    {
         assert_eq!(check.id, "word-count", "check id");
         assert_eq!(check.label, "Word Count", "check label");
         assert_eq!(check.kind, "document-policy", "check kind");
@@ -72,7 +95,10 @@ fn build_file_result_json_serializable() {
     let json_str = json.unwrap_or_default();
     assert!(json_str.contains("word-count"), "JSON contains check id");
     assert!(json_str.contains("Word Count"), "JSON contains label");
-    assert!(json_str.contains("rewrite_needed"), "JSON contains rewrite flag");
+    assert!(
+        json_str.contains("rewrite_needed"),
+        "JSON contains rewrite flag"
+    );
 }
 
 #[test]
@@ -92,14 +118,27 @@ fn build_file_result_includes_rewrite_guidance_for_failures() {
     let file_result = build_file_result(Path::new("draft.md"), &result, false);
 
     assert!(!file_result.success, "should be failure");
-    assert_eq!(file_result.exit_reason, "check-failures", "failure exit reason");
+    assert_eq!(
+        file_result.exit_reason, "check-failures",
+        "failure exit reason"
+    );
     assert!(file_result.rewrite_needed, "rewrite should be needed");
     assert_eq!(file_result.failures.len(), 2, "2 failed checks");
     assert_eq!(file_result.rewrite_brief.len(), 2, "2 rewrite instructions");
-    assert!(file_result.rewrite_brief.iter().any(|s| s.contains("word-count range")),
-        "word-count rewrite brief present");
-    assert!(file_result.rewrite_brief.iter().any(|s| s.contains("Replace closed em dashes")),
-        "em-dash rewrite brief present");
+    assert!(
+        file_result
+            .rewrite_brief
+            .iter()
+            .any(|s| s.contains("word-count range")),
+        "word-count rewrite brief present"
+    );
+    assert!(
+        file_result
+            .rewrite_brief
+            .iter()
+            .any(|s| s.contains("Replace closed em dashes")),
+        "em-dash rewrite brief present"
+    );
     assert!(file_result.checks.is_none(), "checks hidden by default");
 
     let word_count = file_result.failures.iter().find(|f| f.id == "word-count");
@@ -107,35 +146,76 @@ fn build_file_result_includes_rewrite_guidance_for_failures() {
     if let Some(failure) = word_count {
         assert_eq!(failure.severity, "error", "word-count severity");
         assert_eq!(failure.kind, "document-policy", "word-count kind");
-        assert!(failure.message.contains("outside the configured range"),
-            "word-count message");
-        assert!(failure.checking.is_none(), "no checking on bare test suite value");
-        assert_eq!(failure.expected, Some(serde_json::json!({
-            "min": 650,
-            "max": 1000
-        })), "word-count expected");
-        assert!(failure.rewrite_hint.contains("word-count range"),
-            "word-count hint");
-        assert!(failure.evidence.is_none(), "no evidence for scalar range failure");
-        assert_eq!(failure.observed, Some(serde_json::json!(1200)), "word-count observed");
+        assert!(
+            failure.message.contains("outside the configured range"),
+            "word-count message"
+        );
+        assert!(
+            failure.checking.is_none(),
+            "no checking on bare test suite value"
+        );
+        assert_eq!(
+            failure.expected,
+            Some(serde_json::json!({
+                "min": 650,
+                "max": 1000
+            })),
+            "word-count expected"
+        );
+        assert!(
+            failure.rewrite_hint.contains("word-count range"),
+            "word-count hint"
+        );
+        assert!(
+            failure.evidence.is_none(),
+            "no evidence for scalar range failure"
+        );
+        assert_eq!(
+            failure.observed,
+            Some(serde_json::json!(1200)),
+            "word-count observed"
+        );
     }
 
     let em_dashes = file_result.failures.iter().find(|f| f.id == "em-dashes");
     assert!(em_dashes.is_some(), "em-dashes failure present");
     if let Some(failure) = em_dashes {
-        assert_eq!(failure.label, "No Closed Em-Dashes", "failure label uses check label");
+        assert_eq!(
+            failure.label, "No Closed Em-Dashes",
+            "failure label uses check label"
+        );
         assert_eq!(failure.kind, "heuristics", "em-dashes kind");
         assert_eq!(failure.severity, "error", "em-dashes severity");
-        assert!(failure.message.contains("Found closed em dashes"), "em-dashes message");
-        assert_eq!(failure.checking.as_deref(), Some("closed em dash count"), "em-dashes checking");
-        assert_eq!(failure.expected, Some(serde_json::json!({
-            "min": 0,
-            "max": 0
-        })), "em-dashes expected");
-        assert!(failure.rewrite_hint.contains("Replace closed em dashes"),
-            "em-dashes hint");
-        assert!(failure.evidence.is_none(), "no evidence for scalar count failure");
-        assert_eq!(failure.observed, Some(serde_json::json!(2)), "em-dashes observed");
+        assert!(
+            failure.message.contains("Found closed em dashes"),
+            "em-dashes message"
+        );
+        assert_eq!(
+            failure.checking.as_deref(),
+            Some("closed em dash count"),
+            "em-dashes checking"
+        );
+        assert_eq!(
+            failure.expected,
+            Some(serde_json::json!({
+                "min": 0,
+                "max": 0
+            })),
+            "em-dashes expected"
+        );
+        assert!(
+            failure.rewrite_hint.contains("Replace closed em dashes"),
+            "em-dashes hint"
+        );
+        assert!(
+            failure.evidence.is_none(),
+            "no evidence for scalar count failure"
+        );
+        assert_eq!(
+            failure.observed,
+            Some(serde_json::json!(2)),
+            "em-dashes observed"
+        );
     }
 }
 
@@ -171,15 +251,24 @@ fn build_file_result_sanitizes_readability_output() {
     let failure = file_result.failures.first();
     assert!(failure.is_some(), "failure present");
     if let Some(failure) = failure {
-        assert_eq!(failure.expected, Some(serde_json::json!({
-            "formula": "fog",
-            "maximum_score": 14.0
-        })));
-        assert_eq!(failure.observed, Some(serde_json::json!({
-            "score": 14.67,
-            "total_words": 100
-        })));
-        assert!(failure.evidence.is_none(), "duplicate scalar evidence removed");
+        assert_eq!(
+            failure.expected,
+            Some(serde_json::json!({
+                "formula": "fog",
+                "maximum_score": 14.0
+            }))
+        );
+        assert_eq!(
+            failure.observed,
+            Some(serde_json::json!({
+                "score": 14.67,
+                "total_words": 100
+            }))
+        );
+        assert!(
+            failure.evidence.is_none(),
+            "duplicate scalar evidence removed"
+        );
     }
 }
 
@@ -215,13 +304,30 @@ fn build_file_result_strips_internal_index_fields_from_evidence() {
         let evidence = failure.evidence.as_ref();
         assert!(evidence.is_some(), "evidence preserved");
         if let Some(evidence) = evidence.and_then(|items| items.first()) {
-            assert!(evidence.get("section_index").is_none(), "section index removed");
-            assert!(evidence.get("paragraph_index").is_none(), "paragraph index removed");
-            assert!(evidence.get("sentence_index").is_none(), "sentence index removed");
-            assert!(evidence.get("sentence_index_next").is_none(), "next index removed");
-            assert!(evidence.get("pattern_type").is_none(), "pattern type removed");
+            assert!(
+                evidence.get("section_index").is_none(),
+                "section index removed"
+            );
+            assert!(
+                evidence.get("paragraph_index").is_none(),
+                "paragraph index removed"
+            );
+            assert!(
+                evidence.get("sentence_index").is_none(),
+                "sentence index removed"
+            );
+            assert!(
+                evidence.get("sentence_index_next").is_none(),
+                "next index removed"
+            );
+            assert!(
+                evidence.get("pattern_type").is_none(),
+                "pattern type removed"
+            );
             assert_eq!(
-                evidence.get("matched_text").and_then(serde_json::Value::as_str),
+                evidence
+                    .get("matched_text")
+                    .and_then(serde_json::Value::as_str),
                 Some("x, not y")
             );
         }

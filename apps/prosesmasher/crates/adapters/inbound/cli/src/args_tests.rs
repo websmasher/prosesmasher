@@ -19,14 +19,24 @@ fn parse_check_with_file() {
             text_mode,
             include_checks,
         } => {
-            assert_eq!(path.as_deref().and_then(std::path::Path::to_str), Some("foo.md"), "path");
+            assert_eq!(
+                path.as_deref().and_then(std::path::Path::to_str),
+                Some("foo.md"),
+                "path"
+            );
             assert!(!list_checks, "not list checks");
             assert!(config.is_none(), "no config");
             assert_eq!(preset.as_deref(), Some("general-en"), "preset");
             assert!(group.is_none(), "no group");
             assert!(check.is_none(), "no check filter");
-            assert!(matches!(format, OutputFormat::Text), "default format is text");
-            assert!(matches!(text_mode, TextMode::Failures), "default text mode is failures");
+            assert!(
+                matches!(format, OutputFormat::Text),
+                "default format is text"
+            );
+            assert!(
+                matches!(text_mode, TextMode::Failures),
+                "default text mode is failures"
+            );
             assert!(!include_checks, "checks hidden by default");
         }
         Command::ListPresets | Command::DumpConfig { .. } => panic!("expected check command"),
@@ -136,7 +146,11 @@ fn parse_check_with_check_filter() {
     let args = args.unwrap_or_else(|e| panic!("parse failed: {e}"));
     match args.command {
         Command::Check { check, .. } => {
-            assert_eq!(check.as_deref(), Some("prohibited-terms,em-dashes"), "check filter");
+            assert_eq!(
+                check.as_deref(),
+                Some("prohibited-terms,em-dashes"),
+                "check filter"
+            );
         }
         Command::ListPresets | Command::DumpConfig { .. } => panic!("expected check command"),
     }
@@ -158,7 +172,10 @@ fn parse_check_with_format_json() {
     let args = args.unwrap_or_else(|e| panic!("parse failed: {e}"));
     match args.command {
         Command::Check { format, .. } => {
-            assert!(matches!(format, OutputFormat::Json), "format should be json");
+            assert!(
+                matches!(format, OutputFormat::Json),
+                "format should be json"
+            );
         }
         Command::ListPresets | Command::DumpConfig { .. } => panic!("expected check command"),
     }
@@ -194,7 +211,9 @@ fn parse_check_list_checks() {
     assert!(args.is_ok(), "should parse");
     let args = args.unwrap_or_else(|e| panic!("parse failed: {e}"));
     match args.command {
-        Command::Check { list_checks, path, .. } => {
+        Command::Check {
+            list_checks, path, ..
+        } => {
             assert!(list_checks, "list checks flag");
             assert!(path.is_none(), "no path required");
         }
@@ -240,7 +259,10 @@ fn parse_dump_config_full() {
     assert!(args.is_ok(), "should parse");
     let args = args.unwrap_or_else(|e| panic!("parse failed: {e}"));
     match args.command {
-        Command::DumpConfig { preset, full_config } => {
+        Command::DumpConfig {
+            preset,
+            full_config,
+        } => {
             assert!(preset.is_none(), "no preset");
             assert!(full_config, "full config");
         }
@@ -255,7 +277,10 @@ fn parse_dump_config_preset() {
     assert!(args.is_ok(), "should parse");
     let args = args.unwrap_or_else(|e| panic!("parse failed: {e}"));
     match args.command {
-        Command::DumpConfig { preset, full_config } => {
+        Command::DumpConfig {
+            preset,
+            full_config,
+        } => {
             assert_eq!(preset.as_deref(), Some("tweet-en"));
             assert!(!full_config, "not full config");
         }

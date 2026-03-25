@@ -22,7 +22,10 @@ fn is_vowel_latin_uppercase() {
 
 #[test]
 fn is_vowel_latin_consonants() {
-    for ch in ['b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'q', 'r', 's', 't', 'v', 'w', 'x', 'z'] {
+    for ch in [
+        'b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'q', 'r', 's', 't', 'v', 'w',
+        'x', 'z',
+    ] {
         assert!(!is_vowel(ch), "{ch} should not be a vowel");
     }
 }
@@ -43,7 +46,10 @@ fn is_vowel_cyrillic_uppercase() {
 
 #[test]
 fn is_vowel_cyrillic_consonants() {
-    for ch in ['б', 'в', 'г', 'д', 'ж', 'з', 'к', 'л', 'м', 'н', 'п', 'р', 'с', 'т', 'ф', 'х', 'ц', 'ч', 'ш', 'щ'] {
+    for ch in [
+        'б', 'в', 'г', 'д', 'ж', 'з', 'к', 'л', 'м', 'н', 'п', 'р', 'с', 'т', 'ф', 'х', 'ц', 'ч',
+        'ш', 'щ',
+    ] {
         assert!(!is_vowel(ch), "{ch} should not be a vowel");
     }
 }
@@ -69,15 +75,15 @@ fn is_vowel_non_alphabetic() {
 fn is_vowel_accented_latin_must_be_recognized() {
     // These accented vowels MUST be recognized:
     let expected_vowels = [
-        'é', 'è', 'ê', 'ë',
-        'á', 'à', 'â', 'ã',
-        'í', 'î', 'ï',
-        'ó', 'ô', 'õ',
-        'ú', 'ù', 'û',
-        'ü', 'ö', 'ä',
+        'é', 'è', 'ê', 'ë', 'á', 'à', 'â', 'ã', 'í', 'î', 'ï', 'ó', 'ô', 'õ', 'ú', 'ù', 'û', 'ü',
+        'ö', 'ä',
     ];
     for ch in expected_vowels {
-        assert!(is_vowel(ch), "{ch} (U+{:04X}) is an accented vowel and must be recognized", u32::from(ch));
+        assert!(
+            is_vowel(ch),
+            "{ch} (U+{:04X}) is an accented vowel and must be recognized",
+            u32::from(ch)
+        );
     }
     // These should NOT be vowels:
     assert!(!is_vowel('ñ'), "ñ is a consonant");
@@ -87,15 +93,15 @@ fn is_vowel_accented_latin_must_be_recognized() {
 #[test]
 fn is_vowel_accented_latin_uppercase() {
     let expected_vowels = [
-        'É', 'È', 'Ê', 'Ë',
-        'Á', 'À', 'Â', 'Ã',
-        'Í', 'Î', 'Ï',
-        'Ó', 'Ô', 'Õ',
-        'Ú', 'Ù', 'Û',
-        'Ü', 'Ö', 'Ä',
+        'É', 'È', 'Ê', 'Ë', 'Á', 'À', 'Â', 'Ã', 'Í', 'Î', 'Ï', 'Ó', 'Ô', 'Õ', 'Ú', 'Ù', 'Û', 'Ü',
+        'Ö', 'Ä',
     ];
     for ch in expected_vowels {
-        assert!(is_vowel(ch), "{ch} (U+{:04X}) is an accented uppercase vowel and must be recognized", u32::from(ch));
+        assert!(
+            is_vowel(ch),
+            "{ch} (U+{:04X}) is an accented uppercase vowel and must be recognized",
+            u32::from(ch)
+        );
     }
 }
 
@@ -115,7 +121,11 @@ fn vowel_clusters_two_separated() {
 
 #[test]
 fn vowel_clusters_diphthong_is_one() {
-    assert_eq!(count_vowel_clusters("boat"), 1, "b-oa-t = 1 cluster (oa adjacent)");
+    assert_eq!(
+        count_vowel_clusters("boat"),
+        1,
+        "b-oa-t = 1 cluster (oa adjacent)"
+    );
 }
 
 #[test]
@@ -136,21 +146,41 @@ fn vowel_clusters_true_consonants_only() {
 #[test]
 fn vowel_clusters_y_is_vowel() {
     // "rhythm" has y which IS a vowel in our impl — 1 cluster from 'y'
-    assert_eq!(count_vowel_clusters("rhythm"), 1, "rhythm: y is the only vowel");
+    assert_eq!(
+        count_vowel_clusters("rhythm"),
+        1,
+        "rhythm: y is the only vowel"
+    );
     // "syzygy" has 3 y's separated by consonants
-    assert_eq!(count_vowel_clusters("syzygy"), 3, "s-y-z-y-g-y = 3 clusters");
+    assert_eq!(
+        count_vowel_clusters("syzygy"),
+        3,
+        "s-y-z-y-g-y = 3 clusters"
+    );
 }
 
 #[test]
 fn vowel_clusters_alternating_max_fragmentation() {
     // Every other char is a vowel — each is its own cluster
-    assert_eq!(count_vowel_clusters("abacada"), 4, "a-b-a-c-a-d-a = 4 clusters");
+    assert_eq!(
+        count_vowel_clusters("abacada"),
+        4,
+        "a-b-a-c-a-d-a = 4 clusters"
+    );
 }
 
 #[test]
 fn vowel_clusters_all_vowels_is_one_cluster() {
-    assert_eq!(count_vowel_clusters("aeiou"), 1, "all adjacent vowels = 1 cluster");
-    assert_eq!(count_vowel_clusters("aeiouy"), 1, "all adjacent = 1 cluster");
+    assert_eq!(
+        count_vowel_clusters("aeiou"),
+        1,
+        "all adjacent vowels = 1 cluster"
+    );
+    assert_eq!(
+        count_vowel_clusters("aeiouy"),
+        1,
+        "all adjacent = 1 cluster"
+    );
 }
 
 #[test]
@@ -168,12 +198,20 @@ fn vowel_clusters_cyrillic_single() {
 fn vowel_clusters_cyrillic_consonants_only() {
     // "взгляд" has ь (soft sign, not a vowel) and я (vowel)
     // Actually let's use a truly consonant-only string
-    assert_eq!(count_vowel_clusters("бвгд"), 1, "all Cyrillic consonants → .max(1)");
+    assert_eq!(
+        count_vowel_clusters("бвгд"),
+        1,
+        "all Cyrillic consonants → .max(1)"
+    );
 }
 
 #[test]
 fn vowel_clusters_mixed_case() {
-    assert_eq!(count_vowel_clusters("CaTeGoRy"), 4, "C-a-T-e-G-o-R-y = 4 clusters");
+    assert_eq!(
+        count_vowel_clusters("CaTeGoRy"),
+        4,
+        "C-a-T-e-G-o-R-y = 4 clusters"
+    );
     assert_eq!(count_vowel_clusters("HELLO"), 2, "H-E-LL-O = 2 clusters");
 }
 
@@ -182,7 +220,11 @@ fn vowel_clusters_mixed_case() {
 #[test]
 fn vowel_clusters_accented_french() {
     // "café" = c-a-f-é = 2 clusters (a and é are both vowels)
-    assert_eq!(count_vowel_clusters("café"), 2, "c-a-f-é = 2 vowel clusters");
+    assert_eq!(
+        count_vowel_clusters("café"),
+        2,
+        "c-a-f-é = 2 vowel clusters"
+    );
 }
 
 #[test]
@@ -207,8 +249,16 @@ fn vowel_clusters_accented_portuguese() {
 
 #[test]
 fn vowel_clusters_punctuation_and_digits_ignored() {
-    assert_eq!(count_vowel_clusters("don't"), 1, "d-o-n-'-t = 1 cluster (o only)");
-    assert_eq!(count_vowel_clusters("abc123def"), 2, "a-bc123-d-e-f = 2 clusters");
+    assert_eq!(
+        count_vowel_clusters("don't"),
+        1,
+        "d-o-n-'-t = 1 cluster (o only)"
+    );
+    assert_eq!(
+        count_vowel_clusters("abc123def"),
+        2,
+        "a-bc123-d-e-f = 2 clusters"
+    );
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -256,7 +306,11 @@ fn locale_mapping_indonesian_has_no_dictionary() {
 
 #[test]
 fn syllables_empty_string_returns_zero() {
-    assert_eq!(count_syllables("", Locale::En), 0, "empty string = 0 syllables");
+    assert_eq!(
+        count_syllables("", Locale::En),
+        0,
+        "empty string = 0 syllables"
+    );
 }
 
 #[test]
@@ -264,19 +318,39 @@ fn syllables_empty_string_all_locales() {
     // The empty guard must fire BEFORE locale-specific logic.
     // Indonesian would hit vowel fallback which returns 1 for empty
     // if the guard didn't fire first.
-    for locale in [Locale::En, Locale::Ru, Locale::De, Locale::Es, Locale::Pt, Locale::Fr, Locale::Id] {
-        assert_eq!(count_syllables("", locale), 0, "empty string must be 0 for {locale:?}");
+    for locale in [
+        Locale::En,
+        Locale::Ru,
+        Locale::De,
+        Locale::Es,
+        Locale::Pt,
+        Locale::Fr,
+        Locale::Id,
+    ] {
+        assert_eq!(
+            count_syllables("", locale),
+            0,
+            "empty string must be 0 for {locale:?}"
+        );
     }
 }
 
 #[test]
 fn syllables_single_vowel_letter() {
-    assert_eq!(count_syllables("a", Locale::En), 1, "single vowel = 1 syllable");
+    assert_eq!(
+        count_syllables("a", Locale::En),
+        1,
+        "single vowel = 1 syllable"
+    );
 }
 
 #[test]
 fn syllables_single_consonant_letter() {
-    assert_eq!(count_syllables("x", Locale::En), 1, "single consonant = minimum 1 syllable");
+    assert_eq!(
+        count_syllables("x", Locale::En),
+        1,
+        "single consonant = minimum 1 syllable"
+    );
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -295,14 +369,20 @@ fn syllables_english_fire_silent_e_limitation() {
     // silent-e words are over-counted because we can't distinguish
     // "dictionary knows it's 1 syllable" from "dictionary doesn't know the word."
     let count = count_syllables("fire", Locale::En);
-    assert_eq!(count, 2, "fire: silent-e causes over-count (known limitation)");
+    assert_eq!(
+        count, 2,
+        "fire: silent-e causes over-count (known limitation)"
+    );
 }
 
 #[test]
 fn syllables_english_smile_silent_e_limitation() {
     // Same limitation as fire — "smile" is 1 syllable but counted as 2.
     let count = count_syllables("smile", Locale::En);
-    assert_eq!(count, 2, "smile: silent-e causes over-count (known limitation)");
+    assert_eq!(
+        count, 2,
+        "smile: silent-e causes over-count (known limitation)"
+    );
 }
 
 #[test]
@@ -342,7 +422,10 @@ fn syllables_unknown_word_falls_back_to_vowels() {
     // "zyxabo" is not in any dictionary — hyphenator returns 1 segment.
     // Vowel clusters: y, a, o = 3. Fallback should return 3.
     let count = count_syllables("zyxabo", Locale::En);
-    assert_eq!(count, 3, "unknown word 'zyxabo' should fall back to vowel counting (3 clusters)");
+    assert_eq!(
+        count, 3,
+        "unknown word 'zyxabo' should fall back to vowel counting (3 clusters)"
+    );
 }
 
 #[test]
@@ -429,7 +512,10 @@ fn syllables_french_ecole() {
     // Known limitation: vowel counting over-estimates for French words with
     // adjacent vowels that form a single syllable.
     let count = count_syllables("école", Locale::Fr);
-    assert_eq!(count, 3, "école: vowel fallback over-counts (known limitation)");
+    assert_eq!(
+        count, 3,
+        "école: vowel fallback over-counts (known limitation)"
+    );
 }
 
 #[test]
@@ -462,7 +548,10 @@ fn syllables_indonesian_perpustakaan() {
     let count = count_syllables("perpustakaan", Locale::Id);
     // The real answer is 5, but vowel counting gives 4.
     // We assert the actual vowel-fallback behavior (4) to document it.
-    assert_eq!(count, 4, "perpustakaan: vowel fallback gives 4 (real answer is 5)");
+    assert_eq!(
+        count, 4,
+        "perpustakaan: vowel fallback gives 4 (real answer is 5)"
+    );
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -477,7 +566,10 @@ fn syllables_french_cafe_accented() {
     // "café" = 2 syllables: ca-fé
     // If accented é is not a vowel, vowel fallback gives 1 (only 'a').
     let count = count_syllables("café", Locale::Fr);
-    assert_eq!(count, 2, "café = 2 syllables (é must be recognized as vowel)");
+    assert_eq!(
+        count, 2,
+        "café = 2 syllables (é must be recognized as vowel)"
+    );
 }
 
 #[test]
@@ -523,14 +615,20 @@ fn syllables_word_with_embedded_hyphen() {
     // "well-known" — caller might pass hyphenated compounds
     // Document actual behavior (hyphenator may or may not handle it)
     let count = count_syllables("well-known", Locale::En);
-    assert!(count >= 1, "hyphenated word must return at least 1, got {count}");
+    assert!(
+        count >= 1,
+        "hyphenated word must return at least 1, got {count}"
+    );
 }
 
 #[test]
 fn syllables_word_with_whitespace() {
     // " hello " — whitespace shouldn't break the function
     let count = count_syllables(" hello ", Locale::En);
-    assert!(count >= 1, "word with whitespace must return at least 1, got {count}");
+    assert!(
+        count >= 1,
+        "word with whitespace must return at least 1, got {count}"
+    );
 }
 
 // ═══════════════════════════════════════════════════════════════

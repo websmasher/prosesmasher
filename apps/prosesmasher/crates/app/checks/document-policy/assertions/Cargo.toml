@@ -1,0 +1,20 @@
+[package]
+name = "prosesmasher-app-checks-document-policy-assertions"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish = false
+description = "Internal reusable document-policy-check assertions for the prosesmasher workspace."
+readme = "../../../../../../README.md"
+
+[dependencies]
+prosesmasher-domain-types = { version = "0.1.7", path = "../../../../domain/types" }
+prosesmasher-app-checks-core-runtime = { version = "0.1.7", path = "../../core/runtime" }
+prosesmasher-app-checks-document-policy-runtime = { version = "0.1.7", path = "../runtime" }
+prosesmasher-app-checks-test-support = { version = "0.1.7", path = "../../test-support" }
+low-expectations.workspace = true
+
+[lints]
+workspace = true

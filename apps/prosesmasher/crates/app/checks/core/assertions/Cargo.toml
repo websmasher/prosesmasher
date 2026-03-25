@@ -1,0 +1,19 @@
+[package]
+name = "prosesmasher-app-checks-core-assertions"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish = false
+description = "Internal reusable check-runner assertions for the prosesmasher workspace."
+readme = "../../../../../../README.md"
+
+[dependencies]
+prosesmasher-domain-types = { version = "0.1.7", path = "../../../../domain/types" }
+prosesmasher-app-checks-core-runtime = { version = "0.1.7", path = "../runtime" }
+prosesmasher-app-checks-test-support = { version = "0.1.7", path = "../../test-support" }
+low-expectations.workspace = true
+
+[lints]
+workspace = true
