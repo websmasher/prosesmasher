@@ -784,6 +784,7 @@ dependencies = [
  "low-expectations",
  "prosesmasher-app-checks-core-runtime",
  "prosesmasher-domain-types",
+ "serde_json",
 ]
 
 [[package]]
