@@ -31,7 +31,7 @@ pub fn collect_checks(group: Option<&str>) -> CheckResult {
             Ok(prosesmasher_app_checks_document_policy_runtime::all_checks())
         }
         Some("lexical") => Ok(prosesmasher_app_checks_lexical_runtime::all_checks()),
-        Some("heuristics") => Ok(prosesmasher_app_checks_heuristics_runtime::all_checks()),
+        Some("heuristics") => Ok(all_heuristics_checks()),
         Some("flow") => Ok(prosesmasher_app_checks_flow_runtime::all_checks()),
         Some("readability") => Ok(prosesmasher_app_checks_readability_runtime::all_checks()),
         None => {
@@ -94,9 +94,19 @@ fn supported_locale_codes(check: &dyn Check) -> Vec<String> {
 fn all_quality_checks() -> Vec<BoxedCheck> {
     let mut all = Vec::new();
     all.extend(prosesmasher_app_checks_lexical_runtime::all_checks());
-    all.extend(prosesmasher_app_checks_heuristics_runtime::all_checks());
+    all.extend(all_heuristics_checks());
     all.extend(prosesmasher_app_checks_flow_runtime::all_checks());
     all.extend(prosesmasher_app_checks_readability_runtime::all_checks());
+    all
+}
+
+fn all_heuristics_checks() -> Vec<BoxedCheck> {
+    let mut all = Vec::new();
+    all.extend(prosesmasher_app_checks_style_signals_runtime::all_checks());
+    all.extend(prosesmasher_app_checks_cadence_patterns_runtime::all_checks());
+    all.extend(prosesmasher_app_checks_rhetorical_framing_runtime::all_checks());
+    all.extend(prosesmasher_app_checks_persona_signals_runtime::all_checks());
+    all.extend(prosesmasher_app_checks_llm_slop_runtime::all_checks());
     all
 }
 

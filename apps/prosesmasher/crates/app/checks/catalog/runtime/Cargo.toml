@@ -12,7 +12,11 @@ readme = "../../../../../../README.md"
 prosesmasher-domain-types = { version = "0.1.7", path = "../../../../domain/types" }
 prosesmasher-app-checks-core-runtime = { version = "0.1.7", path = "../../core/runtime" }
 prosesmasher-app-checks-lexical-runtime = { version = "0.1.7", path = "../../lexical/runtime" }
-prosesmasher-app-checks-heuristics-runtime = { version = "0.1.7", path = "../../heuristics/runtime" }
+prosesmasher-app-checks-style-signals-runtime = { version = "0.1.7", path = "../../style-signals/runtime" }
+prosesmasher-app-checks-cadence-patterns-runtime = { version = "0.1.7", path = "../../cadence-patterns/runtime" }
+prosesmasher-app-checks-rhetorical-framing-runtime = { version = "0.1.7", path = "../../rhetorical-framing/runtime" }
+prosesmasher-app-checks-persona-signals-runtime = { version = "0.1.7", path = "../../persona-signals/runtime" }
+prosesmasher-app-checks-llm-slop-runtime = { version = "0.1.7", path = "../../llm-slop/runtime" }
 prosesmasher-app-checks-flow-runtime = { version = "0.1.7", path = "../../flow/runtime" }
 prosesmasher-app-checks-readability-runtime = { version = "0.1.7", path = "../../readability/runtime" }
 prosesmasher-app-checks-document-policy-runtime = { version = "0.1.7", path = "../../document-policy/runtime" }

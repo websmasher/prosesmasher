@@ -1,0 +1,15 @@
+[package]
+name = "prosesmasher-app-checks-llm-slop-assertions"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish = false
+description = "Internal reusable LLM-slop-check assertions for the prosesmasher workspace."
+readme = "../../../../../../README.md"
+
+[dependencies]
+
+[lints]
+workspace = true

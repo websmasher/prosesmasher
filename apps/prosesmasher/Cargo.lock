@@ -673,6 +673,29 @@ dependencies = [
 ]
 
 [[package]]
+name = "prosesmasher-app-checks-cadence-patterns-assertions"
+version = "0.1.7"
+dependencies = [
+ "low-expectations",
+ "prosesmasher-app-checks-cadence-patterns-runtime",
+ "prosesmasher-app-checks-core-runtime",
+ "prosesmasher-app-checks-test-support",
+ "prosesmasher-domain-types",
+]
+
+[[package]]
+name = "prosesmasher-app-checks-cadence-patterns-runtime"
+version = "0.1.7"
+dependencies = [
+ "low-expectations",
+ "prosesmasher-app-checks-cadence-patterns-assertions",
+ "prosesmasher-app-checks-core-runtime",
+ "prosesmasher-app-checks-test-support",
+ "prosesmasher-domain-types",
+ "serde_json",
+]
+
+[[package]]
 name = "prosesmasher-app-checks-catalog-assertions"
 version = "0.1.7"
 dependencies = [
@@ -683,12 +706,16 @@ dependencies = [
 name = "prosesmasher-app-checks-catalog-runtime"
 version = "0.1.7"
 dependencies = [
+ "prosesmasher-app-checks-cadence-patterns-runtime",
  "prosesmasher-app-checks-core-runtime",
  "prosesmasher-app-checks-document-policy-runtime",
  "prosesmasher-app-checks-flow-runtime",
- "prosesmasher-app-checks-heuristics-runtime",
  "prosesmasher-app-checks-lexical-runtime",
+ "prosesmasher-app-checks-llm-slop-runtime",
+ "prosesmasher-app-checks-persona-signals-runtime",
  "prosesmasher-app-checks-readability-runtime",
+ "prosesmasher-app-checks-rhetorical-framing-runtime",
+ "prosesmasher-app-checks-style-signals-runtime",
  "prosesmasher-domain-types",
  "serde",
 ]
@@ -760,29 +787,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "prosesmasher-app-checks-heuristics-assertions"
-version = "0.1.7"
-dependencies = [
- "low-expectations",
- "prosesmasher-app-checks-core-runtime",
- "prosesmasher-app-checks-heuristics-runtime",
- "prosesmasher-app-checks-test-support",
- "prosesmasher-domain-types",
-]
-
-[[package]]
-name = "prosesmasher-app-checks-heuristics-runtime"
-version = "0.1.7"
-dependencies = [
- "low-expectations",
- "prosesmasher-app-checks-core-runtime",
- "prosesmasher-app-checks-heuristics-assertions",
- "prosesmasher-app-checks-test-support",
- "prosesmasher-domain-types",
- "serde_json",
-]
-
-[[package]]
 name = "prosesmasher-app-checks-lexical-assertions"
 version = "0.1.7"
 dependencies = [
@@ -800,6 +804,42 @@ dependencies = [
  "low-expectations",
  "prosesmasher-app-checks-core-runtime",
  "prosesmasher-app-checks-lexical-assertions",
+ "prosesmasher-app-checks-test-support",
+ "prosesmasher-domain-types",
+ "serde_json",
+]
+
+[[package]]
+name = "prosesmasher-app-checks-llm-slop-assertions"
+version = "0.1.7"
+
+[[package]]
+name = "prosesmasher-app-checks-llm-slop-runtime"
+version = "0.1.7"
+dependencies = [
+ "prosesmasher-app-checks-core-runtime",
+ "prosesmasher-app-checks-llm-slop-assertions",
+ "prosesmasher-app-checks-test-support",
+]
+
+[[package]]
+name = "prosesmasher-app-checks-persona-signals-assertions"
+version = "0.1.7"
+dependencies = [
+ "low-expectations",
+ "prosesmasher-app-checks-core-runtime",
+ "prosesmasher-app-checks-persona-signals-runtime",
+ "prosesmasher-app-checks-test-support",
+ "prosesmasher-domain-types",
+]
+
+[[package]]
+name = "prosesmasher-app-checks-persona-signals-runtime"
+version = "0.1.7"
+dependencies = [
+ "low-expectations",
+ "prosesmasher-app-checks-core-runtime",
+ "prosesmasher-app-checks-persona-signals-assertions",
  "prosesmasher-app-checks-test-support",
  "prosesmasher-domain-types",
  "serde_json",
@@ -829,6 +869,52 @@ dependencies = [
 ]
 
 [[package]]
+name = "prosesmasher-app-checks-rhetorical-framing-assertions"
+version = "0.1.7"
+dependencies = [
+ "low-expectations",
+ "prosesmasher-app-checks-core-runtime",
+ "prosesmasher-app-checks-rhetorical-framing-runtime",
+ "prosesmasher-app-checks-test-support",
+ "prosesmasher-domain-types",
+]
+
+[[package]]
+name = "prosesmasher-app-checks-rhetorical-framing-runtime"
+version = "0.1.7"
+dependencies = [
+ "low-expectations",
+ "prosesmasher-app-checks-core-runtime",
+ "prosesmasher-app-checks-rhetorical-framing-assertions",
+ "prosesmasher-app-checks-test-support",
+ "prosesmasher-domain-types",
+ "serde_json",
+]
+
+[[package]]
+name = "prosesmasher-app-checks-style-signals-assertions"
+version = "0.1.7"
+dependencies = [
+ "low-expectations",
+ "prosesmasher-app-checks-core-runtime",
+ "prosesmasher-app-checks-style-signals-runtime",
+ "prosesmasher-app-checks-test-support",
+ "prosesmasher-domain-types",
+]
+
+[[package]]
+name = "prosesmasher-app-checks-style-signals-runtime"
+version = "0.1.7"
+dependencies = [
+ "low-expectations",
+ "prosesmasher-app-checks-core-runtime",
+ "prosesmasher-app-checks-style-signals-assertions",
+ "prosesmasher-app-checks-test-support",
+ "prosesmasher-domain-types",
+ "serde_json",
+]
+
+[[package]]
 name = "prosesmasher-app-checks-test-support"
 version = "0.1.7"
 dependencies = [
@@ -842,12 +928,16 @@ dependencies = [
 name = "prosesmasher-app-core"
 version = "0.1.7"
 dependencies = [
+ "prosesmasher-app-checks-cadence-patterns-runtime",
  "prosesmasher-app-checks-core-runtime",
  "prosesmasher-app-checks-document-policy-runtime",
  "prosesmasher-app-checks-flow-runtime",
- "prosesmasher-app-checks-heuristics-runtime",
  "prosesmasher-app-checks-lexical-runtime",
+ "prosesmasher-app-checks-llm-slop-runtime",
+ "prosesmasher-app-checks-persona-signals-runtime",
  "prosesmasher-app-checks-readability-runtime",
+ "prosesmasher-app-checks-rhetorical-framing-runtime",
+ "prosesmasher-app-checks-style-signals-runtime",
 ]
 
 [[package]]
