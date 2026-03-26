@@ -24,12 +24,15 @@ pub mod generic_signposting;
 pub mod boilerplate_framing;
 #[path = "slop_05_llm_vocabulary.rs"]
 pub mod llm_vocabulary;
+#[path = "slop_06_softening_language.rs"]
+pub mod softening_language;
 
 pub use boilerplate_framing::BoilerplateFramingCheck;
 pub use llm_vocabulary::LlmVocabularyCheck;
 pub use llm_disclaimer::LlmDisclaimerCheck;
 pub use generic_signposting::GenericSignpostingCheck;
 pub use response_wrapper::ResponseWrapperCheck;
+pub use softening_language::SofteningLanguageCheck;
 
 #[must_use]
 pub fn all_checks() -> Vec<check::BoxedCheck> {
@@ -39,5 +42,6 @@ pub fn all_checks() -> Vec<check::BoxedCheck> {
         Box::new(GenericSignpostingCheck),
         Box::new(BoilerplateFramingCheck),
         Box::new(LlmVocabularyCheck),
+        Box::new(SofteningLanguageCheck),
     ]
 }

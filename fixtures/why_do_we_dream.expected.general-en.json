@@ -57,6 +57,20 @@
       ]
     },
     {
+      "rule": "softening-language",
+      "evidenceContainsByField": {
+        "pattern_kind": [
+          "hedged-claim"
+        ],
+        "matched_text": [
+          "may + often"
+        ],
+        "sentence": [
+          "The self-organization theory of dreaming proposes that dreaming is a side effect of brain neural activity during sleep, and this may be why our dreams often involve elements of our waking lives."
+        ]
+      }
+    },
+    {
       "rule": "smart-quotes",
       "evidenceContainsByField": {
         "matched_text": [

@@ -118,6 +118,9 @@ pub struct HeuristicsDto {
     pub llm_vocabulary: Option<AccumulativeDto>,
     #[garde(skip)]
     #[serde(default)]
+    pub softening_language: Option<AccumulativeDto>,
+    #[garde(skip)]
+    #[serde(default)]
     pub affirmation_closers: Option<EnabledDto>,
     #[garde(skip)]
     #[serde(default)]
@@ -464,6 +467,12 @@ const fn apply_toggle_heuristics(
         heuristics.llm_vocabulary.enabled = accumulative.enabled;
         if let Some(max) = accumulative.max_per_document {
             heuristics.llm_vocabulary.max_per_document = max;
+        }
+    }
+    if let Some(accumulative) = dto.softening_language.as_ref() {
+        heuristics.softening_language.enabled = accumulative.enabled;
+        if let Some(max) = accumulative.max_per_document {
+            heuristics.softening_language.max_per_document = max;
         }
     }
     if let Some(enabled) = dto.affirmation_closers {

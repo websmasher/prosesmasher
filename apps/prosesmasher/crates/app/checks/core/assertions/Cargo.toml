@@ -10,9 +10,9 @@ description = "Internal reusable check-runner assertions for the prosesmasher wo
 readme = "../../../../../../README.md"
 
 [dependencies]
-prosesmasher-domain-types = { version = "0.2.0", path = "../../../../domain/types" }
-prosesmasher-app-checks-core-runtime = { version = "0.2.0", path = "../runtime" }
-prosesmasher-app-checks-test-support = { version = "0.2.0", path = "../../test-support" }
+prosesmasher-domain-types = { version = "0.2.1", path = "../../../../domain/types" }
+prosesmasher-app-checks-core-runtime = { version = "0.2.1", path = "../runtime" }
+prosesmasher-app-checks-test-support = { version = "0.2.1", path = "../../test-support" }
 low-expectations.workspace = true
 
 [lints]
