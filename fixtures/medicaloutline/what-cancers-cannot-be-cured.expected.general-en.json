@@ -40,6 +40,20 @@
       }
     },
     {
+      "rule": "softening-language",
+      "evidenceContainsByField": {
+        "pattern_kind": [
+          "hedged-claim"
+        ],
+        "matched_text": [
+          "may + potentially"
+        ],
+        "sentence": [
+          "However, it’s important to note that the field of oncology is constantly evolving, and new treatments and therapies may become available that could potentially change the outcomes for different types of cancers."
+        ]
+      }
+    },
+    {
       "rule": "smart-quotes",
       "evidenceContainsByField": {
         "matched_text": [

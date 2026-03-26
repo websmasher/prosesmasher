@@ -46,3 +46,5 @@ pub mod generic_signposting;
 pub mod boilerplate_framing;
 #[path = "slop_05_llm_vocabulary.rs"]
 pub mod llm_vocabulary;
+#[path = "slop_06_softening_language.rs"]
+pub mod softening_language;

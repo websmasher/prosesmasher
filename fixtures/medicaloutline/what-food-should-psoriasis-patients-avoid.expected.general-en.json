@@ -40,6 +40,20 @@
       }
     },
     {
+      "rule": "softening-language",
+      "evidenceContainsByField": {
+        "pattern_kind": [
+          "variability-softening"
+        ],
+        "matched_text": [
+          "may + in some cases"
+        ],
+        "sentence": [
+          "However, some general dietary recommendations for individuals with psoriasis, which is a chronic autoimmune skin condition, may include avoiding certain foods that are known to trigger inflammation or worsen symptoms in some cases."
+        ]
+      }
+    },
+    {
       "rule": "smart-quotes",
       "evidenceContainsByField": {
         "matched_text": [

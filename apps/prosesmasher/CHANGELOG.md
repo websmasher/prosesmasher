@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.1
+
+- Added `softening-language` as the next accumulative `llm-slop` rule for repeated low-commitment phrasing such as modal-heavy variability disclaimers and tentative reporting.
+- Expanded the fixture regression sidecars to cover the new real-world hits in `why_do_we_dream` and the Medical Outline corpus.
+- Kept the packaged CLI release contract intact while bumping the workspace to the next semantic version.
+
 ## 0.2.0
 
 - Added the `llm-slop` family with the first live rules for:

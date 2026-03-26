@@ -70,6 +70,7 @@
       "genericSignposting": { "enabled": true, "maxPerDocument": 1 },
       "boilerplateFraming": { "enabled": true, "maxPerDocument": 1 },
       "llmVocabulary": { "enabled": true, "maxPerDocument": 1 },
+      "softeningLanguage": { "enabled": true, "maxPerDocument": 1 },
       "affirmationClosers": { "enabled": true },
       "summativeCloser": { "enabled": true },
       "falseQuestion": { "enabled": true },
