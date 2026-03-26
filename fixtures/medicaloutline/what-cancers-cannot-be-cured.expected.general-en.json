@@ -2,19 +2,27 @@
   "requiredFailures": [
     {
       "rule": "llm-disclaimer",
-      "evidenceContains": [
-        "as a language model",
-        "As a language model, I do not have access to real-time information, and my knowledge is based on data up to September 2021."
-      ]
+      "evidenceContainsByField": {
+        "matched_text": [
+          "as a language model"
+        ],
+        "sentence": [
+          "As a language model, I do not have access to real-time information, and my knowledge is based on data up to September 2021."
+        ]
+      }
     },
     {
       "rule": "smart-quotes",
-      "evidenceContains": [
-        "’",
-        "However, it’s important to note that the field of oncology is constantly evolving, and new treatments and therapies may become available that could potentially change the",
-        "It’s important to note that every cancer case is unique, and treatment outcomes can vary depending on many factors, including the stage of cancer, the overall health of the",
-        "It’s always best to consult with a qualified healthcare professional for accurate and up-to-date information on specific types of cancers and their treatment options."
-      ]
+      "evidenceContainsByField": {
+        "matched_text": [
+          "’"
+        ],
+        "sentence": [
+          "However, it’s important to note that the field of oncology is constantly evolving, and new treatments and therapies may become available that could potentially change the",
+          "It’s important to note that every cancer case is unique, and treatment outcomes can vary depending on many factors, including the stage of cancer, the overall health of the",
+          "It’s always best to consult with a qualified healthcare professional for accurate and up-to-date information on specific types of cancers and their treatment options."
+        ]
+      }
     }
   ]
 }

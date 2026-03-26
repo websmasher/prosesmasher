@@ -2,19 +2,27 @@
   "requiredFailures": [
     {
       "rule": "llm-disclaimer",
-      "evidenceContains": [
-        "as a language model",
-        "As a language model, I can provide general information about eczema and foods that may commonly trigger eczema flare-ups in some individuals."
-      ]
+      "evidenceContainsByField": {
+        "matched_text": [
+          "as a language model"
+        ],
+        "sentence": [
+          "As a language model, I can provide general information about eczema and foods that may commonly trigger eczema flare-ups in some individuals."
+        ]
+      }
     },
     {
       "rule": "smart-quotes",
-      "evidenceContains": [
-        "’’’",
-        "However, it’s important to note that eczema triggers can vary from person to person, and what may trigger one person’s eczema may not necessarily trigger another’s.",
-        "’",
-        "If you suspect that certain foods are exacerbating your eczema, it’s recommended to consult with a qualified healthcare professional for personalized advice."
-      ]
+      "evidenceContainsByField": {
+        "matched_text": [
+          "’’’",
+          "’"
+        ],
+        "sentence": [
+          "However, it’s important to note that eczema triggers can vary from person to person, and what may trigger one person’s eczema may not necessarily trigger another’s.",
+          "If you suspect that certain foods are exacerbating your eczema, it’s recommended to consult with a qualified healthcare professional for personalized advice."
+        ]
+      }
     }
   ]
 }

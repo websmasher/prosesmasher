@@ -2,17 +2,25 @@
   "requiredFailures": [
     {
       "rule": "llm-disclaimer",
-      "evidenceContains": [
-        "as a language model",
-        "As a language model, I don’t have real-time data and my knowledge cutoff date is September 2021."
-      ]
+      "evidenceContainsByField": {
+        "matched_text": [
+          "as a language model"
+        ],
+        "sentence": [
+          "As a language model, I don’t have real-time data and my knowledge cutoff date is September 2021."
+        ]
+      }
     },
     {
       "rule": "smart-quotes",
-      "evidenceContains": [
-        "’",
-        "As a language model, I don’t have real-time data and my knowledge cutoff date is September 2021."
-      ]
+      "evidenceContainsByField": {
+        "matched_text": [
+          "’"
+        ],
+        "sentence": [
+          "As a language model, I don’t have real-time data and my knowledge cutoff date is September 2021."
+        ]
+      }
     }
   ]
 }
