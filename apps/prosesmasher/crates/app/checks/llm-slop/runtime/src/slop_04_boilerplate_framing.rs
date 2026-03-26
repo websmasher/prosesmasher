@@ -31,7 +31,11 @@ impl Check for BoilerplateFramingCheck {
             return;
         }
 
-        let max = config.quality.heuristics.boilerplate_framing.max_per_document;
+        let max = config
+            .quality
+            .heuristics
+            .boilerplate_framing
+            .max_per_document;
         let max_i64 = i64::try_from(max).unwrap_or(i64::MAX);
         let evidence = collect_boilerplate_framing_evidence(doc);
         let observed = i64::try_from(evidence.len()).unwrap_or(i64::MAX);
@@ -50,24 +54,10 @@ impl Check for BoilerplateFramingCheck {
 
 const LEADING_PREFIXES: &[&str] = &["however, ", "but ", "and ", "so ", "that being said, "];
 
-const VAGUE_INTROS: &[&str] = &[
-    "some",
-    "common",
-    "certain",
-    "several",
-    "following",
-];
+const VAGUE_INTROS: &[&str] = &["some", "common", "certain", "several", "following"];
 
 const CATEGORY_WORDS: &[&str] = &[
-    "examples",
-    "types",
-    "reasons",
-    "factors",
-    "foods",
-    "triggers",
-    "ways",
-    "steps",
-    "sections",
+    "examples", "types", "reasons", "factors", "foods", "triggers", "ways", "steps", "sections",
     "parts",
 ];
 
@@ -84,12 +74,7 @@ fn collect_boilerplate_framing_evidence(doc: &Document) -> Vec<Value> {
 
     for (section_index, section) in doc.sections.iter().enumerate() {
         for block in &section.blocks {
-            collect_from_block(
-                block,
-                section_index,
-                &mut paragraph_index,
-                &mut evidence,
-            );
+            collect_from_block(block, section_index, &mut paragraph_index, &mut evidence);
         }
     }
 
@@ -178,10 +163,7 @@ fn tokens_contain_in_order(tokens: &[&str], groups: &[&[&str]]) -> bool {
 }
 
 fn matches_preview_frame(tokens: &[&str]) -> bool {
-    tokens_contain_in_order(
-        tokens,
-        &[&["following"], PREVIEW_OBJECTS, PREVIEW_VERBS],
-    )
+    tokens_contain_in_order(tokens, &[&["following"], PREVIEW_OBJECTS, PREVIEW_VERBS])
 }
 
 fn matches_topic_frame(normalized: &str) -> bool {
@@ -189,19 +171,31 @@ fn matches_topic_frame(normalized: &str) -> bool {
 }
 
 fn matches_existence_frame(tokens: &[&str]) -> bool {
-    tokens_contain_in_order(tokens, &[EXISTENCE_WORDS, AUXILIARY_WORDS, &["certain", "common"], CATEGORY_WORDS])
+    tokens_contain_in_order(
+        tokens,
+        &[
+            EXISTENCE_WORDS,
+            AUXILIARY_WORDS,
+            &["certain", "common"],
+            CATEGORY_WORDS,
+        ],
+    )
 }
 
 fn match_enumeration_preface(tokens: &[&str]) -> Option<&'static str> {
     if tokens_contain_in_order(tokens, &[&["some"], &["examples"], ENUMERATION_VERBS]) {
         return Some("some examples + include");
     }
-    if tokens_contain_in_order(tokens, &[&["some", "common"], CATEGORY_WORDS, ENUMERATION_VERBS])
-    {
+    if tokens_contain_in_order(
+        tokens,
+        &[&["some", "common"], CATEGORY_WORDS, ENUMERATION_VERBS],
+    ) {
         return Some("some/common + include");
     }
-    if tokens_contain_in_order(tokens, &[&["certain", "several"], CATEGORY_WORDS, ENUMERATION_VERBS])
-    {
+    if tokens_contain_in_order(
+        tokens,
+        &[&["certain", "several"], CATEGORY_WORDS, ENUMERATION_VERBS],
+    ) {
         return Some("certain/several + include");
     }
     if tokens_contain_in_order(tokens, &[VAGUE_INTROS, CATEGORY_WORDS, ENUMERATION_VERBS]) {

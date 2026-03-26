@@ -194,12 +194,13 @@ pub fn build_file_result(
                 .results
                 .iter()
                 .map(|(column, vr)| {
+                    let public_id = public_check_id(column);
                     let label = check_label(column, &vr.expectation_config.meta).to_owned();
                     let observed = vr.result.observed_value.clone().map(sanitize_value);
                     CheckOutput {
-                        id: column.clone(),
+                        id: public_id.to_owned(),
                         label,
-                        kind: check_kind(column).to_owned(),
+                        kind: check_kind(public_id).to_owned(),
                         success: vr.success,
                         observed,
                     }
@@ -215,22 +216,23 @@ pub fn build_file_result(
         .iter()
         .filter(|(_, vr)| !vr.success)
         .map(|(column, vr)| {
+            let public_id = public_check_id(column);
             let label = check_label(column, &vr.expectation_config.meta).to_owned();
-            let message = failure_message(column, &label);
+            let message = failure_message(public_id, &label);
             let observed = vr.result.observed_value.clone().map(sanitize_value);
             let expected = expected_value(vr).map(sanitize_value);
-            let evidence = sanitized_evidence(column, vr, observed.as_ref());
+            let evidence = sanitized_evidence(public_id, vr, observed.as_ref());
             FailureOutput {
-                id: column.clone(),
+                id: public_id.to_owned(),
                 label,
-                kind: check_kind(column).to_owned(),
+                kind: check_kind(public_id).to_owned(),
                 severity: failure_severity(vr),
                 message,
                 checking: check_checking(&vr.expectation_config.meta),
                 expected,
                 observed,
                 evidence,
-                rewrite_hint: rewrite_hint(column),
+                rewrite_hint: rewrite_hint(public_id),
             }
         })
         .collect();
@@ -302,6 +304,14 @@ fn check_label<'a>(
     meta: &'a std::collections::BTreeMap<String, Value>,
 ) -> &'a str {
     meta.get("label").and_then(|v| v.as_str()).unwrap_or(column)
+}
+
+fn public_check_id(column: &str) -> &str {
+    if column.starts_with("sentence-case-") {
+        "sentence-case"
+    } else {
+        column
+    }
 }
 
 fn build_rewrite_brief(failures: &[FailureOutput]) -> Vec<String> {

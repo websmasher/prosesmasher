@@ -78,7 +78,7 @@ prosesmasher check content/ --config prosesmasher.json
 Emit machine-readable JSON:
 
 ```bash
-prosesmasher check draft.md --config prosesmasher.json --format json
+prosesmasher check draft.md --config prose.json --format json
 ```
 
 List checks instead of validating files:

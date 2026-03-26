@@ -19,7 +19,10 @@ fn make_sentence(text: &str) -> Sentence {
 
 fn make_multi_sentence_doc(sentences: &[&str], locale: Locale) -> Document {
     let sentence_values: Vec<Sentence> = sentences.iter().map(|text| make_sentence(text)).collect();
-    let total_words: usize = sentence_values.iter().map(|sentence| sentence.words.len()).sum();
+    let total_words: usize = sentence_values
+        .iter()
+        .map(|sentence| sentence.words.len())
+        .sum();
     Document {
         locale,
         sections: vec![Section {
@@ -41,7 +44,10 @@ fn make_multi_sentence_doc(sentences: &[&str], locale: Locale) -> Document {
 
 fn make_multi_sentence_blockquote_doc(sentences: &[&str], locale: Locale) -> Document {
     let sentence_values: Vec<Sentence> = sentences.iter().map(|text| make_sentence(text)).collect();
-    let total_words: usize = sentence_values.iter().map(|sentence| sentence.words.len()).sum();
+    let total_words: usize = sentence_values
+        .iter()
+        .map(|sentence| sentence.words.len())
+        .sum();
     Document {
         locale,
         sections: vec![Section {
@@ -197,7 +203,11 @@ fn raised_threshold_passes_two_hits() {
         Locale::En,
     );
     let mut config = CheckConfig::default();
-    config.quality.heuristics.softening_language.max_per_document = 2;
+    config
+        .quality
+        .heuristics
+        .softening_language
+        .max_per_document = 2;
     assertions::assert_passes(
         &doc,
         &config,

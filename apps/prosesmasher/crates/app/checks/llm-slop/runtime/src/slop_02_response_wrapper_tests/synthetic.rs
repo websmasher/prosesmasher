@@ -4,7 +4,8 @@ use prosesmasher_domain_types::{CheckConfig, Locale};
 
 #[test]
 fn general_information_wrapper_detected() {
-    let sentence = "I can provide general information about eczema, but not personalized treatment advice.";
+    let sentence =
+        "I can provide general information about eczema, but not personalized treatment advice.";
     let doc = make_doc(sentence, Locale::En);
     let config = CheckConfig::default();
     assertions::assert_response_wrapper_failure(
@@ -66,11 +67,7 @@ fn third_person_explanation_passes() {
         Locale::En,
     );
     let config = CheckConfig::default();
-    assertions::assert_passes(
-        &doc,
-        &config,
-        "third-person educational prose should pass",
-    );
+    assertions::assert_passes(&doc, &config, "third-person educational prose should pass");
 }
 
 #[test]
@@ -80,11 +77,7 @@ fn plain_consultation_sentence_passes() {
         Locale::En,
     );
     let config = CheckConfig::default();
-    assertions::assert_passes(
-        &doc,
-        &config,
-        "plain consultation advice alone should pass",
-    );
+    assertions::assert_passes(&doc, &config, "plain consultation advice alone should pass");
 }
 
 #[test]
@@ -113,14 +106,20 @@ fn code_block_wrapper_passes() {
 
 #[test]
 fn non_english_is_skipped() {
-    let doc = make_doc("I can provide general information about eczema.", Locale::Fr);
+    let doc = make_doc(
+        "I can provide general information about eczema.",
+        Locale::Fr,
+    );
     let config = CheckConfig::default();
     assertions::assert_skips(&doc, &config, "non-English locales should skip");
 }
 
 #[test]
 fn disabled_check_skips() {
-    let doc = make_doc("I can provide general information about eczema.", Locale::En);
+    let doc = make_doc(
+        "I can provide general information about eczema.",
+        Locale::En,
+    );
     let mut config = CheckConfig::default();
     config.quality.heuristics.response_wrapper.enabled = false;
     assertions::assert_skips(&doc, &config, "disabled response-wrapper should skip");

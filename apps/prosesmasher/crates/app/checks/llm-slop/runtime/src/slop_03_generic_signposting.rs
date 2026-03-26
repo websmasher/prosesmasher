@@ -34,7 +34,11 @@ impl Check for GenericSignpostingCheck {
             return;
         }
 
-        let max = config.quality.heuristics.generic_signposting.max_per_document;
+        let max = config
+            .quality
+            .heuristics
+            .generic_signposting
+            .max_per_document;
         let max_i64 = i64::try_from(max).unwrap_or(i64::MAX);
         let evidence = collect_generic_signposting_evidence(doc);
         let observed = i64::try_from(evidence.len()).unwrap_or(i64::MAX);
@@ -74,20 +78,23 @@ const CONSULTATION_PATTERNS: &[&str] = &[
 const NOTE_PATTERNS: &[&str] = &["please note that", "please note"];
 
 fn collect_generic_signposting_evidence(doc: &Document) -> Vec<Value> {
-    collect_sentence_evidence(doc, |sentence, section_index, paragraph_index, sentence_index| {
-        match_signposting(sentence).map(|(pattern_kind, matched_text)| {
-            sentence_evidence(
-                section_index,
-                paragraph_index,
-                sentence_index,
-                &[
-                    ("pattern_kind", pattern_kind),
-                    ("matched_text", matched_text),
-                    ("sentence", sentence),
-                ],
-            )
-        })
-    })
+    collect_sentence_evidence(
+        doc,
+        |sentence, section_index, paragraph_index, sentence_index| {
+            match_signposting(sentence).map(|(pattern_kind, matched_text)| {
+                sentence_evidence(
+                    section_index,
+                    paragraph_index,
+                    sentence_index,
+                    &[
+                        ("pattern_kind", pattern_kind),
+                        ("matched_text", matched_text),
+                        ("sentence", sentence),
+                    ],
+                )
+            })
+        },
+    )
 }
 
 fn match_signposting(sentence: &str) -> Option<(&'static str, &'static str)> {

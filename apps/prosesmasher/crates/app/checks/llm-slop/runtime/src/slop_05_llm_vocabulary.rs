@@ -69,12 +69,7 @@ fn collect_llm_vocabulary_evidence(doc: &Document) -> Vec<Value> {
 
     for (section_index, section) in doc.sections.iter().enumerate() {
         for block in &section.blocks {
-            collect_from_block(
-                block,
-                section_index,
-                &mut paragraph_index,
-                &mut evidence,
-            );
+            collect_from_block(block, section_index, &mut paragraph_index, &mut evidence);
         }
     }
 

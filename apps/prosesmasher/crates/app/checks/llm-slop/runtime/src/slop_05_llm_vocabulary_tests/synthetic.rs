@@ -19,7 +19,10 @@ fn make_sentence(text: &str) -> Sentence {
 
 fn make_multi_sentence_doc(sentences: &[&str], locale: Locale) -> Document {
     let sentence_values: Vec<Sentence> = sentences.iter().map(|text| make_sentence(text)).collect();
-    let total_words: usize = sentence_values.iter().map(|sentence| sentence.words.len()).sum();
+    let total_words: usize = sentence_values
+        .iter()
+        .map(|sentence| sentence.words.len())
+        .sum();
     Document {
         locale,
         sections: vec![Section {
@@ -41,7 +44,10 @@ fn make_multi_sentence_doc(sentences: &[&str], locale: Locale) -> Document {
 
 fn make_multi_sentence_blockquote_doc(sentences: &[&str], locale: Locale) -> Document {
     let sentence_values: Vec<Sentence> = sentences.iter().map(|text| make_sentence(text)).collect();
-    let total_words: usize = sentence_values.iter().map(|sentence| sentence.words.len()).sum();
+    let total_words: usize = sentence_values
+        .iter()
+        .map(|sentence| sentence.words.len())
+        .sum();
     Document {
         locale,
         sections: vec![Section {
@@ -100,10 +106,7 @@ fn mixed_terms_fail() {
 #[test]
 fn repeated_terms_inside_blockquote_fail() {
     let doc = make_multi_sentence_blockquote_doc(
-        &[
-            "A vibrant roadmap helps.",
-            "A vibrant narrative does not.",
-        ],
+        &["A vibrant roadmap helps.", "A vibrant narrative does not."],
         Locale::En,
     );
     let config = CheckConfig::default();
@@ -138,7 +141,10 @@ fn quoted_discussion_passes() {
 
 #[test]
 fn code_block_terms_pass() {
-    let doc = make_doc_code_only("Moreover, we delve into a comprehensive abstraction.", Locale::En);
+    let doc = make_doc_code_only(
+        "Moreover, we delve into a comprehensive abstraction.",
+        Locale::En,
+    );
     let config = CheckConfig::default();
     assertions::assert_passes(&doc, &config, "code blocks should be ignored");
 }

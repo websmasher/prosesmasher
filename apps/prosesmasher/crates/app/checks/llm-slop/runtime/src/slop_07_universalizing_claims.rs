@@ -34,7 +34,11 @@ impl Check for UniversalizingClaimsCheck {
             return;
         }
 
-        let max = config.quality.heuristics.universalizing_claims.max_per_document;
+        let max = config
+            .quality
+            .heuristics
+            .universalizing_claims
+            .max_per_document;
         let max_i64 = i64::try_from(max).unwrap_or(i64::MAX);
         let evidence = collect_universalizing_evidence(doc);
         let observed = i64::try_from(evidence.len()).unwrap_or(i64::MAX);
@@ -73,35 +77,29 @@ const SUBJECT_PATTERNS: &[&[&str]] = &[
 ];
 
 const DESIRE_VERBS: &[&str] = &[
-    "want",
-    "wants",
-    "need",
-    "needs",
-    "hope",
-    "hopes",
-    "deserve",
-    "deserves",
-    "crave",
-    "craves",
+    "want", "wants", "need", "needs", "hope", "hopes", "deserve", "deserves", "crave", "craves",
 ];
 
 const CERTAINTY_VERBS: &[&str] = &["know", "knows"];
 
 fn collect_universalizing_evidence(doc: &Document) -> Vec<Value> {
-    collect_sentence_evidence(doc, |sentence, section_index, paragraph_index, sentence_index| {
-        match_universalizing_sentence(sentence).map(|(pattern_kind, matched_text)| {
-            sentence_evidence(
-                section_index,
-                paragraph_index,
-                sentence_index,
-                &[
-                    ("pattern_kind", pattern_kind),
-                    ("matched_text", &matched_text),
-                    ("sentence", sentence),
-                ],
-            )
-        })
-    })
+    collect_sentence_evidence(
+        doc,
+        |sentence, section_index, paragraph_index, sentence_index| {
+            match_universalizing_sentence(sentence).map(|(pattern_kind, matched_text)| {
+                sentence_evidence(
+                    section_index,
+                    paragraph_index,
+                    sentence_index,
+                    &[
+                        ("pattern_kind", pattern_kind),
+                        ("matched_text", &matched_text),
+                        ("sentence", sentence),
+                    ],
+                )
+            })
+        },
+    )
 }
 
 fn match_universalizing_sentence(sentence: &str) -> Option<(&'static str, String)> {
@@ -132,7 +130,12 @@ fn match_universalizing_sentence(sentence: &str) -> Option<(&'static str, String
         .iter()
         .copied()
         .find(|candidate| CERTAINTY_VERBS.contains(candidate))
-        .map(|verb| ("collective-certainty", format!("{} {verb}", subject.join(" "))))
+        .map(|verb| {
+            (
+                "collective-certainty",
+                format!("{} {verb}", subject.join(" ")),
+            )
+        })
 }
 
 fn match_subject<'a>(tokens: &'a [&'a str]) -> Option<(usize, &'static [&'static str])> {

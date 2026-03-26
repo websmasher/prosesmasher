@@ -44,18 +44,16 @@ impl Check for ResponseWrapperCheck {
                 &evidence,
             )
             .label("Response Wrapper")
-            .checking("canned assistant capability, limitation, or diagnosis/advice wrapper language");
+            .checking(
+                "canned assistant capability, limitation, or diagnosis/advice wrapper language",
+            );
     }
 }
 
 const LEADING_PREFIXES: &[&str] = &["however, ", "but ", "that being said, ", "as such, "];
 
-const GENERAL_INFO_CAPABILITY_PATTERNS: &[&str] = &[
-    "i can provide",
-    "i can offer",
-    "i can share",
-    "i can give",
-];
+const GENERAL_INFO_CAPABILITY_PATTERNS: &[&str] =
+    &["i can provide", "i can offer", "i can share", "i can give"];
 
 const GENERAL_INFO_OBJECTS: &[&str] = &[
     "general information",
@@ -114,18 +112,21 @@ const ABILITY_LIMITATION_PATTERNS: &[&str] = &[
 ];
 
 fn collect_response_wrapper_evidence(doc: &Document) -> Vec<Value> {
-    collect_sentence_evidence(doc, |sentence, section_index, paragraph_index, sentence_index| {
-        match_response_wrapper(sentence).map(|(pattern_kind, matched_signal)| {
-            json!({
-                "section_index": section_index,
-                "paragraph_index": paragraph_index,
-                "sentence_index": sentence_index,
-                "pattern_kind": pattern_kind,
-                "matched_signal": matched_signal,
-                "sentence": sentence,
+    collect_sentence_evidence(
+        doc,
+        |sentence, section_index, paragraph_index, sentence_index| {
+            match_response_wrapper(sentence).map(|(pattern_kind, matched_signal)| {
+                json!({
+                    "section_index": section_index,
+                    "paragraph_index": paragraph_index,
+                    "sentence_index": sentence_index,
+                    "pattern_kind": pattern_kind,
+                    "matched_signal": matched_signal,
+                    "sentence": sentence,
+                })
             })
-        })
-    })
+        },
+    )
 }
 
 fn match_response_wrapper(sentence: &str) -> Option<(&'static str, &'static str)> {

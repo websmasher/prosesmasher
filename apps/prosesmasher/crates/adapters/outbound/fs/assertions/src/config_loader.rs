@@ -190,7 +190,11 @@ pub fn assert_shared_quality_defaults(config: &CheckConfig, context: &str) {
         "{context}: generic signposting enabled by default"
     );
     assert_eq!(
-        config.quality.heuristics.generic_signposting.max_per_document,
+        config
+            .quality
+            .heuristics
+            .generic_signposting
+            .max_per_document,
         1,
         "{context}: generic signposting default threshold"
     );
@@ -199,7 +203,11 @@ pub fn assert_shared_quality_defaults(config: &CheckConfig, context: &str) {
         "{context}: boilerplate framing enabled by default"
     );
     assert_eq!(
-        config.quality.heuristics.boilerplate_framing.max_per_document,
+        config
+            .quality
+            .heuristics
+            .boilerplate_framing
+            .max_per_document,
         1,
         "{context}: boilerplate framing default threshold"
     );
@@ -208,8 +216,7 @@ pub fn assert_shared_quality_defaults(config: &CheckConfig, context: &str) {
         "{context}: llm vocabulary enabled by default"
     );
     assert_eq!(
-        config.quality.heuristics.llm_vocabulary.max_per_document,
-        1,
+        config.quality.heuristics.llm_vocabulary.max_per_document, 1,
         "{context}: llm vocabulary default threshold"
     );
     assert_eq!(

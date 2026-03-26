@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.4
+
+- Restored the packaged `prosesmasher` wrapper crate files so `cargo run -p prosesmasher` and packaged smoke tests work again after the accidental workspace breakage.
+- Normalized `sentence-case` JSON output back to the stable public check ID `sentence-case` instead of leaking heading text through internal expectation columns.
+- Added a CLI output regression test for the `sentence-case` public ID contract and kept `--version` release coverage intact.
+
 ## 0.2.3
 
 - Added `universalizing-claims` as the next accumulative `llm-slop` rule for repeated broad-human framing such as `everyone wants...`, `we all want...`, and `most people know...`.
