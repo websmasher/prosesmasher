@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.3
+
+- Added `universalizing-claims` as the next accumulative `llm-slop` rule for repeated broad-human framing such as `everyone wants...`, `we all want...`, and `most people know...`.
+- Kept the new rule synthetic-first for now: the existing fixture sidecar baselines stayed intact and no prior expected failures disappeared.
+- Extended the shipped config surface and presets with `universalizingClaims` while keeping the full workspace and packaged CLI green.
+
 ## 0.2.2
 
 - Tightened `softening-language` so a weaker `may + often` sentence no longer fails on its own.
