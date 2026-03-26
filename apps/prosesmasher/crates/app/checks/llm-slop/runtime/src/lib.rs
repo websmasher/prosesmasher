@@ -14,6 +14,8 @@ pub mod test_helpers {
 
 mod support;
 
+#[path = "slop_08_boilerplate_conclusion.rs"]
+pub mod boilerplate_conclusion;
 #[path = "slop_04_boilerplate_framing.rs"]
 pub mod boilerplate_framing;
 #[path = "slop_03_generic_signposting.rs"]
@@ -29,6 +31,7 @@ pub mod softening_language;
 #[path = "slop_07_universalizing_claims.rs"]
 pub mod universalizing_claims;
 
+pub use boilerplate_conclusion::BoilerplateConclusionCheck;
 pub use boilerplate_framing::BoilerplateFramingCheck;
 pub use generic_signposting::GenericSignpostingCheck;
 pub use llm_disclaimer::LlmDisclaimerCheck;
@@ -44,6 +47,7 @@ pub fn all_checks() -> Vec<check::BoxedCheck> {
         Box::new(ResponseWrapperCheck),
         Box::new(GenericSignpostingCheck),
         Box::new(BoilerplateFramingCheck),
+        Box::new(BoilerplateConclusionCheck),
         Box::new(LlmVocabularyCheck),
         Box::new(SofteningLanguageCheck),
         Box::new(UniversalizingClaimsCheck),

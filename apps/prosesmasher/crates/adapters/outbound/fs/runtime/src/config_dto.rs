@@ -115,6 +115,9 @@ pub struct HeuristicsDto {
     pub boilerplate_framing: Option<AccumulativeDto>,
     #[garde(skip)]
     #[serde(default)]
+    pub boilerplate_conclusion: Option<EnabledDto>,
+    #[garde(skip)]
+    #[serde(default)]
     pub llm_vocabulary: Option<AccumulativeDto>,
     #[garde(skip)]
     #[serde(default)]
@@ -465,6 +468,9 @@ const fn apply_toggle_heuristics(
         if let Some(max) = accumulative.max_per_document {
             heuristics.boilerplate_framing.max_per_document = max;
         }
+    }
+    if let Some(enabled) = dto.boilerplate_conclusion {
+        heuristics.boilerplate_conclusion.enabled = enabled.enabled;
     }
     if let Some(accumulative) = dto.llm_vocabulary.as_ref() {
         heuristics.llm_vocabulary.enabled = accumulative.enabled;

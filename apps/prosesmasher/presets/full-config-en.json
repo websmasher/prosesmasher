@@ -69,6 +69,7 @@
       "responseWrapper": { "enabled": true },
       "genericSignposting": { "enabled": true, "maxPerDocument": 1 },
       "boilerplateFraming": { "enabled": true, "maxPerDocument": 1 },
+      "boilerplateConclusion": { "enabled": true },
       "llmVocabulary": { "enabled": true, "maxPerDocument": 1 },
       "softeningLanguage": { "enabled": true, "maxPerDocument": 1 },
       "universalizingClaims": { "enabled": true, "maxPerDocument": 1 },

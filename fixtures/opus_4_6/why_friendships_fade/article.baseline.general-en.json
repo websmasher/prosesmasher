@@ -1,0 +1,25 @@
+{
+  "preset": "general-en",
+  "failures": [
+    {
+      "rule": "colon-dramatic",
+      "count": 1
+    },
+    {
+      "rule": "negation-reframe",
+      "count": 1
+    },
+    {
+      "rule": "paragraph-length",
+      "count": 1
+    },
+    {
+      "rule": "prohibited-terms",
+      "count": 1
+    },
+    {
+      "rule": "sentence-case",
+      "count": 3
+    }
+  ]
+}

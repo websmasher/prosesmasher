@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.5
+
+- Added `boilerplate-conclusion` and a generated-fixture baseline compare workflow for model-written article corpora.
+
 ## 0.2.4
 
 - Restored the packaged `prosesmasher` wrapper crate files so `cargo run -p prosesmasher` and packaged smoke tests work again after the accidental workspace breakage.

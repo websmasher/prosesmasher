@@ -1,0 +1,9 @@
+{
+  "preset": "general-en",
+  "failures": [
+    {
+      "rule": "sentence-case",
+      "count": 5
+    }
+  ]
+}
