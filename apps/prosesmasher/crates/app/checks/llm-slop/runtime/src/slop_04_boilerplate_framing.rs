@@ -1,14 +1,11 @@
 //! Boilerplate-framing check — flags repeated canned setup and preview scaffolding.
 
 use low_expectations::ExpectationSuite;
-use prosesmasher_domain_types::{CheckConfig, Document, Locale};
+use prosesmasher_domain_types::{Block, CheckConfig, Document, Locale};
 use serde_json::{Value, json};
 
 use crate::check::Check;
-use crate::support::{
-    collect_sentence_evidence, normalize, sentence_evidence, strip_leading_prefixes,
-    strip_quoted_segments,
-};
+use crate::support::{normalize, sentence_evidence, strip_leading_prefixes, strip_quoted_segments};
 
 #[derive(Debug)]
 pub struct BoilerplateFramingCheck;
@@ -75,45 +72,86 @@ const CATEGORY_WORDS: &[&str] = &[
 ];
 
 const ENUMERATION_VERBS: &[&str] = &["include", "includes"];
+const EXISTENCE_WORDS: &[&str] = &["there"];
+const AUXILIARY_WORDS: &[&str] = &["are"];
 
 const PREVIEW_OBJECTS: &[&str] = &["sections", "section", "parts", "part", "pages", "page"];
 const PREVIEW_VERBS: &[&str] = &["explore", "discuss", "examine", "cover"];
 
 fn collect_boilerplate_framing_evidence(doc: &Document) -> Vec<Value> {
-    collect_sentence_evidence(doc, |sentence, section_index, paragraph_index, sentence_index| {
-        match_boilerplate_framing(sentence).map(|(pattern_kind, matched_text)| {
-            sentence_evidence(
+    let mut evidence = Vec::new();
+    let mut paragraph_index: usize = 0;
+
+    for (section_index, section) in doc.sections.iter().enumerate() {
+        for block in &section.blocks {
+            collect_from_block(
+                block,
                 section_index,
-                paragraph_index,
-                sentence_index,
-                &[
-                    ("pattern_kind", pattern_kind),
-                    ("matched_text", matched_text),
-                    ("sentence", sentence),
-                ],
-            )
-        })
-    })
+                &mut paragraph_index,
+                &mut evidence,
+            );
+        }
+    }
+
+    evidence
 }
 
-fn match_boilerplate_framing(sentence: &str) -> Option<(&'static str, &'static str)> {
+fn collect_from_block(
+    block: &Block,
+    section_index: usize,
+    paragraph_index: &mut usize,
+    evidence: &mut Vec<Value>,
+) {
+    match block {
+        Block::Paragraph(paragraph) => {
+            for (sentence_index, sentence) in paragraph.sentences.iter().enumerate() {
+                for (pattern_kind, matched_text) in match_boilerplate_framing(&sentence.text) {
+                    evidence.push(sentence_evidence(
+                        section_index,
+                        *paragraph_index,
+                        sentence_index,
+                        &[
+                            ("pattern_kind", pattern_kind),
+                            ("matched_text", matched_text),
+                            ("sentence", &sentence.text),
+                        ],
+                    ));
+                }
+            }
+            *paragraph_index = paragraph_index.saturating_add(1);
+        }
+        Block::BlockQuote(inner) => {
+            for inner_block in inner {
+                collect_from_block(inner_block, section_index, paragraph_index, evidence);
+            }
+        }
+        Block::List(_) | Block::CodeBlock(_) => {}
+    }
+}
+
+fn match_boilerplate_framing(sentence: &str) -> Vec<(&'static str, &'static str)> {
     let normalized = normalize(sentence);
     let stripped = strip_quoted_segments(strip_leading_prefixes(&normalized, LEADING_PREFIXES));
     let tokens = token_words(&stripped);
+    let mut matches = Vec::new();
 
     if tokens.is_empty() {
-        return None;
+        return matches;
     }
     if matches_preview_frame(&tokens) {
-        return Some(("preview-frame", "following + explore"));
+        matches.push(("preview-frame", "following + explore"));
     }
     if matches_topic_frame(&stripped) {
-        return Some(("topic-frame", "when it comes to"));
+        matches.push(("topic-frame", "when it comes to"));
+    }
+    if matches_existence_frame(&tokens) {
+        matches.push(("existence-frame", "there are certain/common"));
     }
     if let Some(signal) = match_enumeration_preface(&tokens) {
-        return Some(("enumeration-preface", signal));
+        matches.push(("enumeration-preface", signal));
     }
-    None
+
+    matches
 }
 
 fn token_words(text: &str) -> Vec<&str> {
@@ -148,6 +186,10 @@ fn matches_preview_frame(tokens: &[&str]) -> bool {
 
 fn matches_topic_frame(normalized: &str) -> bool {
     normalized.contains("when it comes to")
+}
+
+fn matches_existence_frame(tokens: &[&str]) -> bool {
+    tokens_contain_in_order(tokens, &[EXISTENCE_WORDS, AUXILIARY_WORDS, &["certain", "common"], CATEGORY_WORDS])
 }
 
 fn match_enumeration_preface(tokens: &[&str]) -> Option<&'static str> {
