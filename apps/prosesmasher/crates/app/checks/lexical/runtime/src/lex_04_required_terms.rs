@@ -50,5 +50,5 @@ impl Check for RequiredTermsCheck {
 }
 
 #[cfg(test)]
-#[path = "required_terms_tests/mod.rs"]
+#[path = "lex_04_required_terms_tests/mod.rs"]
 mod tests;

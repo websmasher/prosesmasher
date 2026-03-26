@@ -12,10 +12,15 @@ pub mod test_helpers {
     pub use prosesmasher_app_checks_test_support::*;
 }
 
+#[path = "doc_04_bold_density.rs"]
 pub mod bold_density;
+#[path = "doc_05_code_fences.rs"]
 pub mod code_fences;
+#[path = "doc_03_heading_counts.rs"]
 pub mod heading_counts;
+#[path = "doc_02_heading_hierarchy.rs"]
 pub mod heading_hierarchy;
+#[path = "doc_01_word_count.rs"]
 pub mod word_count;
 
 pub use bold_density::BoldDensityCheck;
@@ -28,10 +33,10 @@ pub use word_count::WordCountCheck;
 #[must_use]
 pub fn all_checks() -> Vec<check::BoxedCheck> {
     vec![
+        Box::new(WordCountCheck),
+        Box::new(HeadingHierarchyCheck),
+        Box::new(HeadingCountsCheck),
         Box::new(BoldDensityCheck),
         Box::new(CodeFencesCheck),
-        Box::new(HeadingCountsCheck),
-        Box::new(HeadingHierarchyCheck),
-        Box::new(WordCountCheck),
     ]
 }

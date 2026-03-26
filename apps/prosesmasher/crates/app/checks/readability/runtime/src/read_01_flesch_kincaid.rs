@@ -101,5 +101,5 @@ fn f64_to_i64_x100(value: f64) -> i64 {
 }
 
 #[cfg(test)]
-#[path = "flesch_kincaid_tests/mod.rs"]
+#[path = "read_01_flesch_kincaid_tests/mod.rs"]
 mod tests;

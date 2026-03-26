@@ -1,4 +1,4 @@
-//! Coleman-Liau index check — estimates the US grade level of prose.
+//! Gunning Fog index check — estimates the years of education needed.
 
 use low_expectations::ExpectationSuite;
 use prosesmasher_domain_types::{Block, CheckConfig, Document, Locale};
@@ -6,21 +6,22 @@ use serde_json::json;
 
 use crate::check::Check;
 
-/// Checks that the document's Coleman-Liau index stays below the configured
+/// Checks that the document's Gunning Fog index stays below the configured
 /// maximum threshold.
 ///
-/// Formula: `0.0588 × L - 0.296 × S - 15.8`
-/// where L = letters per 100 words, S = sentences per 100 words.
+/// Formula: `0.4 × ((words/sentences) + 100 × (complex_words/words))`
+///
+/// A "complex word" has 3 or more syllables. Lower scores indicate simpler text.
 #[derive(Debug)]
-pub struct ColemanLiauCheck;
+pub struct GunningFogCheck;
 
-impl Check for ColemanLiauCheck {
+impl Check for GunningFogCheck {
     fn id(&self) -> &'static str {
-        "coleman-liau"
+        "gunning-fog"
     }
 
     fn label(&self) -> &'static str {
-        "Coleman-Liau Index"
+        "Gunning Fog Index"
     }
 
     fn supported_locales(&self) -> Option<&'static [Locale]> {
@@ -31,80 +32,81 @@ impl Check for ColemanLiauCheck {
         if !config.quality.readability.enabled {
             return;
         }
-        let Some(max) = config.quality.readability.coleman_liau_max else {
+        let Some(max) = config.quality.readability.gunning_fog_max else {
             return;
         };
 
         let total_words = doc.metadata.total_words;
         let total_sentences = doc.metadata.total_sentences;
 
-        if total_words == 0 || total_sentences == 0 {
+        if total_sentences == 0 || total_words == 0 {
             return;
         }
 
-        let mut total_letters: usize = 0;
+        let mut complex_count: usize = 0;
         for section in &doc.sections {
-            count_letters_in_blocks(&section.blocks, &mut total_letters);
+            complex_count = complex_count.saturating_add(count_complex_in_blocks(&section.blocks));
         }
 
         let words_f = f64::from(u32::try_from(total_words).unwrap_or(u32::MAX));
         let sentences_f = f64::from(u32::try_from(total_sentences).unwrap_or(u32::MAX));
-        let letters_f = f64::from(u32::try_from(total_letters).unwrap_or(u32::MAX));
+        let complex_f = f64::from(u32::try_from(complex_count).unwrap_or(u32::MAX));
 
-        let l = letters_f / words_f * 100.0;
-        let s = sentences_f / words_f * 100.0;
-
-        let score = 0.0588f64.mul_add(l, 0.296f64.mul_add(-s, -15.8));
+        let score = 0.4 * 100.0f64.mul_add(complex_f / words_f, words_f / sentences_f);
 
         let score_100 = f64_to_i64_x100(score);
         let max_100 = f64_to_i64_x100(max);
 
         let _result = suite
             .record_custom_values(
-                "coleman-liau",
+                "gunning-fog",
                 score_100 <= max_100,
                 json!({
                     "maximum_score_x100": max_100,
-                    "formula": "0.0588 × L - 0.296 × S - 15.8",
+                    "formula": "0.4 × ((words/sentences) + 100 × (complex_words/words))",
                 }),
                 json!({
                     "score_x100": score_100,
                     "score": score,
                     "total_words": total_words,
                     "total_sentences": total_sentences,
-                    "total_letters": total_letters,
+                    "complex_word_count": complex_count,
                 }),
                 &[json!({
                     "score_x100": score_100,
                     "score": score,
                     "total_words": total_words,
                     "total_sentences": total_sentences,
-                    "total_letters": total_letters,
+                    "complex_word_count": complex_count,
                     "maximum_score_x100": max_100,
                 })],
             )
-            .label("Coleman-Liau Index")
-            .checking("grade level index (×100)");
+            .label("Gunning Fog Index")
+            .checking("fog index (×100)");
     }
 }
 
-/// Count alphabetic characters in all word texts (recursive for blockquotes).
-fn count_letters_in_blocks(blocks: &[Block], count: &mut usize) {
+/// Count words with 3+ syllables in all blocks (recursive for blockquotes).
+fn count_complex_in_blocks(blocks: &[Block]) -> usize {
+    let mut count: usize = 0;
     for block in blocks {
         match block {
             Block::Paragraph(p) => {
                 for sentence in &p.sentences {
                     for word in &sentence.words {
-                        *count = count.saturating_add(
-                            word.text.chars().filter(|c| c.is_alphabetic()).count(),
-                        );
+                        if word.syllable_count >= 3 {
+                            count = count.saturating_add(1);
+                        }
                     }
                 }
             }
-            Block::BlockQuote(inner) => count_letters_in_blocks(inner, count),
+            Block::BlockQuote(inner) => {
+                count = count.saturating_add(count_complex_in_blocks(inner));
+            }
             Block::List(_) | Block::CodeBlock(_) => {}
         }
     }
+    count
 }
 
 /// Multiply by 100, round, and convert to i64 without using `as`.
@@ -117,5 +119,5 @@ fn f64_to_i64_x100(value: f64) -> i64 {
 }
 
 #[cfg(test)]
-#[path = "coleman_liau_tests/mod.rs"]
+#[path = "read_02_gunning_fog_tests/mod.rs"]
 mod tests;

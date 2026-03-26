@@ -119,5 +119,5 @@ fn check_block(
 }
 
 #[cfg(test)]
-#[path = "hedge_words_tests/mod.rs"]
+#[path = "lex_02_hedge_stacking_tests/mod.rs"]
 mod tests;

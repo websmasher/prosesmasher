@@ -76,5 +76,5 @@ fn block_code_text(block: &Block) -> String {
 }
 
 #[cfg(test)]
-#[path = "code_fences_tests/mod.rs"]
+#[path = "doc_05_code_fences_tests/mod.rs"]
 mod tests;

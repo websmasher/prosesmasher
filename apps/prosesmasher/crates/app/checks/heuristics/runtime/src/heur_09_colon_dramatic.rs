@@ -119,5 +119,5 @@ fn dramatic_colon_details(text: &str) -> Option<ColonDetails<'_>> {
 }
 
 #[cfg(test)]
-#[path = "colon_dramatic_tests/mod.rs"]
+#[path = "heur_09_colon_dramatic_tests/mod.rs"]
 mod tests;

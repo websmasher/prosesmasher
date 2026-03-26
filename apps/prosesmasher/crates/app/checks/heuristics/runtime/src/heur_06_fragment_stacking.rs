@@ -261,5 +261,5 @@ fn is_function_word(word: &str) -> bool {
 }
 
 #[cfg(test)]
-#[path = "fragment_stacking_tests/mod.rs"]
+#[path = "heur_06_fragment_stacking_tests/mod.rs"]
 mod tests;

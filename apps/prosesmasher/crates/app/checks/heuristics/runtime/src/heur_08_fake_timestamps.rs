@@ -161,5 +161,5 @@ fn collect_timestamp_matches(text: &str) -> Vec<String> {
 }
 
 #[cfg(test)]
-#[path = "fake_timestamps_tests/mod.rs"]
+#[path = "heur_08_fake_timestamps_tests/mod.rs"]
 mod tests;

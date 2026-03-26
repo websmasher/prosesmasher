@@ -87,5 +87,5 @@ fn is_title_cased(word: &str) -> bool {
 }
 
 #[cfg(test)]
-#[path = "sentence_case_tests/mod.rs"]
+#[path = "heur_02_sentence_case_tests/mod.rs"]
 mod tests;

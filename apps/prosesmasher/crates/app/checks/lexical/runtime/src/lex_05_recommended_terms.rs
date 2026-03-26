@@ -108,5 +108,5 @@ fn rough_stem(word: &str) -> String {
 }
 
 #[cfg(test)]
-#[path = "recommended_terms_tests/mod.rs"]
+#[path = "lex_05_recommended_terms_tests/mod.rs"]
 mod tests;

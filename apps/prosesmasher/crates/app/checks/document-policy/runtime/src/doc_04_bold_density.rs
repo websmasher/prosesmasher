@@ -35,5 +35,5 @@ impl Check for BoldDensityCheck {
 }
 
 #[cfg(test)]
-#[path = "bold_density_tests/mod.rs"]
+#[path = "doc_04_bold_density_tests/mod.rs"]
 mod tests;

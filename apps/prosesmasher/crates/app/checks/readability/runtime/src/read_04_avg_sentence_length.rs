@@ -74,5 +74,5 @@ impl Check for AvgSentenceLengthCheck {
 }
 
 #[cfg(test)]
-#[path = "avg_sentence_length_tests/mod.rs"]
+#[path = "read_04_avg_sentence_length_tests/mod.rs"]
 mod tests;

@@ -100,5 +100,5 @@ fn check_blocks(
 }
 
 #[cfg(test)]
-#[path = "exclamation_density_tests/mod.rs"]
+#[path = "heur_04_exclamation_density_tests/mod.rs"]
 mod tests;

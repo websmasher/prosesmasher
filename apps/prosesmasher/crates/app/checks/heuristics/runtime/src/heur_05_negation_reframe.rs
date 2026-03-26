@@ -587,5 +587,5 @@ fn normalize_text(text: &str) -> String {
 }
 
 #[cfg(test)]
-#[path = "negation_reframe_tests/mod.rs"]
+#[path = "heur_05_negation_reframe_tests/mod.rs"]
 mod tests;

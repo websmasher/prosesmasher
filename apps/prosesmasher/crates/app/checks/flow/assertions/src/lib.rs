@@ -37,5 +37,7 @@ macro_rules! define_rule_assertions {
 
 pub(crate) use define_rule_assertions;
 
+#[path = "flow_01_paragraph_length.rs"]
 pub mod paragraph_length;
+#[path = "flow_02_word_repetition.rs"]
 pub mod word_repetition;
