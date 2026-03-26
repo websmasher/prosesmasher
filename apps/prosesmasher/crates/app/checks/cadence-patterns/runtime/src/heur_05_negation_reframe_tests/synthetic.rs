@@ -369,6 +369,76 @@ fn noun_need_without_repeated_subject_passes() {
 }
 
 #[test]
+fn quantified_human_need_with_they_detected() {
+    let doc = make_doc_with_sentences(
+        &[
+            "Most new moms do not need more products.",
+            "They need less load.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    assertions::assert_negation_reframe_failure(
+        &doc,
+        &config,
+        "x does not need y -> they need z",
+        "quantified human subject with they corrective should fail",
+    );
+}
+
+#[test]
+fn quantified_nonhuman_need_with_they_passes() {
+    let doc = make_doc_with_sentences(
+        &[
+            "Most servers do not need more memory.",
+            "They need better tuning.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    assertions::assert_passes(
+        &doc,
+        &config,
+        "quantified nonhuman subject with they corrective should pass",
+    );
+}
+
+#[test]
+fn repeated_want_transform_corrective_detected() {
+    let doc = make_doc_with_sentences(
+        &[
+            "You do not want to crush leadership.",
+            "You want to turn orders into invitations.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    assertions::assert_negation_reframe_failure(
+        &doc,
+        &config,
+        "do not want x -> want to turn y into z",
+        "transformative repeated want corrective should fail",
+    );
+}
+
+#[test]
+fn repeated_want_without_transform_passes() {
+    let doc = make_doc_with_sentences(
+        &[
+            "You do not want to click twice.",
+            "You want to save the draft.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    assertions::assert_passes(
+        &doc,
+        &config,
+        "ordinary repeated want instruction should pass",
+    );
+}
+
+#[test]
 fn less_more_like_pair_detected() {
     let doc = make_doc_with_sentences(
         &[

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.9
+
+- Expanded `negation-reframe` with two narrow corrective branches: quantified human `do not need -> they need` pairs such as `Most new moms do not need ... They need ...`, and a transformation-specific `do not want -> want to turn ... into ...` branch.
+- Expanded `slogan-punchline` with short contrastive coaching aphorisms such as `Kids get kind in reps, not revelations.`, `Bring a pattern, not a vibe.`, and `Mostly by treating ... like scripts, not virtues.`
+- Verified the new branches against the six generated-model regression buckets and kept all of those compares clean.
+
 ## 0.2.8
 
 - Expanded `negation-reframe` with a repeated noun-subject corrective branch so lines like `The child does not need ... The child needs ...` are caught without broadening into generic contrast prose.

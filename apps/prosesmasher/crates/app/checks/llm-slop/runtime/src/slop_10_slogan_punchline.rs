@@ -50,6 +50,8 @@ impl Check for SloganPunchlineCheck {
 
 const LEADING_PREFIXES: &[&str] = &["and ", "but ", "so ", "because "];
 const ENOUGH_FOR_SUFFIXES: &[&str] = &[" is enough for this", " is enough for that"];
+const ABSTRACT_CONTRAST_NOUNS: &[&str] = &["revelations", "vibe", "virtues"];
+const HUMAN_PLURAL_SUBJECTS: &[&str] = &["kids", "children", "people"];
 
 fn collect_slogan_punchline_evidence(doc: &Document) -> Vec<serde_json::Value> {
     let mut evidence = collect_sentence_evidence(
@@ -99,6 +101,15 @@ fn match_single_sentence(sentence: &str) -> Option<&'static str> {
     }
     if matches_it_changes_everything(&stripped) {
         return Some("it-changes-everything");
+    }
+    if matches_imperative_contrast_aphorism(&stripped) {
+        return Some("imperative-contrast-aphorism");
+    }
+    if matches_reps_not_revelations_shape(&stripped) {
+        return Some("reps-not-revelations");
+    }
+    if matches_treating_like_not_virtues_shape(&stripped) {
+        return Some("treating-like-not-virtues");
     }
 
     None
@@ -152,6 +163,40 @@ fn matches_part_most_people_miss(text: &str) -> bool {
 fn matches_it_changes_everything(text: &str) -> bool {
     let tokens = tokens(text);
     matches!(tokens.as_slice(), [.., "it", "changes", "everything"]) && tokens.len() <= 8
+}
+
+fn matches_imperative_contrast_aphorism(text: &str) -> bool {
+    let tokens = tokens(text);
+    matches!(
+        tokens.as_slice(),
+        ["bring", article_a, _, "not", article_b, contrast]
+            if is_article(article_a)
+                && is_article(article_b)
+                && ABSTRACT_CONTRAST_NOUNS.contains(contrast)
+    )
+}
+
+fn matches_reps_not_revelations_shape(text: &str) -> bool {
+    let tokens = tokens(text);
+    matches!(
+        tokens.as_slice(),
+        [subject, "get", _, "in", _, "not", contrast]
+            if HUMAN_PLURAL_SUBJECTS.contains(subject)
+                && ABSTRACT_CONTRAST_NOUNS.contains(contrast)
+    )
+}
+
+fn matches_treating_like_not_virtues_shape(text: &str) -> bool {
+    let tokens = tokens(text);
+    tokens.len() <= 10
+        && tokens.starts_with(&["mostly", "by", "treating"])
+        && tokens.contains(&"like")
+        && matches!(tokens.last(), Some(contrast) if ABSTRACT_CONTRAST_NOUNS.contains(contrast))
+        && tokens.iter().any(|token| *token == "not")
+}
+
+fn is_article(token: &str) -> bool {
+    matches!(token, "a" | "an" | "the")
 }
 
 fn tokens(text: &str) -> Vec<&str> {

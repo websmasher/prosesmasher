@@ -100,6 +100,45 @@ fn enough_for_this_curriculum_pair_fails() {
 }
 
 #[test]
+fn imperative_contrast_aphorism_fails() {
+    let doc = make_doc("Bring a pattern, not a vibe.", Locale::En);
+    let config = CheckConfig::default();
+    assertions::assert_punchline_failure(
+        &doc,
+        &config,
+        "imperative-contrast-aphorism",
+        "short imperative coaching contrast should fail",
+    );
+}
+
+#[test]
+fn reps_not_revelations_shape_fails() {
+    let doc = make_doc("Kids get kind in reps, not revelations.", Locale::En);
+    let config = CheckConfig::default();
+    assertions::assert_punchline_failure(
+        &doc,
+        &config,
+        "reps-not-revelations",
+        "short reps not revelations aphorism should fail",
+    );
+}
+
+#[test]
+fn treating_like_not_virtues_shape_fails() {
+    let doc = make_doc(
+        "Mostly by treating social skills like scripts, not virtues.",
+        Locale::En,
+    );
+    let config = CheckConfig::default();
+    assertions::assert_punchline_failure(
+        &doc,
+        &config,
+        "treating-like-not-virtues",
+        "treating-like-not-virtues contrast should fail",
+    );
+}
+
+#[test]
 fn generic_part_people_skip_passes() {
     let doc = make_doc(
         "That is the part people skip when they talk about burnout as if it were just a resilience issue.",
@@ -110,6 +149,42 @@ fn generic_part_people_skip_passes() {
         &doc,
         &config,
         "long explanatory part-skip sentence should pass",
+    );
+}
+
+#[test]
+fn imperative_concrete_object_contrast_passes() {
+    let doc = make_doc("Bring a towel, not a coat.", Locale::En);
+    let config = CheckConfig::default();
+    assertions::assert_passes(
+        &doc,
+        &config,
+        "concrete imperative contrast should pass",
+    );
+}
+
+#[test]
+fn human_gets_x_in_y_not_concrete_passes() {
+    let doc = make_doc("Kids get calmer in sleep, not stimulants.", Locale::En);
+    let config = CheckConfig::default();
+    assertions::assert_passes(
+        &doc,
+        &config,
+        "concrete causal contrast should pass",
+    );
+}
+
+#[test]
+fn treating_like_x_not_magic_passes() {
+    let doc = make_doc(
+        "Mostly by treating the parser like a state machine, not magic.",
+        Locale::En,
+    );
+    let config = CheckConfig::default();
+    assertions::assert_passes(
+        &doc,
+        &config,
+        "technical treating-like contrast should pass",
     );
 }
 
