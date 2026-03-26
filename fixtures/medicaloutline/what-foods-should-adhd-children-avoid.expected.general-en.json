@@ -2,18 +2,26 @@
   "requiredFailures": [
     {
       "rule": "llm-disclaimer",
-      "evidenceContains": [
-        "as a language model",
-        "As a language model, I do not provide medical advice."
-      ]
+      "evidenceContainsByField": {
+        "matched_text": [
+          "as a language model"
+        ],
+        "sentence": [
+          "As a language model, I do not provide medical advice."
+        ]
+      }
     },
     {
       "rule": "smart-quotes",
-      "evidenceContains": [
-        "’",
-        "It’s important to note that dietary changes should always be discussed with a qualified healthcare professional, and any dietary modifications should be part of a comprehensive",
-        "A qualified healthcare professional, such as a pediatrician or a registered dietitian, can provide personalized advice and guidance based on your child’s specific needs and"
-      ]
+      "evidenceContainsByField": {
+        "matched_text": [
+          "’"
+        ],
+        "sentence": [
+          "It’s important to note that dietary changes should always be discussed with a qualified healthcare professional, and any dietary modifications should be part of a comprehensive",
+          "A qualified healthcare professional, such as a pediatrician or a registered dietitian, can provide personalized advice and guidance based on your child’s specific needs and"
+        ]
+      }
     }
   ]
 }

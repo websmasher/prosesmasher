@@ -2,19 +2,29 @@
   "requiredFailures": [
     {
       "rule": "paragraph-length",
-      "evidenceContains": [
-        "<BlogHowTo title=\"How to get through an explosive episode\" steps={[ { name: \"Stay close and protect yourself\", text: \"Move breakables out of reach. Put your glasses somewhere",
-        "<BlogFAQ items={[ { question: \"At what age should explosive aggression start decreasing?\", answer: \"Most children show a meaningful decrease in physical aggression between ages"
-      ]
+      "evidenceContainsByField": {
+        "paragraph_text": [
+          "<BlogHowTo title=\"How to get through an explosive episode\" steps={[ { name: \"Stay close and protect yourself\", text: \"Move breakables out of reach. Put your glasses somewhere",
+          "<BlogFAQ items={[ { question: \"At what age should explosive aggression start decreasing?\", answer: \"Most children show a meaningful decrease in physical aggression between ages"
+        ]
+      }
     },
     {
       "rule": "triple-repeat",
-      "evidenceContains": [
-        "your",
-        "Your four-year-old can't get the Lego piece to snap on, and suddenly she's hurling the entire bin at her brother's head.",
-        "Your six-year-old loses a board game and punches a hole in the couch cushion.",
-        "Your three-year-old bites another child at pickup, and you didn't even see it building."
-      ]
+      "evidenceContainsByField": {
+        "matched_text": [
+          "your"
+        ],
+        "sentence_1": [
+          "Your four-year-old can't get the Lego piece to snap on, and suddenly she's hurling the entire bin at her brother's head."
+        ],
+        "sentence_2": [
+          "Your six-year-old loses a board game and punches a hole in the couch cushion."
+        ],
+        "sentence_3": [
+          "Your three-year-old bites another child at pickup, and you didn't even see it building."
+        ]
+      }
     }
   ]
 }

@@ -2,55 +2,77 @@
   "requiredFailures": [
     {
       "rule": "paragraph-length",
-      "evidenceContains": [
-        "As we sleep, our bodies cycle through two different phases of sleep: REM (rapid eye movement) sleep and non-REM sleep. The first stage of sleep is non-REM sleep, which is divided",
-        "As I mentioned earlier, the different stages of sleep serve distinct purposes. REM sleep is particularly fascinating because it is the stage in which we experience the most vivid",
-        "Lucid dreaming is a fascinating phenomenon that has been studied extensively by scientists. Research has shown that it is indeed real and relatively common. During a lucid dream,",
-        "In my previous sections, I described the different stages of sleep, and the vital role played by REM sleep in generating dreams. But what happens inside our brains during this"
-      ]
+      "evidenceContainsByField": {
+        "paragraph_text": [
+          "As we sleep, our bodies cycle through two different phases of sleep: REM (rapid eye movement) sleep and non-REM sleep. The first stage of sleep is non-REM sleep, which is divided",
+          "As I mentioned earlier, the different stages of sleep serve distinct purposes. REM sleep is particularly fascinating because it is the stage in which we experience the most vivid",
+          "Lucid dreaming is a fascinating phenomenon that has been studied extensively by scientists. Research has shown that it is indeed real and relatively common. During a lucid dream,",
+          "In my previous sections, I described the different stages of sleep, and the vital role played by REM sleep in generating dreams. But what happens inside our brains during this"
+        ]
+      }
     },
     {
       "rule": "prohibited-terms",
-      "evidenceContains": [
-        "delve",
-        "As I delve into the topic of why we dream when we sleep, it’s important to first understand what exactly dreams are.",
-        "As we delve deeper into the topic of dreaming during sleep, it’s essential to understand the purpose behind it.",
-        "in conclusion"
-      ]
+      "evidenceContainsByField": {
+        "matched_text": [
+          "delve",
+          "in conclusion"
+        ],
+        "sentence": [
+          "As I delve into the topic of why we dream when we sleep, it’s important to first understand what exactly dreams are.",
+          "As we delve deeper into the topic of dreaming during sleep, it’s essential to understand the purpose behind it."
+        ]
+      }
     },
     {
       "rule": "simplicity",
-      "evidenceContains": [
+      "observedContains": [
         "facilitate",
         "numerous"
       ]
     },
     {
       "rule": "smart-quotes",
-      "evidenceContains": [
-        "’",
-        "In this blog post, we’ll explore some of the fascinating aspects of dreaming and what they can reveal about our mental state and health.",
-        "As I delve into the topic of why we dream when we sleep, it’s important to first understand what exactly dreams are.",
-        "Essentially, REM sleep helps our brain process and organize our experiences from the day before, which in turn helps us function better when we’re awake."
-      ]
+      "evidenceContainsByField": {
+        "matched_text": [
+          "’"
+        ],
+        "sentence": [
+          "In this blog post, we’ll explore some of the fascinating aspects of dreaming and what they can reveal about our mental state and health.",
+          "As I delve into the topic of why we dream when we sleep, it’s important to first understand what exactly dreams are.",
+          "Essentially, REM sleep helps our brain process and organize our experiences from the day before, which in turn helps us function better when we’re awake."
+        ]
+      }
     },
     {
       "rule": "triple-repeat",
-      "evidenceContains": [
-        "stage",
-        "Stage 1 is the lightest stage of sleep, where we are just drifting off.",
-        "Stage 2 is a period of deep relaxation where our brain waves slow down, and we begin to disengage from our surroundings.",
-        "Stage 3 is the deepest stage of sleep, where our body repairs and regenerates itself."
-      ]
+      "evidenceContainsByField": {
+        "matched_text": [
+          "stage"
+        ],
+        "sentence_1": [
+          "Stage 1 is the lightest stage of sleep, where we are just drifting off."
+        ],
+        "sentence_2": [
+          "Stage 2 is a period of deep relaxation where our brain waves slow down, and we begin to disengage from our surroundings."
+        ],
+        "sentence_3": [
+          "Stage 3 is the deepest stage of sleep, where our body repairs and regenerates itself."
+        ]
+      }
     },
     {
       "rule": "word-repetition",
-      "evidenceContains": [
-        "As we sleep, our bodies cycle through two different phases of sleep: REM (rapid eye movement) sleep and non-REM sleep. The first stage of sleep is non-REM sleep, which is divided",
-        "sleep",
-        "stage",
-        "Lucid dreaming is a fascinating phenomenon that has been studied extensively by scientists. Research has shown that it is indeed real and relatively common. During a lucid dream,"
-      ]
+      "evidenceContainsByField": {
+        "paragraph_text": [
+          "As we sleep, our bodies cycle through two different phases of sleep: REM (rapid eye movement) sleep and non-REM sleep. The first stage of sleep is non-REM sleep, which is divided",
+          "Lucid dreaming is a fascinating phenomenon that has been studied extensively by scientists. Research has shown that it is indeed real and relatively common. During a lucid dream,"
+        ],
+        "word": [
+          "sleep",
+          "stage"
+        ]
+      }
     }
   ]
 }

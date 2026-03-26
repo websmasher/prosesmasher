@@ -2,19 +2,27 @@
   "requiredFailures": [
     {
       "rule": "llm-disclaimer",
-      "evidenceContains": [
-        "as a language model",
-        "As a language model AI, I don’t have access to the most up-to-date medical information or the ability to provide a diagnosis."
-      ]
+      "evidenceContainsByField": {
+        "matched_text": [
+          "as a language model"
+        ],
+        "sentence": [
+          "As a language model AI, I don’t have access to the most up-to-date medical information or the ability to provide a diagnosis."
+        ]
+      }
     },
     {
       "rule": "smart-quotes",
-      "evidenceContains": [
-        "’",
-        "As a language model AI, I don’t have access to the most up-to-date medical information or the ability to provide a diagnosis.",
-        "“”",
-        "Additionally, “end stage bipolar” is not a recognized medical term."
-      ]
+      "evidenceContainsByField": {
+        "matched_text": [
+          "’",
+          "“”"
+        ],
+        "sentence": [
+          "As a language model AI, I don’t have access to the most up-to-date medical information or the ability to provide a diagnosis.",
+          "Additionally, “end stage bipolar” is not a recognized medical term."
+        ]
+      }
     }
   ]
 }

@@ -2,12 +2,16 @@
   "requiredFailures": [
     {
       "rule": "word-repetition",
-      "evidenceContains": [
-        "[ \"There are many different best seller lists that are published by various organizations, and the New York Times is just one of them. The New York Times best seller list is a",
-        "best",
-        "list",
-        "seller"
-      ]
+      "evidenceContainsByField": {
+        "paragraph_text": [
+          "[ \"There are many different best seller lists that are published by various organizations, and the New York Times is just one of them. The New York Times best seller list is a"
+        ],
+        "word": [
+          "best",
+          "list",
+          "seller"
+        ]
+      }
     }
   ]
 }
