@@ -12,6 +12,20 @@
       }
     },
     {
+      "rule": "response-wrapper",
+      "evidenceContainsByField": {
+        "pattern_kind": [
+          "information-wrapper"
+        ],
+        "matched_signal": [
+          "i cannot provide"
+        ],
+        "sentence": [
+          "As such, I cannot provide the most up-to-date information."
+        ]
+      }
+    },
+    {
       "rule": "smart-quotes",
       "evidenceContainsByField": {
         "matched_text": [

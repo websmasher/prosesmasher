@@ -1,10 +1,11 @@
 //! LLM-disclaimer check — flags explicit model/disclaimer leakage.
 
 use low_expectations::ExpectationSuite;
-use prosesmasher_domain_types::{Block, CheckConfig, Document, Locale};
+use prosesmasher_domain_types::{CheckConfig, Document, Locale};
 use serde_json::{Value, json};
 
 use crate::check::Check;
+use crate::support::{collect_sentence_evidence, normalize, strip_leading_prefixes};
 
 #[derive(Debug)]
 pub struct LlmDisclaimerCheck;
@@ -73,56 +74,17 @@ const CONTAINS_PATTERNS: &[&str] = &[
 ];
 
 fn collect_llm_disclaimer_evidence(doc: &Document) -> Vec<Value> {
-    let mut evidence = Vec::new();
-    let mut paragraph_index: usize = 0;
-
-    for (section_index, section) in doc.sections.iter().enumerate() {
-        for block in &section.blocks {
-            collect_llm_disclaimer_evidence_from_block(
-                block,
-                section_index,
-                &mut paragraph_index,
-                &mut evidence,
-            );
-        }
-    }
-
-    evidence
-}
-
-fn collect_llm_disclaimer_evidence_from_block(
-    block: &Block,
-    section_index: usize,
-    paragraph_index: &mut usize,
-    evidence: &mut Vec<Value>,
-) {
-    match block {
-        Block::Paragraph(paragraph) => {
-            for (sentence_index, sentence) in paragraph.sentences.iter().enumerate() {
-                if let Some(pattern) = match_disclaimer_pattern(&sentence.text) {
-                    evidence.push(json!({
-                        "section_index": section_index,
-                        "paragraph_index": *paragraph_index,
-                        "sentence_index": sentence_index,
-                        "matched_text": pattern,
-                        "sentence": sentence.text,
-                    }));
-                }
-            }
-            *paragraph_index = paragraph_index.saturating_add(1);
-        }
-        Block::BlockQuote(inner) => {
-            for inner_block in inner {
-                collect_llm_disclaimer_evidence_from_block(
-                    inner_block,
-                    section_index,
-                    paragraph_index,
-                    evidence,
-                );
-            }
-        }
-        Block::List(_) | Block::CodeBlock(_) => {}
-    }
+    collect_sentence_evidence(doc, |sentence, section_index, paragraph_index, sentence_index| {
+        match_disclaimer_pattern(sentence).map(|pattern| {
+            json!({
+                "section_index": section_index,
+                "paragraph_index": paragraph_index,
+                "sentence_index": sentence_index,
+                "matched_text": pattern,
+                "sentence": sentence,
+            })
+        })
+    })
 }
 
 fn match_disclaimer_pattern(sentence: &str) -> Option<&'static str> {
@@ -141,30 +103,11 @@ fn match_disclaimer_pattern(sentence: &str) -> Option<&'static str> {
 }
 
 fn starts_with_disclaimer(normalized: &str, pattern: &str) -> bool {
-    normalized == pattern
-        || normalized
+    let stripped = strip_leading_prefixes(normalized, &["however, ", "but "]);
+    stripped == pattern
+        || stripped
             .strip_prefix(pattern)
             .is_some_and(|rest| rest.is_empty() || rest.starts_with([' ', ',', '.', ':', ';']))
-        || normalized
-            .strip_prefix("however, ")
-            .is_some_and(|rest| starts_with_disclaimer(rest, pattern))
-        || normalized
-            .strip_prefix("but ")
-            .is_some_and(|rest| starts_with_disclaimer(rest, pattern))
-}
-
-fn normalize(sentence: &str) -> String {
-    sentence
-        .chars()
-        .map(|ch| match ch {
-            '\u{2018}' | '\u{2019}' => '\'',
-            '\u{201C}' | '\u{201D}' => '"',
-            _ => ch.to_ascii_lowercase(),
-        })
-        .collect::<String>()
-        .split_whitespace()
-        .collect::<Vec<_>>()
-        .join(" ")
 }
 
 #[cfg(test)]

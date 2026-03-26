@@ -12,6 +12,20 @@
           "However, as I am an AI language model and do not have access to real-time information, I cannot provide updates on her current health status beyond that."
         ]
       }
+    },
+    {
+      "rule": "response-wrapper",
+      "evidenceContainsByField": {
+        "pattern_kind": [
+          "information-wrapper"
+        ],
+        "matched_signal": [
+          "i cannot provide"
+        ],
+        "sentence": [
+          "However, as I am an AI language model and do not have access to real-time information, I cannot provide updates on her current health status beyond that."
+        ]
+      }
     }
   ]
 }

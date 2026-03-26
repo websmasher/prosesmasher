@@ -181,6 +181,10 @@ pub fn assert_shared_quality_defaults(config: &CheckConfig, context: &str) {
         config.quality.heuristics.llm_disclaimer.enabled,
         "{context}: llm disclaimer enabled by default"
     );
+    assert!(
+        config.quality.heuristics.response_wrapper.enabled,
+        "{context}: response wrapper enabled by default"
+    );
     assert_eq!(
         config
             .quality
