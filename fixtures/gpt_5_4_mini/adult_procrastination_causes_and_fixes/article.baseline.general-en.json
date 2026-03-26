@@ -7,19 +7,23 @@
     },
     {
       "rule": "fragment-stacking",
+      "count": 4
+    },
+    {
+      "rule": "negation-reframe",
       "count": 1
     },
     {
       "rule": "paragraph-length",
-      "count": 1
+      "count": 7
     },
     {
       "rule": "smart-quotes",
-      "count": 1
+      "count": 5
     },
     {
       "rule": "triple-repeat",
-      "count": 1
+      "count": 4
     },
     {
       "rule": "word-repetition",

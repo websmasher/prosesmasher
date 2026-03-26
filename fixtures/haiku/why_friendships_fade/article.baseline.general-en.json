@@ -3,7 +3,7 @@
   "failures": [
     {
       "rule": "em-dashes",
-      "count": 1
+      "count": 13
     },
     {
       "rule": "sentence-case",

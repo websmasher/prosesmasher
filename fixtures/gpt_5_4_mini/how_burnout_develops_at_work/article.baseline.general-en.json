@@ -3,11 +3,11 @@
   "failures": [
     {
       "rule": "fragment-stacking",
-      "count": 1
+      "count": 2
     },
     {
       "rule": "paragraph-length",
-      "count": 1
+      "count": 3
     },
     {
       "rule": "prohibited-terms",
@@ -19,7 +19,7 @@
     },
     {
       "rule": "smart-quotes",
-      "count": 1
+      "count": 6
     },
     {
       "rule": "triple-repeat",

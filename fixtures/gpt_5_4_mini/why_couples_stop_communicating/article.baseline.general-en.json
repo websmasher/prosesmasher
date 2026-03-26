@@ -11,11 +11,11 @@
     },
     {
       "rule": "negation-reframe",
-      "count": 1
+      "count": 2
     },
     {
       "rule": "paragraph-length",
-      "count": 1
+      "count": 4
     },
     {
       "rule": "sentence-case",
@@ -23,7 +23,7 @@
     },
     {
       "rule": "smart-quotes",
-      "count": 1
+      "count": 13
     }
   ]
 }

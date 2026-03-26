@@ -63,6 +63,18 @@ def sidecar_path(article: Path, preset: str) -> Path:
     return article.with_suffix(f".baseline.{preset}.json")
 
 
+def failure_hit_count(failure: dict[str, object]) -> int:
+    observed = failure.get("observed")
+    if isinstance(observed, int):
+        return observed
+
+    evidence = failure.get("evidence")
+    if isinstance(evidence, list):
+        return len(evidence)
+
+    return 1
+
+
 def run_cli(binary: Path, article: Path, preset: str) -> Counter[str]:
     proc = subprocess.run(
         [str(binary), "check", str(article), "--preset", preset, "--format", "json"],
@@ -76,7 +88,13 @@ def run_cli(binary: Path, article: Path, preset: str) -> Counter[str]:
         raise SystemExit(1)
 
     data = json.loads(proc.stdout)
-    return Counter(failure["id"] for failure in data.get("failures", []))
+    counter: Counter[str] = Counter()
+    for failure in data.get("failures", []):
+        rule_id = failure.get("id")
+        if not isinstance(rule_id, str):
+            continue
+        counter[rule_id] += failure_hit_count(failure)
+    return counter
 
 
 def serialize_counter(counter: Counter[str]) -> list[dict[str, int | str]]:

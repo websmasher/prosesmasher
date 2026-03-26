@@ -1,0 +1,97 @@
+use crate::test_helpers::{make_doc, make_doc_code_only};
+use prosesmasher_app_checks_llm_slop_assertions::empty_emphasis as assertions;
+use prosesmasher_domain_types::{CheckConfig, Locale};
+
+#[test]
+fn that_last_part_matters_fails() {
+    let doc = make_doc("That last part matters.", Locale::En);
+    let config = CheckConfig::default();
+    assertions::assert_emphasis_failure(
+        &doc,
+        &config,
+        "deictic-part-matters",
+        "short deictic filler emphasis should fail",
+    );
+}
+
+#[test]
+fn this_part_matters_fails() {
+    let doc = make_doc("This part matters.", Locale::En);
+    let config = CheckConfig::default();
+    assertions::assert_emphasis_failure(
+        &doc,
+        &config,
+        "deictic-part-matters",
+        "short deictic part-matters line should fail",
+    );
+}
+
+#[test]
+fn prefixed_part_matters_fails() {
+    let doc = make_doc("And that last bit matters.", Locale::En);
+    let config = CheckConfig::default();
+    assertions::assert_emphasis_failure(
+        &doc,
+        &config,
+        "deictic-part-matters",
+        "leading conjunctions should not hide empty emphasis",
+    );
+}
+
+#[test]
+fn longer_explanatory_sentence_passes() {
+    let doc = make_doc(
+        "That last part matters because the contract changes the failure mode completely.",
+        Locale::En,
+    );
+    let config = CheckConfig::default();
+    assertions::assert_passes(
+        &doc,
+        &config,
+        "explanatory sentence with actual content should pass",
+    );
+}
+
+#[test]
+fn concrete_noun_matters_passes() {
+    let doc = make_doc("That contract term matters.", Locale::En);
+    let config = CheckConfig::default();
+    assertions::assert_passes(&doc, &config, "concrete noun statements should pass");
+}
+
+#[test]
+fn quoted_phrase_passes() {
+    let doc = make_doc(
+        "Editors should cut lines like \"That last part matters.\" when they add no content.",
+        Locale::En,
+    );
+    let config = CheckConfig::default();
+    assertions::assert_passes(&doc, &config, "quoted discussion should pass");
+}
+
+#[test]
+fn code_block_phrase_passes() {
+    let doc = make_doc_code_only("That last part matters.", Locale::En);
+    let config = CheckConfig::default();
+    assertions::assert_passes(&doc, &config, "code blocks should be ignored");
+}
+
+#[test]
+fn non_english_is_skipped() {
+    let doc = make_doc("That last part matters.", Locale::Fr);
+    let config = CheckConfig::default();
+    assertions::assert_skips(&doc, &config, "non-English locales should skip");
+}
+
+#[test]
+fn disabled_check_skips() {
+    let doc = make_doc("That last part matters.", Locale::En);
+    let mut config = CheckConfig::default();
+    config.quality.heuristics.empty_emphasis.enabled = false;
+    assertions::assert_skips(&doc, &config, "disabled check should skip");
+}
+
+#[test]
+fn check_id_and_label() {
+    assertions::assert_check_metadata();
+}

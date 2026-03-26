@@ -18,6 +18,8 @@ mod support;
 pub mod boilerplate_conclusion;
 #[path = "slop_04_boilerplate_framing.rs"]
 pub mod boilerplate_framing;
+#[path = "slop_09_empty_emphasis.rs"]
+pub mod empty_emphasis;
 #[path = "slop_03_generic_signposting.rs"]
 pub mod generic_signposting;
 #[path = "slop_01_llm_disclaimer.rs"]
@@ -33,6 +35,7 @@ pub mod universalizing_claims;
 
 pub use boilerplate_conclusion::BoilerplateConclusionCheck;
 pub use boilerplate_framing::BoilerplateFramingCheck;
+pub use empty_emphasis::EmptyEmphasisCheck;
 pub use generic_signposting::GenericSignpostingCheck;
 pub use llm_disclaimer::LlmDisclaimerCheck;
 pub use llm_vocabulary::LlmVocabularyCheck;
@@ -48,6 +51,7 @@ pub fn all_checks() -> Vec<check::BoxedCheck> {
         Box::new(GenericSignpostingCheck),
         Box::new(BoilerplateFramingCheck),
         Box::new(BoilerplateConclusionCheck),
+        Box::new(EmptyEmphasisCheck),
         Box::new(LlmVocabularyCheck),
         Box::new(SofteningLanguageCheck),
         Box::new(UniversalizingClaimsCheck),

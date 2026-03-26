@@ -244,6 +244,96 @@ fn explicit_make_contrast_detected() {
 }
 
 #[test]
+fn repeated_goal_frame_detected() {
+    let doc = make_doc_with_sentences(
+        &[
+            "The goal is not perfect confidence.",
+            "The goal is to stop treating every conversation like a referendum on your worth.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    assertions::assert_negation_reframe_failure(
+        &doc,
+        &config,
+        "goal is not x -> goal is y",
+        "repeated goal frame corrective should fail",
+    );
+}
+
+#[test]
+fn repeated_point_frame_detected() {
+    let doc = make_doc_with_sentences(
+        &[
+            "The point is not the distance.",
+            "The point is that the identity survives even on a terrible day.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    assertions::assert_negation_reframe_failure(
+        &doc,
+        &config,
+        "goal is not x -> goal is y",
+        "repeated point frame corrective should fail",
+    );
+}
+
+#[test]
+fn goal_frame_with_short_interrupt_detected() {
+    let doc = make_doc_with_sentences(
+        &[
+            "The goal is not to never lose motivation.",
+            "You will.",
+            "The goal is to make your next action so small that motivation becomes optional.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    assertions::assert_negation_reframe_failure(
+        &doc,
+        &config,
+        "goal is not x -> goal is y",
+        "short interrupt should not hide a repeated goal corrective",
+    );
+}
+
+#[test]
+fn repeated_need_to_corrective_detected() {
+    let doc = make_doc_with_sentences(
+        &[
+            "You do not need to sell school as magical.",
+            "You need to make it familiar and survivable.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    assertions::assert_negation_reframe_failure(
+        &doc,
+        &config,
+        "do not need x -> need y",
+        "you do not need x / you need y corrective should fail",
+    );
+}
+
+#[test]
+fn goal_without_reframe_passes() {
+    let doc = make_doc_with_sentences(
+        &[
+            "The goal is not necessarily to eliminate screens entirely.",
+            "Children still need sleep and face-to-face play.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    assertions::assert_passes(
+        &doc,
+        &config,
+        "goal negation without a paired corrective should pass",
+    );
+}
+
+#[test]
 fn less_more_like_pair_detected() {
     let doc = make_doc_with_sentences(
         &[

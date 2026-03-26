@@ -15,7 +15,7 @@
     },
     {
       "rule": "smart-quotes",
-      "count": 1
+      "count": 6
     },
     {
       "rule": "triple-repeat",
@@ -23,7 +23,7 @@
     },
     {
       "rule": "word-repetition",
-      "count": 1
+      "count": 2
     }
   ]
 }

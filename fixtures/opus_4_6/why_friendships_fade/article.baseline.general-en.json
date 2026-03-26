@@ -3,11 +3,11 @@
   "failures": [
     {
       "rule": "colon-dramatic",
-      "count": 1
+      "count": 3
     },
     {
       "rule": "negation-reframe",
-      "count": 1
+      "count": 2
     },
     {
       "rule": "paragraph-length",
@@ -15,7 +15,7 @@
     },
     {
       "rule": "prohibited-terms",
-      "count": 1
+      "count": 2
     },
     {
       "rule": "sentence-case",
