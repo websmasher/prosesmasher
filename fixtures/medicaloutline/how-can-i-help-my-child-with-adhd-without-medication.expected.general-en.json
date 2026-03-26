@@ -12,6 +12,20 @@
       }
     },
     {
+      "rule": "response-wrapper",
+      "evidenceContainsByField": {
+        "pattern_kind": [
+          "information-wrapper"
+        ],
+        "matched_signal": [
+          "i can provide"
+        ],
+        "sentence": [
+          "As a language model AI, I can provide some general suggestions for helping a child with ADHD without medication."
+        ]
+      }
+    },
+    {
       "rule": "smart-quotes",
       "evidenceContainsByField": {
         "matched_text": [

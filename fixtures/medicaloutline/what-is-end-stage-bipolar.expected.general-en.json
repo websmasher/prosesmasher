@@ -12,6 +12,20 @@
       }
     },
     {
+      "rule": "response-wrapper",
+      "evidenceContainsByField": {
+        "pattern_kind": [
+          "diagnosis-limitation"
+        ],
+        "matched_signal": [
+          "ability to provide a diagnosis"
+        ],
+        "sentence": [
+          "As a language model AI, I don’t have access to the most up-to-date medical information or the ability to provide a diagnosis."
+        ]
+      }
+    },
+    {
       "rule": "smart-quotes",
       "evidenceContainsByField": {
         "matched_text": [

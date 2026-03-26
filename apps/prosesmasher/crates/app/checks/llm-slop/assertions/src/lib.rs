@@ -38,3 +38,5 @@ pub(crate) use define_rule_assertions;
 
 #[path = "slop_01_llm_disclaimer.rs"]
 pub mod llm_disclaimer;
+#[path = "slop_02_response_wrapper.rs"]
+pub mod response_wrapper;

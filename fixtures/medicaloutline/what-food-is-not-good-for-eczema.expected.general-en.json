@@ -12,6 +12,20 @@
       }
     },
     {
+      "rule": "response-wrapper",
+      "evidenceContainsByField": {
+        "pattern_kind": [
+          "information-wrapper"
+        ],
+        "matched_signal": [
+          "i can provide"
+        ],
+        "sentence": [
+          "As a language model, I can provide general information about eczema and foods that may commonly trigger eczema flare-ups in some individuals."
+        ]
+      }
+    },
+    {
       "rule": "smart-quotes",
       "evidenceContainsByField": {
         "matched_text": [

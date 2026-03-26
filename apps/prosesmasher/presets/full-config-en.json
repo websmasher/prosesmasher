@@ -66,6 +66,7 @@
       "colonDramatic": { "enabled": true },
       "llmOpeners": { "enabled": true },
       "llmDisclaimer": { "enabled": true },
+      "responseWrapper": { "enabled": true },
       "affirmationClosers": { "enabled": true },
       "summativeCloser": { "enabled": true },
       "falseQuestion": { "enabled": true },

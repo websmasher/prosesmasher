@@ -12,6 +12,20 @@
       }
     },
     {
+      "rule": "response-wrapper",
+      "evidenceContainsByField": {
+        "pattern_kind": [
+          "advice-limitation"
+        ],
+        "matched_signal": [
+          "medical expertise"
+        ],
+        "sentence": [
+          "As a language model, I do not have medical expertise and cannot provide specific medical advice."
+        ]
+      }
+    },
+    {
       "rule": "smart-quotes",
       "evidenceContainsByField": {
         "matched_text": [
