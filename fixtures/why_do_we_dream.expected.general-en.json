@@ -15,6 +15,17 @@
       }
     },
     {
+      "rule": "llm-vocabulary",
+      "evidenceContainsByField": {
+        "matched_text": [
+          "delve"
+        ],
+        "sentence": [
+          "As I delve into the topic of why we dream when we sleep, it’s important to first understand what exactly dreams are."
+        ]
+      }
+    },
+    {
       "rule": "paragraph-length",
       "evidenceContainsByField": {
         "paragraph_text": [

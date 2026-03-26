@@ -44,3 +44,5 @@ pub mod response_wrapper;
 pub mod generic_signposting;
 #[path = "slop_04_boilerplate_framing.rs"]
 pub mod boilerplate_framing;
+#[path = "slop_05_llm_vocabulary.rs"]
+pub mod llm_vocabulary;

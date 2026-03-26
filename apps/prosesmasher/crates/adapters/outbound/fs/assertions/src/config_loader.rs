@@ -203,6 +203,15 @@ pub fn assert_shared_quality_defaults(config: &CheckConfig, context: &str) {
         1,
         "{context}: boilerplate framing default threshold"
     );
+    assert!(
+        config.quality.heuristics.llm_vocabulary.enabled,
+        "{context}: llm vocabulary enabled by default"
+    );
+    assert_eq!(
+        config.quality.heuristics.llm_vocabulary.max_per_document,
+        1,
+        "{context}: llm vocabulary default threshold"
+    );
     assert_eq!(
         config
             .quality
