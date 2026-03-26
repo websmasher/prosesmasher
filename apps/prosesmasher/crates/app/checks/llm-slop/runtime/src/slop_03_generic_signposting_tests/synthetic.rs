@@ -87,6 +87,44 @@ fn repeated_important_to_signposts_fail() {
 }
 
 #[test]
+fn answer_and_question_frames_fail() {
+    let doc = make_multi_sentence_doc(
+        &[
+            "The answer is simple.",
+            "The useful question is whether they are building any skill from it or just rehearsing chaos.",
+        ],
+        Locale::En,
+    );
+    let config = CheckConfig::default();
+    assertions::assert_signposting_failure(
+        &doc,
+        &config,
+        "answer-frame",
+        "the answer is simple",
+        "empty answer and question frames should fail once repeated",
+    );
+}
+
+#[test]
+fn answer_and_sequence_frames_fail() {
+    let doc = make_multi_sentence_doc(
+        &[
+            "The answer is simple.",
+            "A simple sequence works well:",
+        ],
+        Locale::En,
+    );
+    let config = CheckConfig::default();
+    assertions::assert_signposting_failure(
+        &doc,
+        &config,
+        "answer-frame",
+        "the answer is simple",
+        "answer and sequence frames should fail once repeated",
+    );
+}
+
+#[test]
 fn mixed_signpost_families_fail() {
     let doc = make_multi_sentence_doc(
         &[
@@ -135,6 +173,20 @@ fn one_signpost_passes() {
         &doc,
         &config,
         "a single signpost should stay under the default threshold",
+    );
+}
+
+#[test]
+fn single_question_frame_passes() {
+    let doc = make_doc(
+        "The useful question is whether the setup is helping or hurting.",
+        Locale::En,
+    );
+    let config = CheckConfig::default();
+    assertions::assert_passes(
+        &doc,
+        &config,
+        "single question frame should stay under default threshold",
     );
 }
 

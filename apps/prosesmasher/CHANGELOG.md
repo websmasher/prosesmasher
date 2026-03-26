@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.8
+
+- Expanded `negation-reframe` with a repeated noun-subject corrective branch so lines like `The child does not need ... The child needs ...` are caught without broadening into generic contrast prose.
+- Expanded `generic-signposting` with narrow meta-framing patterns such as `The answer is simple.`, `The useful question is ...`, and `A simple sequence works well:` while keeping the generated article regression corpus stable.
+- Expanded `empty-emphasis` with deictic filler lines like `That one change helped a lot.` and `This is telling you something.` while leaving concrete-subject explanations out of scope.
+
 ## 0.2.7
 
 - Added `slogan-punchline` for short sloganized lines like `The rehearsal is the part that sticks.`, `It sounds small, and it changes everything.`, and paired `X is enough for this. X is the curriculum.` constructions.
