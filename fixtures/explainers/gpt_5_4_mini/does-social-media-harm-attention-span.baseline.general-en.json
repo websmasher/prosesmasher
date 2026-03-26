@@ -1,0 +1,29 @@
+{
+  "preset": "general-en",
+  "failures": [
+    {
+      "rule": "affirmation-closers",
+      "count": 1
+    },
+    {
+      "rule": "authority-padding",
+      "count": 3
+    },
+    {
+      "rule": "fragment-stacking",
+      "count": 1
+    },
+    {
+      "rule": "generic-signposting",
+      "count": 3
+    },
+    {
+      "rule": "negation-reframe",
+      "count": 3
+    },
+    {
+      "rule": "triple-repeat",
+      "count": 1
+    }
+  ]
+}

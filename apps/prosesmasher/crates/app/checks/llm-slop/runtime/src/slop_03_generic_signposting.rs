@@ -86,6 +86,14 @@ const QUESTION_PATTERNS: &[&str] = &[
 const ANSWER_PATTERNS: &[&str] = &[
     "the answer is simple",
     "the answer is straightforward",
+    "the short answer is",
+    "the better conclusion is",
+];
+const FRAME_PATTERNS: &[&str] = &[
+    "the short version",
+    "the useful frame",
+    "the useful version is",
+    "the point is plain enough",
 ];
 const SEQUENCE_PATTERNS: &[&str] = &[
     "a simple sequence works well",
@@ -119,7 +127,7 @@ fn is_strong_meta_evidence(evidence: &Value) -> bool {
     };
     matches!(
         pattern_kind,
-        "question-frame" | "answer-frame" | "sequence-frame"
+        "question-frame" | "answer-frame" | "sequence-frame" | "frame-signpost"
     )
 }
 
@@ -144,6 +152,9 @@ fn match_signposting(sentence: &str) -> Option<(&'static str, &'static str)> {
     }
     if let Some(matched) = contains_any(&stripped, ANSWER_PATTERNS) {
         return Some(("answer-frame", matched));
+    }
+    if let Some(matched) = contains_any(&stripped, FRAME_PATTERNS) {
+        return Some(("frame-signpost", matched));
     }
     contains_any(&stripped, SEQUENCE_PATTERNS).map(|matched| ("sequence-frame", matched))
 }

@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.2
+
+- Added `authority-padding` for vague research/evidence prestige framing such as `The research is not mysterious here.`, `Researchers keep finding ...`, and `The broader research backs ...` while explicitly leaving concrete sourced statements like `The 2023 review found ...` out of scope.
+- Expanded `generic-signposting` with more empty compression/meta frames such as `The short answer is ...`, `The short version ...`, `The point is plain enough ...`, and `That is the useful frame.` after reviewing additive hits in both generated and explainer corpora.
+- Expanded `boilerplate-conclusion` with narrow `practical response is plain`, `the basic rule is simple`, `the whole trick`, `the core fact`, and `the rest is detail` closers, while keeping concrete technical `The basic rule is simple: parse the file first ...` prose out of scope.
+- Added an explainer-fixture baseline workflow in `scripts/explainer_fixture_failures.py` and refreshed the reviewed `gpt_5_4_mini` generated/explainer sidecars for the additive hits from this pass.
+
 ## 0.3.1
 
 - Tightened `generic-signposting` so empty guidance frames like `The useful move is ...` and `The useful question is ...` fail even when they appear alone, while ordinary note/consultation signposts remain accumulative.

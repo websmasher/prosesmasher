@@ -1,0 +1,25 @@
+{
+  "preset": "general-en",
+  "failures": [
+    {
+      "rule": "affirmation-closers",
+      "count": 1
+    },
+    {
+      "rule": "boilerplate-conclusion",
+      "count": 2
+    },
+    {
+      "rule": "colon-dramatic",
+      "count": 1
+    },
+    {
+      "rule": "negation-reframe",
+      "count": 4
+    },
+    {
+      "rule": "smart-quotes",
+      "count": 10
+    }
+  ]
+}

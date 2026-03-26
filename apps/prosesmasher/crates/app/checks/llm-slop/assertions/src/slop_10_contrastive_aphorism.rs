@@ -17,5 +17,10 @@ pub fn assert_aphorism_failure(
 ) {
     let result = run(doc, config);
     assert_fail(&result, message);
-    assert_first_evidence_str(&result, "contrastive-aphorism", "matched_text", expected_match);
+    assert_first_evidence_str(
+        &result,
+        "contrastive-aphorism",
+        "matched_text",
+        expected_match,
+    );
 }

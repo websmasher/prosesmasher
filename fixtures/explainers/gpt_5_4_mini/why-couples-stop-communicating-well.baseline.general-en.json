@@ -1,0 +1,29 @@
+{
+  "preset": "general-en",
+  "failures": [
+    {
+      "rule": "authority-padding",
+      "count": 4
+    },
+    {
+      "rule": "boilerplate-conclusion",
+      "count": 1
+    },
+    {
+      "rule": "negation-reframe",
+      "count": 4
+    },
+    {
+      "rule": "smart-quotes",
+      "count": 7
+    },
+    {
+      "rule": "triple-repeat",
+      "count": 3
+    },
+    {
+      "rule": "word-repetition",
+      "count": 1
+    }
+  ]
+}

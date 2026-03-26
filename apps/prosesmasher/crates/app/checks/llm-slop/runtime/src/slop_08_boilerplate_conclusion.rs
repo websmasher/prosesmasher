@@ -72,6 +72,10 @@ const ACCEPTANCE_CLOSE_PATTERNS: &[&str] = &[
     "not something you need to accept as normal",
     "is not a luxury",
 ];
+const RESPONSE_CLOSE_PATTERNS: &[&str] = &["the practical response is plain"];
+const BASIC_RULE_SIMPLE_PATTERN: &str = "the basic rule is simple";
+const COMPRESSION_CLOSE_PATTERNS: &[&str] =
+    &["the whole trick", "the core fact", "the rest is detail"];
 
 #[derive(Clone)]
 struct SentenceRef {
@@ -79,6 +83,7 @@ struct SentenceRef {
     paragraph_index: usize,
     sentence_index: usize,
     sentence: String,
+    is_document_tail: bool,
 }
 
 fn collect_boilerplate_conclusion_evidence(doc: &Document) -> Vec<Value> {
@@ -86,20 +91,18 @@ fn collect_boilerplate_conclusion_evidence(doc: &Document) -> Vec<Value> {
     sentences
         .iter()
         .filter_map(|candidate| {
-            match_boilerplate_conclusion(&candidate.sentence).map(
-                |(pattern_kind, matched_signal)| {
-                    sentence_evidence(
-                        candidate.section_index,
-                        candidate.paragraph_index,
-                        candidate.sentence_index,
-                        &[
-                            ("pattern_kind", pattern_kind),
-                            ("matched_signal", matched_signal),
-                            ("sentence", &candidate.sentence),
-                        ],
-                    )
-                },
-            )
+            match_boilerplate_conclusion(candidate).map(|(pattern_kind, matched_signal)| {
+                sentence_evidence(
+                    candidate.section_index,
+                    candidate.paragraph_index,
+                    candidate.sentence_index,
+                    &[
+                        ("pattern_kind", pattern_kind),
+                        ("matched_signal", matched_signal),
+                        ("sentence", &candidate.sentence),
+                    ],
+                )
+            })
         })
         .collect()
 }
@@ -115,14 +118,12 @@ fn closing_candidate_sentences(doc: &Document) -> Vec<SentenceRef> {
     }
 
     let keep = sentences.len().min(3);
+    let tail_start = sentences.len().saturating_sub(keep);
+    for (index, sentence) in sentences.iter_mut().enumerate() {
+        sentence.is_document_tail = index >= tail_start;
+    }
+
     sentences
-        .into_iter()
-        .rev()
-        .take(keep)
-        .collect::<Vec<_>>()
-        .into_iter()
-        .rev()
-        .collect()
 }
 
 fn collect_paragraph_sentences(
@@ -139,6 +140,7 @@ fn collect_paragraph_sentences(
                     paragraph_index: *paragraph_index,
                     sentence_index,
                     sentence: sentence.text.clone(),
+                    is_document_tail: false,
                 });
             }
             *paragraph_index = paragraph_index.saturating_add(1);
@@ -147,17 +149,48 @@ fn collect_paragraph_sentences(
     }
 }
 
-fn match_boilerplate_conclusion(sentence: &str) -> Option<(&'static str, &'static str)> {
-    let normalized = normalize(sentence);
+fn match_boilerplate_conclusion(candidate: &SentenceRef) -> Option<(&'static str, &'static str)> {
+    let normalized = normalize(&candidate.sentence);
     let stripped = strip_quoted_segments(strip_leading_prefixes(&normalized, LEADING_PREFIXES));
 
-    if let Some(signal) = match_insight_close(&stripped) {
-        return Some(("insight-close", signal));
+    if candidate.is_document_tail {
+        if let Some(signal) = match_insight_close(&stripped) {
+            return Some(("insight-close", signal));
+        }
+        if let Some(signal) = contains_any(&stripped, AUTHORITY_CLOSE_PATTERNS) {
+            return Some(("authority-close", signal));
+        }
+        if let Some(signal) = contains_any(&stripped, ACCEPTANCE_CLOSE_PATTERNS) {
+            return Some(("acceptance-close", signal));
+        }
     }
-    if let Some(signal) = contains_any(&stripped, AUTHORITY_CLOSE_PATTERNS) {
-        return Some(("authority-close", signal));
+    if let Some(signal) = match_response_close(&stripped) {
+        return Some(("response-close", signal));
     }
-    contains_any(&stripped, ACCEPTANCE_CLOSE_PATTERNS).map(|signal| ("acceptance-close", signal))
+    if let Some(signal) = match_compression_close(&stripped) {
+        return Some(("compression-close", signal));
+    }
+    None
+}
+
+fn is_basic_rule_simple_close(normalized: &str) -> bool {
+    let Some(remainder) = normalized.strip_prefix(BASIC_RULE_SIMPLE_PATTERN) else {
+        return false;
+    };
+
+    let tail = remainder.trim();
+    tail.is_empty() || tail == "."
+}
+
+fn match_response_close(normalized: &str) -> Option<&'static str> {
+    if let Some(signal) = contains_any(normalized, RESPONSE_CLOSE_PATTERNS) {
+        return Some(signal);
+    }
+    is_basic_rule_simple_close(normalized).then_some(BASIC_RULE_SIMPLE_PATTERN)
+}
+
+fn match_compression_close(normalized: &str) -> Option<&'static str> {
+    contains_any(normalized, COMPRESSION_CLOSE_PATTERNS)
 }
 
 fn match_insight_close(normalized: &str) -> Option<&'static str> {
