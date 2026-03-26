@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.7
+
+- Added `slogan-punchline` for short sloganized lines like `The rehearsal is the part that sticks.`, `It sounds small, and it changes everything.`, and paired `X is enough for this. X is the curriculum.` constructions.
+- Added `blame-reframe` for narrow blame-to-growth coaching contrasts like `comes from development, not malice` and `as skill-building instead of shame`.
+- Kept both new rules deliberately narrow and verified that they did not add any regressions across the 60 generated article fixture baselines.
+
 ## 0.2.6
 
 - Added `empty-emphasis` for short deictic filler lines such as `That last part matters.` while keeping explanatory sentences and quoted discussion out of scope.
