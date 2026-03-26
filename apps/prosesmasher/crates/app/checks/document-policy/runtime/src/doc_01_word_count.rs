@@ -36,5 +36,5 @@ impl Check for WordCountCheck {
 }
 
 #[cfg(test)]
-#[path = "word_count_tests/mod.rs"]
+#[path = "doc_01_word_count_tests/mod.rs"]
 mod tests;

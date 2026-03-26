@@ -101,5 +101,5 @@ fn merge_evidence(mut a: Vec<Value>, b: Vec<Value>) -> Vec<Value> {
 }
 
 #[cfg(test)]
-#[path = "affirmation_closers_tests/mod.rs"]
+#[path = "heur_11_affirmation_closers_tests/mod.rs"]
 mod tests;

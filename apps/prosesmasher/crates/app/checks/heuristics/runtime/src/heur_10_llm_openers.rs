@@ -52,5 +52,5 @@ impl Check for LlmOpenersCheck {
 }
 
 #[cfg(test)]
-#[path = "llm_openers_tests/mod.rs"]
+#[path = "heur_10_llm_openers_tests/mod.rs"]
 mod tests;

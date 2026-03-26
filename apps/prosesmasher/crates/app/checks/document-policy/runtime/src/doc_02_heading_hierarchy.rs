@@ -147,5 +147,5 @@ fn record_skip_violation(
 }
 
 #[cfg(test)]
-#[path = "heading_hierarchy_tests/mod.rs"]
+#[path = "doc_02_heading_hierarchy_tests/mod.rs"]
 mod tests;

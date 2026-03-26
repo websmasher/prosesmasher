@@ -36,8 +36,13 @@ macro_rules! define_rule_assertions {
 
 pub(crate) use define_rule_assertions;
 
+#[path = "doc_04_bold_density.rs"]
 pub mod bold_density;
+#[path = "doc_05_code_fences.rs"]
 pub mod code_fences;
+#[path = "doc_03_heading_counts.rs"]
 pub mod heading_counts;
+#[path = "doc_02_heading_hierarchy.rs"]
 pub mod heading_hierarchy;
+#[path = "doc_01_word_count.rs"]
 pub mod word_count;

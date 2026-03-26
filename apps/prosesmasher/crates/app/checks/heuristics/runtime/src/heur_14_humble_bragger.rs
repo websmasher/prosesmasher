@@ -1,4 +1,4 @@
-//! Jargon-faker check — flags sentences containing fake tech jargon phrases.
+//! Humble-bragger check — flags sentences containing humble-bragging phrases.
 
 use low_expectations::ExpectationSuite;
 use prosesmasher_domain_types::{CheckConfig, Document, Locale};
@@ -6,18 +6,18 @@ use serde_json::json;
 
 use crate::check::Check;
 
-/// Detects fake jargon phrases in prose
-/// (e.g., "debugging your", "optimizing for", "iterating on your").
+/// Detects humble-bragging phrases in prose
+/// (e.g., "In my experience", "As someone who has").
 #[derive(Debug)]
-pub struct JargonFakerCheck;
+pub struct HumbleBraggerCheck;
 
-impl Check for JargonFakerCheck {
+impl Check for HumbleBraggerCheck {
     fn id(&self) -> &'static str {
-        "jargon-faker"
+        "humble-bragger"
     }
 
     fn label(&self) -> &'static str {
-        "Jargon Faker"
+        "Humble Bragger"
     }
 
     fn supported_locales(&self) -> Option<&'static [Locale]> {
@@ -25,31 +25,31 @@ impl Check for JargonFakerCheck {
     }
 
     fn run(&self, doc: &Document, config: &CheckConfig, suite: &mut ExpectationSuite) {
-        if !config.quality.heuristics.jargon_faker.enabled {
+        if !config.quality.heuristics.humble_bragger.enabled {
             return;
         }
-        let jargon_faker_phrases = super::resolve_jargon_faker_phrases(config);
-        if jargon_faker_phrases.is_empty() {
+        let humble_bragger_phrases = super::resolve_humble_bragger_phrases(config);
+        if humble_bragger_phrases.is_empty() {
             return;
         }
         let evidence = super::collect_sentence_phrase_evidence(
             doc,
-            &jargon_faker_phrases,
+            &humble_bragger_phrases,
             super::sentence_contains,
         );
         let _result = suite
             .record_custom_values(
-                "jargon-faker",
+                "humble-bragger",
                 evidence.is_empty(),
-                json!({ "min": 0, "max": 0, "absent": jargon_faker_phrases }),
+                json!({ "min": 0, "max": 0, "absent": humble_bragger_phrases }),
                 json!(evidence.len()),
                 &evidence,
             )
-            .label("Jargon Faker")
-            .checking("sentences containing fake tech jargon");
+            .label("Humble Bragger")
+            .checking("sentences containing humble-bragging phrases");
     }
 }
 
 #[cfg(test)]
-#[path = "jargon_faker_tests/mod.rs"]
+#[path = "heur_14_humble_bragger_tests/mod.rs"]
 mod tests;

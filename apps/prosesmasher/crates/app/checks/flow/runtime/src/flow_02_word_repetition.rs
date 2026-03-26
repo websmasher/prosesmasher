@@ -153,5 +153,5 @@ fn resolve_excluded_terms(
 }
 
 #[cfg(test)]
-#[path = "word_repetition_tests/mod.rs"]
+#[path = "flow_02_word_repetition_tests/mod.rs"]
 mod tests;

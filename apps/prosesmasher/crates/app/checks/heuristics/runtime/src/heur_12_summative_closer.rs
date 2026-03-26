@@ -52,5 +52,5 @@ impl Check for SummativeCloserCheck {
 }
 
 #[cfg(test)]
-#[path = "summative_closer_tests/mod.rs"]
+#[path = "heur_12_summative_closer_tests/mod.rs"]
 mod tests;

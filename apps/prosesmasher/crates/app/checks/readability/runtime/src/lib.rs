@@ -12,9 +12,13 @@ pub mod test_helpers {
     pub use prosesmasher_app_checks_test_support::*;
 }
 
+#[path = "read_04_avg_sentence_length.rs"]
 pub mod avg_sentence_length;
+#[path = "read_03_coleman_liau.rs"]
 pub mod coleman_liau;
+#[path = "read_01_flesch_kincaid.rs"]
 pub mod flesch_kincaid;
+#[path = "read_02_gunning_fog.rs"]
 pub mod gunning_fog;
 
 pub use avg_sentence_length::AvgSentenceLengthCheck;
@@ -26,9 +30,9 @@ pub use gunning_fog::GunningFogCheck;
 #[must_use]
 pub fn all_checks() -> Vec<check::BoxedCheck> {
     vec![
-        Box::new(AvgSentenceLengthCheck),
-        Box::new(ColemanLiauCheck),
         Box::new(FleschKincaidCheck),
         Box::new(GunningFogCheck),
+        Box::new(ColemanLiauCheck),
+        Box::new(AvgSentenceLengthCheck),
     ]
 }

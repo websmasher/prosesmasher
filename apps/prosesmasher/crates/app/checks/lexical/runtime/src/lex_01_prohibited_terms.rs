@@ -48,5 +48,5 @@ impl Check for ProhibitedTermsCheck {
 }
 
 #[cfg(test)]
-#[path = "prohibited_terms_tests/mod.rs"]
+#[path = "lex_01_prohibited_terms_tests/mod.rs"]
 mod tests;

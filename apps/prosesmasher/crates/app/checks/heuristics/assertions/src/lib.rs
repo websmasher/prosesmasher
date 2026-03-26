@@ -36,18 +36,33 @@ macro_rules! define_rule_assertions {
 
 pub(crate) use define_rule_assertions;
 
+#[path = "heur_11_affirmation_closers.rs"]
 pub mod affirmation_closers;
+#[path = "heur_09_colon_dramatic.rs"]
 pub mod colon_dramatic;
+#[path = "heur_01_em_dashes.rs"]
 pub mod em_dashes;
+#[path = "heur_04_exclamation_density.rs"]
 pub mod exclamation_density;
+#[path = "heur_08_fake_timestamps.rs"]
 pub mod fake_timestamps;
+#[path = "heur_13_false_question.rs"]
 pub mod false_question;
+#[path = "heur_06_fragment_stacking.rs"]
 pub mod fragment_stacking;
+#[path = "heur_14_humble_bragger.rs"]
 pub mod humble_bragger;
+#[path = "heur_15_jargon_faker.rs"]
 pub mod jargon_faker;
+#[path = "heur_10_llm_openers.rs"]
 pub mod llm_openers;
+#[path = "heur_05_negation_reframe.rs"]
 pub mod negation_reframe;
+#[path = "heur_02_sentence_case.rs"]
 pub mod sentence_case;
+#[path = "heur_03_smart_quotes.rs"]
 pub mod smart_quotes;
+#[path = "heur_12_summative_closer.rs"]
 pub mod summative_closer;
+#[path = "heur_07_triple_repeat.rs"]
 pub mod triple_repeat;

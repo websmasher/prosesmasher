@@ -111,5 +111,5 @@ fn collect_triple_repeat_evidence_from_paragraph(para: &Paragraph, evidence: &mu
 }
 
 #[cfg(test)]
-#[path = "triple_repeat_tests/mod.rs"]
+#[path = "heur_07_triple_repeat_tests/mod.rs"]
 mod tests;

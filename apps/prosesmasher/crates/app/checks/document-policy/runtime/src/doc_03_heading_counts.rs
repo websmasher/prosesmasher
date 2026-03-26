@@ -67,5 +67,5 @@ impl Check for HeadingCountsCheck {
 }
 
 #[cfg(test)]
-#[path = "heading_counts_tests/mod.rs"]
+#[path = "doc_03_heading_counts_tests/mod.rs"]
 mod tests;

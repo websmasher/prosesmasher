@@ -96,5 +96,5 @@ fn check_block(
 }
 
 #[cfg(test)]
-#[path = "paragraph_length_tests/mod.rs"]
+#[path = "flow_01_paragraph_length_tests/mod.rs"]
 mod tests;

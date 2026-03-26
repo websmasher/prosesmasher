@@ -54,5 +54,5 @@ impl Check for SimplicityCheck {
 }
 
 #[cfg(test)]
-#[path = "simplicity_tests/mod.rs"]
+#[path = "lex_03_simplicity_tests/mod.rs"]
 mod tests;

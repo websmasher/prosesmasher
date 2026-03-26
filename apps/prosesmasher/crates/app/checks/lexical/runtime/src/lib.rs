@@ -14,10 +14,15 @@ pub mod test_helpers {
 
 mod support;
 
+#[path = "lex_02_hedge_stacking.rs"]
 pub mod hedge_words;
+#[path = "lex_01_prohibited_terms.rs"]
 pub mod prohibited_terms;
+#[path = "lex_05_recommended_terms.rs"]
 pub mod recommended_terms;
+#[path = "lex_04_required_terms.rs"]
 pub mod required_terms;
+#[path = "lex_03_simplicity.rs"]
 pub mod simplicity;
 
 pub use hedge_words::HedgeStackingCheck;
