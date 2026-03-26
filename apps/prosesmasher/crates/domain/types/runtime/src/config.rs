@@ -77,6 +77,7 @@ pub struct HeuristicsConfig {
     pub response_wrapper: EnabledCheck,
     pub generic_signposting: AccumulativeCheck,
     pub boilerplate_framing: AccumulativeCheck,
+    pub llm_vocabulary: AccumulativeCheck,
     pub affirmation_closers: EnabledCheck,
     pub summative_closer: EnabledCheck,
     pub false_question: EnabledCheck,
@@ -111,6 +112,10 @@ impl Default for HeuristicsConfig {
                 max_per_document: 1,
             },
             boilerplate_framing: AccumulativeCheck {
+                enabled: true,
+                max_per_document: 1,
+            },
+            llm_vocabulary: AccumulativeCheck {
                 enabled: true,
                 max_per_document: 1,
             },
