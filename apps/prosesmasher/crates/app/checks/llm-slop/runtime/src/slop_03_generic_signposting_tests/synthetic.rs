@@ -108,10 +108,7 @@ fn answer_and_question_frames_fail() {
 #[test]
 fn answer_and_sequence_frames_fail() {
     let doc = make_multi_sentence_doc(
-        &[
-            "The answer is simple.",
-            "A simple sequence works well:",
-        ],
+        &["The answer is simple.", "A simple sequence works well:"],
         Locale::En,
     );
     let config = CheckConfig::default();
@@ -209,6 +206,67 @@ fn useful_move_frame_fails() {
 }
 
 #[test]
+fn short_answer_frame_fails() {
+    let doc = make_doc(
+        "The short answer is: it can, but not in the cartoon version of the story.",
+        Locale::En,
+    );
+    let config = CheckConfig::default();
+    assertions::assert_signposting_failure(
+        &doc,
+        &config,
+        "answer-frame",
+        "the short answer is",
+        "single short-answer frame should now fail",
+    );
+}
+
+#[test]
+fn short_version_frame_fails() {
+    let doc = make_doc(
+        "The short version: your first few weeks are not proof that you are bad at habits.",
+        Locale::En,
+    );
+    let config = CheckConfig::default();
+    assertions::assert_signposting_failure(
+        &doc,
+        &config,
+        "frame-signpost",
+        "the short version",
+        "single short-version frame should now fail",
+    );
+}
+
+#[test]
+fn useful_frame_fails() {
+    let doc = make_doc("That is the useful frame.", Locale::En);
+    let config = CheckConfig::default();
+    assertions::assert_signposting_failure(
+        &doc,
+        &config,
+        "frame-signpost",
+        "the useful frame",
+        "single useful-frame line should now fail",
+    );
+}
+
+#[test]
+fn point_plain_enough_fails() {
+    let doc = make_doc(
+        "The point is plain enough: people do not multitask because they are cursed.",
+        Locale::En,
+    );
+    let config = CheckConfig::default();
+    assertions::assert_signposting_failure(
+        &doc,
+        &config,
+        "frame-signpost",
+        "the point is plain enough",
+        "plain-enough framing should now fail",
+    );
+}
+
+#[test]
 fn single_note_signpost_still_passes() {
     let doc = make_doc("Please note that this is general information.", Locale::En);
     let config = CheckConfig::default();
@@ -216,6 +274,20 @@ fn single_note_signpost_still_passes() {
         &doc,
         &config,
         "plain note signposts should remain accumulative rather than immediate",
+    );
+}
+
+#[test]
+fn concrete_point_statement_passes() {
+    let doc = make_doc(
+        "The point is that the parser preserves visible text and drops hidden HTML.",
+        Locale::En,
+    );
+    let config = CheckConfig::default();
+    assertions::assert_passes(
+        &doc,
+        &config,
+        "ordinary explanatory point statements should still pass",
     );
 }
 

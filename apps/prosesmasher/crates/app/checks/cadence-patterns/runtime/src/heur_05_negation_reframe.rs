@@ -131,17 +131,8 @@ const NEED_NOUN_NEGATION_PHRASES: &[&str] = &[
 const NEED_NOUN_AFFIRMATIVE_PHRASES: &[&str] = &[" needs ", " just needs "];
 const NEED_PRONOUN_AFFIRMATIVE_PHRASES: &[&str] = &["they need ", "they just need "];
 const HUMAN_PLURAL_NOUNS: &[&str] = &[
-    "adults",
-    "children",
-    "families",
-    "kids",
-    "moms",
-    "parents",
-    "people",
-    "students",
-    "teachers",
-    "women",
-    "men",
+    "adults", "children", "families", "kids", "moms", "parents", "people", "students", "teachers",
+    "women", "men",
 ];
 const WANT_NEGATION_STARTS: &[&str] = &["you do not want to ", "you don't want to "];
 const WANT_TRANSFORM_AFFIRMATIVE_STARTS: &[&str] = &["you want to turn "];
@@ -477,27 +468,27 @@ fn interrupted_corrective_evidence(
         }));
     }
 
-    repeated_want_transform_corrective(&a_text, &c_text, a.word_count(), c.word_count()).map(
-        |matched_text| {
+    repeated_want_transform_corrective(&a_text, &c_text, a.word_count(), c.word_count())
+        .map(|matched_text| {
             json!({
                 "matched_text": matched_text,
                 "sentence": a.text,
                 "interrupting_sentence": b.text,
                 "next_sentence": c.text,
             })
-        },
-    ).or_else(|| {
-        problem_reframe_corrective(&a_text, &c_text, a.word_count(), c.word_count()).map(
-            |matched_text| {
-                json!({
-                    "matched_text": matched_text,
-                    "sentence": a.text,
-                    "interrupting_sentence": b.text,
-                    "next_sentence": c.text,
-                })
-            },
-        )
-    })
+        })
+        .or_else(|| {
+            problem_reframe_corrective(&a_text, &c_text, a.word_count(), c.word_count()).map(
+                |matched_text| {
+                    json!({
+                        "matched_text": matched_text,
+                        "sentence": a.text,
+                        "interrupting_sentence": b.text,
+                        "next_sentence": c.text,
+                    })
+                },
+            )
+        })
 }
 
 fn inline_corrective_match(text: &str, word_count: usize) -> Option<&'static str> {
@@ -804,7 +795,10 @@ fn repeated_want_transform_corrective(
     if a_word_count > 18 || b_word_count > 18 {
         return None;
     }
-    if !WANT_NEGATION_STARTS.iter().any(|prefix| a_text.starts_with(prefix)) {
+    if !WANT_NEGATION_STARTS
+        .iter()
+        .any(|prefix| a_text.starts_with(prefix))
+    {
         return None;
     }
     if !WANT_TRANSFORM_AFFIRMATIVE_STARTS
@@ -813,7 +807,8 @@ fn repeated_want_transform_corrective(
     {
         return None;
     }
-    b_text.contains(" into ")
+    b_text
+        .contains(" into ")
         .then_some("do not want x -> want to turn y into z")
 }
 
@@ -826,11 +821,10 @@ fn problem_reframe_corrective(
     if a_word_count > 18 || b_word_count > 18 {
         return None;
     }
-    let problem_negations = [
-        " is not the problem",
-        " isn't the problem",
-    ];
-    if problem_negations.iter().any(|suffix| a_text.ends_with(suffix))
+    let problem_negations = [" is not the problem", " isn't the problem"];
+    if problem_negations
+        .iter()
+        .any(|suffix| a_text.ends_with(suffix))
         && (b_text.starts_with("the ") || b_text.starts_with("it "))
         && (b_text.ends_with(" is") || b_text.starts_with("it is "))
     {

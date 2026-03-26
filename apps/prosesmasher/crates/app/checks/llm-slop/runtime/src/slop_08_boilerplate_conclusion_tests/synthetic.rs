@@ -48,6 +48,64 @@ fn acceptance_as_normal_close_fails() {
 }
 
 #[test]
+fn practical_response_plain_close_fails() {
+    let doc = make_doc(
+        "The practical response is plain: make connection easier to start, easier to repeat, and easier to keep.",
+        Locale::En,
+    );
+    let config = CheckConfig::default();
+    assertions::assert_conclusion_failure(
+        &doc,
+        &config,
+        "response-close",
+        "the practical response is plain",
+        "practical-response summary closers should fail",
+    );
+}
+
+#[test]
+fn basic_rule_simple_close_fails() {
+    let doc = make_doc("The basic rule is simple.", Locale::En);
+    let config = CheckConfig::default();
+    assertions::assert_conclusion_failure(
+        &doc,
+        &config,
+        "response-close",
+        "the basic rule is simple",
+        "basic-rule summary closers should fail",
+    );
+}
+
+#[test]
+fn whole_trick_close_fails() {
+    let doc = make_doc("That is the whole trick.", Locale::En);
+    let config = CheckConfig::default();
+    assertions::assert_conclusion_failure(
+        &doc,
+        &config,
+        "compression-close",
+        "the whole trick",
+        "whole-trick compression closers should fail",
+    );
+}
+
+#[test]
+fn whole_trick_mid_paragraph_fails() {
+    let doc = make_doc(
+        "Choose one behavior, one cue, and one tiny starting point. That is the whole trick. It is not glamorous. It works anyway.",
+        Locale::En,
+    );
+    let config = CheckConfig::default();
+    assertions::assert_conclusion_failure(
+        &doc,
+        &config,
+        "compression-close",
+        "the whole trick",
+        "strong compression lines should fail even away from the document ending",
+    );
+}
+
+#[test]
 fn same_phrase_mid_article_passes() {
     let doc = make_doc_multi_section(
         &[
@@ -60,6 +118,41 @@ fn same_phrase_mid_article_passes() {
     );
     let config = CheckConfig::default();
     assertions::assert_passes(&doc, &config, "non-closing occurrences should not fail");
+}
+
+#[test]
+fn practical_response_mid_article_fails() {
+    let doc = make_doc_multi_section(
+        &[
+            "Loneliness has real health consequences when it becomes chronic.",
+            "The practical response is plain: make connection easier to start, easier to repeat, and easier to keep.",
+            "That shift matters more than one big gesture.",
+            "Small repeated contact works better than heroic bursts.",
+        ],
+        Locale::En,
+    );
+    let config = CheckConfig::default();
+    assertions::assert_conclusion_failure(
+        &doc,
+        &config,
+        "response-close",
+        "the practical response is plain",
+        "strong practical-response framing should fail even when it appears before the final section close",
+    );
+}
+
+#[test]
+fn concrete_rule_statement_passes() {
+    let doc = make_doc(
+        "The basic rule is simple: parse the file first, then normalize the visible text.",
+        Locale::En,
+    );
+    let config = CheckConfig::default();
+    assertions::assert_passes(
+        &doc,
+        &config,
+        "concrete explanatory rule statements should pass",
+    );
 }
 
 #[test]

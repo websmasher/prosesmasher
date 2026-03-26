@@ -484,11 +484,7 @@ fn technical_problem_reframe_passes() {
         Locale::En,
     );
     let config = config_with_signals();
-    assertions::assert_passes(
-        &doc,
-        &config,
-        "technical problem sentence should pass",
-    );
+    assertions::assert_passes(&doc, &config, "technical problem sentence should pass");
 }
 
 #[test]

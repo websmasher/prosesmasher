@@ -102,7 +102,10 @@ fn longer_explanatory_sentence_passes() {
 
 #[test]
 fn concrete_body_telling_you_something_passes() {
-    let doc = make_doc("Your body is telling you something important about your stress load.", Locale::En);
+    let doc = make_doc(
+        "Your body is telling you something important about your stress load.",
+        Locale::En,
+    );
     let config = CheckConfig::default();
     assertions::assert_passes(
         &doc,
@@ -139,11 +142,7 @@ fn technical_pattern_explanation_passes() {
         Locale::En,
     );
     let config = CheckConfig::default();
-    assertions::assert_passes(
-        &doc,
-        &config,
-        "technical weakening explanation should pass",
-    );
+    assertions::assert_passes(&doc, &config, "technical weakening explanation should pass");
 }
 
 #[test]

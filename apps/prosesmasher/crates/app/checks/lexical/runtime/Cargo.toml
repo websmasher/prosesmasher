@@ -9,14 +9,14 @@ description = "Internal lexical checks runtime crate for the prosesmasher worksp
 readme = "../../../../../../README.md"
 
 [dependencies]
-prosesmasher-domain-types = { version = "0.3.1", path = "../../../../domain/types" }
-prosesmasher-app-checks-core-runtime = { version = "0.3.1", path = "../../core/runtime" }
+prosesmasher-domain-types = { version = "0.3.2", path = "../../../../domain/types" }
+prosesmasher-app-checks-core-runtime = { version = "0.3.2", path = "../../core/runtime" }
 low-expectations.workspace = true
 serde_json.workspace = true
 
 [dev-dependencies]
-prosesmasher-app-checks-lexical-assertions = { version = "0.3.1", path = "../assertions" }
-prosesmasher-app-checks-test-support = { version = "0.3.1", path = "../../test-support" }
+prosesmasher-app-checks-lexical-assertions = { version = "0.3.2", path = "../assertions" }
+prosesmasher-app-checks-test-support = { version = "0.3.2", path = "../../test-support" }
 
 [lints]
 workspace = true

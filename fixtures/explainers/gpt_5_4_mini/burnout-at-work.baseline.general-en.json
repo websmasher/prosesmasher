@@ -1,0 +1,25 @@
+{
+  "preset": "general-en",
+  "failures": [
+    {
+      "rule": "affirmation-closers",
+      "count": 1
+    },
+    {
+      "rule": "authority-padding",
+      "count": 2
+    },
+    {
+      "rule": "colon-dramatic",
+      "count": 1
+    },
+    {
+      "rule": "generic-signposting",
+      "count": 1
+    },
+    {
+      "rule": "smart-quotes",
+      "count": 3
+    }
+  ]
+}

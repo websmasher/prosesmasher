@@ -183,22 +183,14 @@ fn generic_part_people_skip_passes() {
 fn imperative_concrete_object_contrast_passes() {
     let doc = make_doc("Bring a towel, not a coat.", Locale::En);
     let config = CheckConfig::default();
-    assertions::assert_passes(
-        &doc,
-        &config,
-        "concrete imperative contrast should pass",
-    );
+    assertions::assert_passes(&doc, &config, "concrete imperative contrast should pass");
 }
 
 #[test]
 fn human_gets_x_in_y_not_concrete_passes() {
     let doc = make_doc("Kids get calmer in sleep, not stimulants.", Locale::En);
     let config = CheckConfig::default();
-    assertions::assert_passes(
-        &doc,
-        &config,
-        "concrete causal contrast should pass",
-    );
+    assertions::assert_passes(&doc, &config, "concrete causal contrast should pass");
 }
 
 #[test]
@@ -219,11 +211,7 @@ fn treating_like_x_not_magic_passes() {
 fn watch_for_concrete_object_contrast_passes() {
     let doc = make_doc("Watch for a leak, not one loose screw.", Locale::En);
     let config = CheckConfig::default();
-    assertions::assert_passes(
-        &doc,
-        &config,
-        "concrete watch-for contrast should pass",
-    );
+    assertions::assert_passes(&doc, &config, "concrete watch-for contrast should pass");
 }
 
 #[test]

@@ -121,6 +121,9 @@ pub struct HeuristicsDto {
     pub blame_reframe: Option<EnabledDto>,
     #[garde(skip)]
     #[serde(default)]
+    pub authority_padding: Option<AccumulativeDto>,
+    #[garde(skip)]
+    #[serde(default)]
     pub empty_emphasis: Option<EnabledDto>,
     #[garde(skip)]
     #[serde(default)]
@@ -483,6 +486,12 @@ const fn apply_toggle_heuristics(
     }
     if let Some(enabled) = dto.blame_reframe {
         heuristics.blame_reframe.enabled = enabled.enabled;
+    }
+    if let Some(accumulative) = dto.authority_padding.as_ref() {
+        heuristics.authority_padding.enabled = accumulative.enabled;
+        if let Some(max) = accumulative.max_per_document {
+            heuristics.authority_padding.max_per_document = max;
+        }
     }
     if let Some(enabled) = dto.empty_emphasis {
         heuristics.empty_emphasis.enabled = enabled.enabled;

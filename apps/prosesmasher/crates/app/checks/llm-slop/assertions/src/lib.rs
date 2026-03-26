@@ -36,12 +36,16 @@ macro_rules! define_rule_assertions {
 
 pub(crate) use define_rule_assertions;
 
+#[path = "slop_12_authority_padding.rs"]
+pub mod authority_padding;
 #[path = "slop_11_blame_reframe.rs"]
 pub mod blame_reframe;
 #[path = "slop_08_boilerplate_conclusion.rs"]
 pub mod boilerplate_conclusion;
 #[path = "slop_04_boilerplate_framing.rs"]
 pub mod boilerplate_framing;
+#[path = "slop_10_contrastive_aphorism.rs"]
+pub mod contrastive_aphorism;
 #[path = "slop_09_empty_emphasis.rs"]
 pub mod empty_emphasis;
 #[path = "slop_03_generic_signposting.rs"]
@@ -52,8 +56,6 @@ pub mod llm_disclaimer;
 pub mod llm_vocabulary;
 #[path = "slop_02_response_wrapper.rs"]
 pub mod response_wrapper;
-#[path = "slop_10_contrastive_aphorism.rs"]
-pub mod contrastive_aphorism;
 #[path = "slop_06_softening_language.rs"]
 pub mod softening_language;
 #[path = "slop_07_universalizing_claims.rs"]
