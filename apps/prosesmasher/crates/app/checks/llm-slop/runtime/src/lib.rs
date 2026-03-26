@@ -12,7 +12,12 @@ pub mod test_helpers {
     pub use prosesmasher_app_checks_test_support::*;
 }
 
+#[path = "slop_01_llm_disclaimer.rs"]
+pub mod llm_disclaimer;
+
+pub use llm_disclaimer::LlmDisclaimerCheck;
+
 #[must_use]
 pub fn all_checks() -> Vec<check::BoxedCheck> {
-    Vec::new()
+    vec![Box::new(LlmDisclaimerCheck)]
 }

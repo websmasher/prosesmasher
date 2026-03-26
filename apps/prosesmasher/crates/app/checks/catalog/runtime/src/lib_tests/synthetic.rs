@@ -5,14 +5,14 @@ use std::collections::BTreeSet;
 #[allow(clippy::panic)] // test assertion
 fn collect_all_returns_32() {
     let checks = collect_checks(None).unwrap_or_else(|e| panic!("collect failed: {e}"));
-    assert_eq!(checks.len(), 31, "total check count");
+    assert_eq!(checks.len(), 32, "total check count");
 }
 
 #[test]
 #[allow(clippy::panic)] // test assertion
-fn collect_quality_returns_24() {
+fn collect_quality_returns_27() {
     let checks = collect_checks(Some("quality")).unwrap_or_else(|e| panic!("collect failed: {e}"));
-    assert_eq!(checks.len(), 26, "quality check count");
+    assert_eq!(checks.len(), 27, "quality check count");
 }
 
 #[test]
@@ -24,10 +24,10 @@ fn collect_lexical_returns_5() {
 
 #[test]
 #[allow(clippy::panic)] // test assertion
-fn collect_heuristics_returns_13() {
+fn collect_heuristics_returns_16() {
     let checks =
         collect_checks(Some("heuristics")).unwrap_or_else(|e| panic!("collect failed: {e}"));
-    assert_eq!(checks.len(), 15, "heuristics check count");
+    assert_eq!(checks.len(), 16, "heuristics check count");
 }
 
 #[test]

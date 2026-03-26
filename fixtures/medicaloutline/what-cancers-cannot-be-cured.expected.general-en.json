@@ -1,6 +1,13 @@
 {
   "requiredFailures": [
     {
+      "rule": "llm-disclaimer",
+      "evidenceContains": [
+        "as a language model",
+        "As a language model, I do not have access to real-time information, and my knowledge is based on data up to September 2021."
+      ]
+    },
+    {
       "rule": "smart-quotes",
       "evidenceContains": [
         "’",
