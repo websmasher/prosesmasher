@@ -1,0 +1,13 @@
+{
+  "requiredFailures": [
+    {
+      "rule": "smart-quotes",
+      "evidenceContains": [
+        "’",
+        "As a language model AI, I don’t have access to the most up-to-date medical information or the ability to provide a diagnosis.",
+        "“”",
+        "Additionally, “end stage bipolar” is not a recognized medical term."
+      ]
+    }
+  ]
+}

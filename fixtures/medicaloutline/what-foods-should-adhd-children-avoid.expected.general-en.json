@@ -1,0 +1,12 @@
+{
+  "requiredFailures": [
+    {
+      "rule": "smart-quotes",
+      "evidenceContains": [
+        "’",
+        "It’s important to note that dietary changes should always be discussed with a qualified healthcare professional, and any dietary modifications should be part of a comprehensive",
+        "A qualified healthcare professional, such as a pediatrician or a registered dietitian, can provide personalized advice and guidance based on your child’s specific needs and"
+      ]
+    }
+  ]
+}

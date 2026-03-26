@@ -1,0 +1,12 @@
+{
+  "requiredFailures": [
+    {
+      "rule": "smart-quotes",
+      "evidenceContains": [
+        "’",
+        "However, please note that it’s important to consult with a qualified healthcare professional, such as a pediatrician or a child psychologist, for personalized advice and to",
+        "It’s important to work closely with healthcare professionals, educators, and your child to develop an individualized plan that meets their specific needs."
+      ]
+    }
+  ]
+}

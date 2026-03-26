@@ -1,0 +1,13 @@
+{
+  "requiredFailures": [
+    {
+      "rule": "smart-quotes",
+      "evidenceContains": [
+        "’’’",
+        "However, it’s important to note that eczema triggers can vary from person to person, and what may trigger one person’s eczema may not necessarily trigger another’s.",
+        "’",
+        "If you suspect that certain foods are exacerbating your eczema, it’s recommended to consult with a qualified healthcare professional for personalized advice."
+      ]
+    }
+  ]
+}
