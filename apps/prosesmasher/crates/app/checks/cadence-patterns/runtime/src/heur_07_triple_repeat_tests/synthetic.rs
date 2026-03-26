@@ -37,14 +37,8 @@ fn make_paragraph_block(texts: &[&str]) -> Block {
 }
 
 fn make_doc_with_blocks(blocks: Vec<Block>, locale: Locale) -> Document {
-    let word_count: usize = blocks
-        .iter()
-        .map(count_words_in_block)
-        .sum();
-    let sentence_count: usize = blocks
-        .iter()
-        .map(count_sentences_in_block)
-        .sum();
+    let word_count: usize = blocks.iter().map(count_words_in_block).sum();
+    let sentence_count: usize = blocks.iter().map(count_sentences_in_block).sum();
 
     Document {
         locale,
@@ -163,7 +157,10 @@ fn sliding_window_triple_repeat_fails() {
     let sentence_2 = "Your first opener drags.";
     let sentence_3 = "Your second opener stalls.";
     let sentence_4 = "Your third opener finally confesses the pattern.";
-    let doc = make_doc_with_sentences(&[sentence_1, sentence_2, sentence_3, sentence_4], Locale::En);
+    let doc = make_doc_with_sentences(
+        &[sentence_1, sentence_2, sentence_3, sentence_4],
+        Locale::En,
+    );
     let config = CheckConfig::default();
     assertions::assert_triple_repeat_failure(
         &doc,
@@ -183,9 +180,7 @@ fn triple_repeat_inside_blockquote_fails() {
     let sentence_3 = "Your calendar mutinies by dinner.";
     let doc = make_doc_with_blocks(
         vec![Block::BlockQuote(vec![make_paragraph_block(&[
-            sentence_1,
-            sentence_2,
-            sentence_3,
+            sentence_1, sentence_2, sentence_3,
         ])])],
         Locale::En,
     );
@@ -233,11 +228,7 @@ fn interrupted_repeat_window_passes() {
         Locale::En,
     );
     let config = CheckConfig::default();
-    assertions::assert_passes(
-        &doc,
-        &config,
-        "non-consecutive repeats should pass",
-    );
+    assertions::assert_passes(&doc, &config, "non-consecutive repeats should pass");
 }
 
 #[test]

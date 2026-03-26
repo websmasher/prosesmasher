@@ -1,6 +1,13 @@
 {
   "requiredFailures": [
     {
+      "rule": "llm-disclaimer",
+      "evidenceContains": [
+        "as a language model",
+        "As a language model AI, I don’t have access to the most up-to-date medical information or the ability to provide a diagnosis."
+      ]
+    },
+    {
       "rule": "smart-quotes",
       "evidenceContains": [
         "’",

@@ -1,3 +1,13 @@
 {
-  "requiredFailures": []
+  "requiredFailures": [
+    {
+      "rule": "llm-disclaimer",
+      "evidenceContains": [
+        "as of my knowledge cutoff",
+        "As of my knowledge cutoff date of September 2021, Hadid had reported improvement in her health and was continuing to manage her condition.",
+        "as i am an ai language model",
+        "However, as I am an AI language model and do not have access to real-time information, I cannot provide updates on her current health status beyond that."
+      ]
+    }
+  ]
 }

@@ -9,7 +9,10 @@ description = "Internal LLM-slop checks runtime crate for the prosesmasher works
 readme = "../../../../../../README.md"
 
 [dependencies]
+prosesmasher-domain-types = { version = "0.1.7", path = "../../../../domain/types" }
 prosesmasher-app-checks-core-runtime = { version = "0.1.7", path = "../../core/runtime" }
+low-expectations.workspace = true
+serde_json.workspace = true
 
 [dev-dependencies]
 prosesmasher-app-checks-llm-slop-assertions = { version = "0.1.7", path = "../assertions" }

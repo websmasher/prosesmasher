@@ -1,6 +1,13 @@
 {
   "requiredFailures": [
     {
+      "rule": "llm-disclaimer",
+      "evidenceContains": [
+        "as a language model",
+        "As a language model, I do not provide medical advice."
+      ]
+    },
+    {
       "rule": "smart-quotes",
       "evidenceContains": [
         "’",

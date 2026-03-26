@@ -103,6 +103,9 @@ pub struct HeuristicsDto {
     pub llm_openers: Option<EnabledDto>,
     #[garde(skip)]
     #[serde(default)]
+    pub llm_disclaimer: Option<EnabledDto>,
+    #[garde(skip)]
+    #[serde(default)]
     pub affirmation_closers: Option<EnabledDto>,
     #[garde(skip)]
     #[serde(default)]
@@ -417,6 +420,9 @@ const fn apply_toggle_heuristics(
     }
     if let Some(enabled) = dto.llm_openers {
         heuristics.llm_openers.enabled = enabled.enabled;
+    }
+    if let Some(enabled) = dto.llm_disclaimer {
+        heuristics.llm_disclaimer.enabled = enabled.enabled;
     }
     if let Some(enabled) = dto.affirmation_closers {
         heuristics.affirmation_closers.enabled = enabled.enabled;

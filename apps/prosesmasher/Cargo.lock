@@ -812,14 +812,24 @@ dependencies = [
 [[package]]
 name = "prosesmasher-app-checks-llm-slop-assertions"
 version = "0.1.7"
+dependencies = [
+ "low-expectations",
+ "prosesmasher-app-checks-core-runtime",
+ "prosesmasher-app-checks-llm-slop-runtime",
+ "prosesmasher-app-checks-test-support",
+ "prosesmasher-domain-types",
+]
 
 [[package]]
 name = "prosesmasher-app-checks-llm-slop-runtime"
 version = "0.1.7"
 dependencies = [
+ "low-expectations",
  "prosesmasher-app-checks-core-runtime",
  "prosesmasher-app-checks-llm-slop-assertions",
  "prosesmasher-app-checks-test-support",
+ "prosesmasher-domain-types",
+ "serde_json",
 ]
 
 [[package]]
