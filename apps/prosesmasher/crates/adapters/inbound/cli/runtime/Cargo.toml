@@ -9,12 +9,12 @@ description = "Internal CLI runtime crate for the prosesmasher workspace."
 readme = "../../../../../README.md"
 
 [dependencies]
-prosesmasher-domain-types = { version = "0.2.2", path = "../../../../domain/types" }
-prosesmasher-ports-outbound-traits = { version = "0.2.2", path = "../../../../ports/outbound/traits" }
-prosesmasher-app-checks-core-runtime = { version = "0.2.2", path = "../../../../app/checks/core/runtime" }
-prosesmasher-app-checks-catalog-runtime = { version = "0.2.2", path = "../../../../app/checks/catalog/runtime" }
-prosesmasher-adapters-outbound-fs = { version = "0.2.2", path = "../../../outbound/fs" }
-prosesmasher-adapters-outbound-parser = { version = "0.2.2", path = "../../../outbound/parser" }
+prosesmasher-domain-types = { version = "0.2.3", path = "../../../../domain/types" }
+prosesmasher-ports-outbound-traits = { version = "0.2.3", path = "../../../../ports/outbound/traits" }
+prosesmasher-app-checks-core-runtime = { version = "0.2.3", path = "../../../../app/checks/core/runtime" }
+prosesmasher-app-checks-catalog-runtime = { version = "0.2.3", path = "../../../../app/checks/catalog/runtime" }
+prosesmasher-adapters-outbound-fs = { version = "0.2.3", path = "../../../outbound/fs" }
+prosesmasher-adapters-outbound-parser = { version = "0.2.3", path = "../../../outbound/parser" }
 clap = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
@@ -22,7 +22,7 @@ walkdir = { workspace = true }
 low-expectations.workspace = true
 
 [dev-dependencies]
-prosesmasher-adapters-inbound-cli-assertions = { version = "0.2.2", path = "../assertions" }
+prosesmasher-adapters-inbound-cli-assertions = { version = "0.2.3", path = "../assertions" }
 
 [lints]
 workspace = true

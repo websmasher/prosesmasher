@@ -79,6 +79,7 @@ pub struct HeuristicsConfig {
     pub boilerplate_framing: AccumulativeCheck,
     pub llm_vocabulary: AccumulativeCheck,
     pub softening_language: AccumulativeCheck,
+    pub universalizing_claims: AccumulativeCheck,
     pub affirmation_closers: EnabledCheck,
     pub summative_closer: EnabledCheck,
     pub false_question: EnabledCheck,
@@ -121,6 +122,10 @@ impl Default for HeuristicsConfig {
                 max_per_document: 1,
             },
             softening_language: AccumulativeCheck {
+                enabled: true,
+                max_per_document: 1,
+            },
+            universalizing_claims: AccumulativeCheck {
                 enabled: true,
                 max_per_document: 1,
             },

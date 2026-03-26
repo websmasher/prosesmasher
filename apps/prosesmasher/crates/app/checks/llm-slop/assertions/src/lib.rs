@@ -48,3 +48,5 @@ pub mod boilerplate_framing;
 pub mod llm_vocabulary;
 #[path = "slop_06_softening_language.rs"]
 pub mod softening_language;
+#[path = "slop_07_universalizing_claims.rs"]
+pub mod universalizing_claims;
