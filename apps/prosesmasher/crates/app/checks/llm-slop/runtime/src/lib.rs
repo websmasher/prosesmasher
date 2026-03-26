@@ -20,7 +20,10 @@ pub mod llm_disclaimer;
 pub mod response_wrapper;
 #[path = "slop_03_generic_signposting.rs"]
 pub mod generic_signposting;
+#[path = "slop_04_boilerplate_framing.rs"]
+pub mod boilerplate_framing;
 
+pub use boilerplate_framing::BoilerplateFramingCheck;
 pub use llm_disclaimer::LlmDisclaimerCheck;
 pub use generic_signposting::GenericSignpostingCheck;
 pub use response_wrapper::ResponseWrapperCheck;
@@ -31,5 +34,6 @@ pub fn all_checks() -> Vec<check::BoxedCheck> {
         Box::new(LlmDisclaimerCheck),
         Box::new(ResponseWrapperCheck),
         Box::new(GenericSignpostingCheck),
+        Box::new(BoilerplateFramingCheck),
     ]
 }
