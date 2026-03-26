@@ -53,7 +53,6 @@ const QUALIFIER_PATTERNS: &[&str] = &[
     " generally ",
     " typically ",
     " commonly ",
-    " often ",
     " potentially ",
     " relatively ",
     " usually ",
