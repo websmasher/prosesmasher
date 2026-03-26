@@ -1,99 +1,78 @@
-use super::*;
-use clap::Parser;
+use prosesmasher_adapters_inbound_cli_assertions::args::{
+    ConfigSource, assert_check_command, assert_dump_config_full_command,
+    assert_dump_config_preset_command, assert_list_presets_command, assert_parse_err, parse_ok,
+};
 
 #[test]
-#[allow(clippy::panic)] // test assertion
 fn parse_check_with_file() {
-    let args = Args::try_parse_from(["prosesmasher", "check", "foo.md", "--preset", "general-en"]);
-    assert!(args.is_ok(), "should parse");
-    let args = args.unwrap_or_else(|e| panic!("parse failed: {e}"));
-    match args.command {
-        Command::Check {
-            path,
-            list_checks,
-            config,
-            preset,
-            group,
-            check,
-            format,
-            text_mode,
-            include_checks,
-        } => {
-            assert_eq!(
-                path.as_deref().and_then(std::path::Path::to_str),
-                Some("foo.md"),
-                "path"
-            );
-            assert!(!list_checks, "not list checks");
-            assert!(config.is_none(), "no config");
-            assert_eq!(preset.as_deref(), Some("general-en"), "preset");
-            assert!(group.is_none(), "no group");
-            assert!(check.is_none(), "no check filter");
-            assert!(
-                matches!(format, OutputFormat::Text),
-                "default format is text"
-            );
-            assert!(
-                matches!(text_mode, TextMode::Failures),
-                "default text mode is failures"
-            );
-            assert!(!include_checks, "checks hidden by default");
-        }
-        Command::ListPresets | Command::DumpConfig { .. } => panic!("expected check command"),
-    }
+    let args = parse_ok(["prosesmasher", "check", "foo.md", "--preset", "general-en"]);
+    assert_check_command(
+        &args,
+        Some("foo.md"),
+        false,
+        ConfigSource::Preset("general-en"),
+        None,
+        None,
+        "text",
+        "failures",
+        false,
+        "parse check with file",
+    );
 }
 
 #[test]
-#[allow(clippy::panic)] // test assertion
 fn parse_check_with_config() {
-    let args = Args::try_parse_from(["prosesmasher", "check", "foo.md", "--config", "c.json"]);
-    assert!(args.is_ok(), "should parse");
-    let args = args.unwrap_or_else(|e| panic!("parse failed: {e}"));
-    match args.command {
-        Command::Check { config, .. } => {
-            assert!(config.is_some(), "config should be Some");
-            assert_eq!(
-                config.unwrap_or_default().to_str(),
-                Some("c.json"),
-                "config path"
-            );
-        }
-        Command::ListPresets | Command::DumpConfig { .. } => panic!("expected check command"),
-    }
+    let args = parse_ok(["prosesmasher", "check", "foo.md", "--config", "c.json"]);
+    assert_check_command(
+        &args,
+        Some("foo.md"),
+        false,
+        ConfigSource::Config("c.json"),
+        None,
+        None,
+        "text",
+        "failures",
+        false,
+        "parse check with config",
+    );
 }
 
 #[test]
-#[allow(clippy::panic)]
 fn parse_check_with_preset() {
-    let args = Args::try_parse_from(["prosesmasher", "check", "foo.md", "--preset", "article-en"]);
-    assert!(args.is_ok(), "should parse");
-    let args = args.unwrap_or_else(|e| panic!("parse failed: {e}"));
-    match args.command {
-        Command::Check { preset, .. } => {
-            assert_eq!(preset.as_deref(), Some("article-en"), "preset");
-        }
-        Command::ListPresets | Command::DumpConfig { .. } => panic!("expected check command"),
-    }
+    let args = parse_ok(["prosesmasher", "check", "foo.md", "--preset", "article-en"]);
+    assert_check_command(
+        &args,
+        Some("foo.md"),
+        false,
+        ConfigSource::Preset("article-en"),
+        None,
+        None,
+        "text",
+        "failures",
+        false,
+        "parse check with preset",
+    );
 }
 
 #[test]
 fn parse_check_with_config_and_preset_fails() {
-    let args = Args::try_parse_from([
-        "prosesmasher",
-        "check",
-        "foo.md",
-        "--config",
-        "c.json",
-        "--preset",
-        "article-en",
-    ]);
-    assert!(args.is_err(), "config and preset should conflict");
+    assert_parse_err(
+        [
+            "prosesmasher",
+            "check",
+            "foo.md",
+            "--config",
+            "c.json",
+            "--preset",
+            "article-en",
+        ],
+        "config and preset should conflict",
+    );
 }
 
 #[test]
-#[allow(clippy::panic)] // test assertion
 fn parse_check_with_group() {
-    let args = Args::try_parse_from([
+    let args = parse_ok([
         "prosesmasher",
         "check",
         "foo.md",
@@ -102,38 +81,62 @@ fn parse_check_with_group() {
         "--group",
         "quality",
     ]);
-    assert!(args.is_ok(), "should parse");
-    let args = args.unwrap_or_else(|e| panic!("parse failed: {e}"));
-    match args.command {
-        Command::Check { group, .. } => {
-            assert_eq!(group.as_deref(), Some("quality"), "group");
-        }
-        Command::ListPresets | Command::DumpConfig { .. } => panic!("expected check command"),
-    }
+    assert_check_command(
+        &args,
+        Some("foo.md"),
+        false,
+        ConfigSource::Preset("general-en"),
+        Some("quality"),
+        None,
+        "text",
+        "failures",
+        false,
+        "parse check with group",
+    );
 }
 
 #[test]
 fn parse_check_requires_config_source() {
-    let args = Args::try_parse_from(["prosesmasher", "check", "foo.md"]);
-    assert!(args.is_ok(), "clap allows later validation");
+    let args = parse_ok(["prosesmasher", "check", "foo.md"]);
+    assert_check_command(
+        &args,
+        Some("foo.md"),
+        false,
+        ConfigSource::None,
+        None,
+        None,
+        "text",
+        "failures",
+        false,
+        "clap should defer config-source validation",
+    );
 }
 
 #[test]
 fn parse_missing_path_fails() {
-    let args = Args::try_parse_from(["prosesmasher", "check"]);
-    assert!(args.is_ok(), "clap allows check --list-checks without path");
+    let args = parse_ok(["prosesmasher", "check"]);
+    assert_check_command(
+        &args,
+        None,
+        false,
+        ConfigSource::None,
+        None,
+        None,
+        "text",
+        "failures",
+        false,
+        "clap should allow runtime to decide whether path is required",
+    );
 }
 
 #[test]
 fn parse_no_subcommand_fails() {
-    let args = Args::try_parse_from(["prosesmasher"]);
-    assert!(args.is_err(), "no subcommand should fail");
+    assert_parse_err(["prosesmasher"], "no subcommand should fail");
 }
 
 #[test]
-#[allow(clippy::panic)]
 fn parse_check_with_check_filter() {
-    let args = Args::try_parse_from([
+    let args = parse_ok([
         "prosesmasher",
         "check",
         "foo.md",
@@ -142,24 +145,23 @@ fn parse_check_with_check_filter() {
         "--check",
         "prohibited-terms,em-dashes",
     ]);
-    assert!(args.is_ok(), "should parse");
-    let args = args.unwrap_or_else(|e| panic!("parse failed: {e}"));
-    match args.command {
-        Command::Check { check, .. } => {
-            assert_eq!(
-                check.as_deref(),
-                Some("prohibited-terms,em-dashes"),
-                "check filter"
-            );
-        }
-        Command::ListPresets | Command::DumpConfig { .. } => panic!("expected check command"),
-    }
+    assert_check_command(
+        &args,
+        Some("foo.md"),
+        false,
+        ConfigSource::Preset("general-en"),
+        None,
+        Some("prohibited-terms,em-dashes"),
+        "text",
+        "failures",
+        false,
+        "parse check with check filter",
+    );
 }
 
 #[test]
-#[allow(clippy::panic)]
 fn parse_check_with_format_json() {
-    let args = Args::try_parse_from([
+    let args = parse_ok([
         "prosesmasher",
         "check",
         "foo.md",
@@ -168,23 +170,23 @@ fn parse_check_with_format_json() {
         "--format",
         "json",
     ]);
-    assert!(args.is_ok(), "should parse");
-    let args = args.unwrap_or_else(|e| panic!("parse failed: {e}"));
-    match args.command {
-        Command::Check { format, .. } => {
-            assert!(
-                matches!(format, OutputFormat::Json),
-                "format should be json"
-            );
-        }
-        Command::ListPresets | Command::DumpConfig { .. } => panic!("expected check command"),
-    }
+    assert_check_command(
+        &args,
+        Some("foo.md"),
+        false,
+        ConfigSource::Preset("general-en"),
+        None,
+        None,
+        "json",
+        "failures",
+        false,
+        "parse check with json format",
+    );
 }
 
 #[test]
-#[allow(clippy::panic)]
 fn parse_check_with_include_checks() {
-    let args = Args::try_parse_from([
+    let args = parse_ok([
         "prosesmasher",
         "check",
         "foo.md",
@@ -194,37 +196,40 @@ fn parse_check_with_include_checks() {
         "json",
         "--include-checks",
     ]);
-    assert!(args.is_ok(), "should parse");
-    let args = args.unwrap_or_else(|e| panic!("parse failed: {e}"));
-    match args.command {
-        Command::Check { include_checks, .. } => {
-            assert!(include_checks, "include checks flag");
-        }
-        Command::ListPresets | Command::DumpConfig { .. } => panic!("expected check command"),
-    }
+    assert_check_command(
+        &args,
+        Some("foo.md"),
+        false,
+        ConfigSource::Preset("general-en"),
+        None,
+        None,
+        "json",
+        "failures",
+        true,
+        "parse check with include-checks",
+    );
 }
 
 #[test]
-#[allow(clippy::panic)]
 fn parse_check_list_checks() {
-    let args = Args::try_parse_from(["prosesmasher", "check", "--list-checks"]);
-    assert!(args.is_ok(), "should parse");
-    let args = args.unwrap_or_else(|e| panic!("parse failed: {e}"));
-    match args.command {
-        Command::Check {
-            list_checks, path, ..
-        } => {
-            assert!(list_checks, "list checks flag");
-            assert!(path.is_none(), "no path required");
-        }
-        Command::ListPresets | Command::DumpConfig { .. } => panic!("expected check command"),
-    }
+    let args = parse_ok(["prosesmasher", "check", "--list-checks"]);
+    assert_check_command(
+        &args,
+        None,
+        true,
+        ConfigSource::None,
+        None,
+        None,
+        "text",
+        "failures",
+        false,
+        "parse check list-checks",
+    );
 }
 
 #[test]
-#[allow(clippy::panic)]
 fn parse_check_with_text_mode() {
-    let args = Args::try_parse_from([
+    let args = parse_ok([
         "prosesmasher",
         "check",
         "foo.md",
@@ -233,75 +238,56 @@ fn parse_check_with_text_mode() {
         "--text-mode",
         "summary",
     ]);
-    assert!(args.is_ok(), "should parse");
-    let args = args.unwrap_or_else(|e| panic!("parse failed: {e}"));
-    match args.command {
-        Command::Check { text_mode, .. } => {
-            assert!(matches!(text_mode, TextMode::Summary), "summary text mode");
-        }
-        Command::ListPresets | Command::DumpConfig { .. } => panic!("expected check command"),
-    }
+    assert_check_command(
+        &args,
+        Some("foo.md"),
+        false,
+        ConfigSource::Preset("general-en"),
+        None,
+        None,
+        "text",
+        "summary",
+        false,
+        "parse check with summary text mode",
+    );
 }
 
 #[test]
-#[allow(clippy::panic)]
 fn parse_list_presets() {
-    let args = Args::try_parse_from(["prosesmasher", "list-presets"]);
-    assert!(args.is_ok(), "should parse");
-    let args = args.unwrap_or_else(|e| panic!("parse failed: {e}"));
-    assert!(matches!(args.command, Command::ListPresets));
+    let args = parse_ok(["prosesmasher", "list-presets"]);
+    assert_list_presets_command(&args, "parse list-presets");
 }
 
 #[test]
-#[allow(clippy::panic)]
 fn parse_dump_config_full() {
-    let args = Args::try_parse_from(["prosesmasher", "dump-config", "--full-config"]);
-    assert!(args.is_ok(), "should parse");
-    let args = args.unwrap_or_else(|e| panic!("parse failed: {e}"));
-    match args.command {
-        Command::DumpConfig {
-            preset,
-            full_config,
-        } => {
-            assert!(preset.is_none(), "no preset");
-            assert!(full_config, "full config");
-        }
-        Command::Check { .. } | Command::ListPresets => panic!("expected dump-config"),
-    }
+    let args = parse_ok(["prosesmasher", "dump-config", "--full-config"]);
+    assert_dump_config_full_command(&args, "parse dump-config --full-config");
 }
 
 #[test]
-#[allow(clippy::panic)]
 fn parse_dump_config_preset() {
-    let args = Args::try_parse_from(["prosesmasher", "dump-config", "--preset", "tweet-en"]);
-    assert!(args.is_ok(), "should parse");
-    let args = args.unwrap_or_else(|e| panic!("parse failed: {e}"));
-    match args.command {
-        Command::DumpConfig {
-            preset,
-            full_config,
-        } => {
-            assert_eq!(preset.as_deref(), Some("tweet-en"));
-            assert!(!full_config, "not full config");
-        }
-        Command::Check { .. } | Command::ListPresets => panic!("expected dump-config"),
-    }
+    let args = parse_ok(["prosesmasher", "dump-config", "--preset", "tweet-en"]);
+    assert_dump_config_preset_command(&args, "tweet-en", "parse dump-config --preset");
 }
 
 #[test]
 fn parse_dump_config_requires_source() {
-    let args = Args::try_parse_from(["prosesmasher", "dump-config"]);
-    assert!(args.is_err(), "dump-config should require source");
+    assert_parse_err(
+        ["prosesmasher", "dump-config"],
+        "dump-config should require a source",
+    );
 }
 
 #[test]
 fn parse_dump_config_conflicting_sources_fail() {
-    let args = Args::try_parse_from([
-        "prosesmasher",
-        "dump-config",
-        "--full-config",
-        "--preset",
-        "tweet-en",
-    ]);
-    assert!(args.is_err(), "dump-config sources should conflict");
+    assert_parse_err(
+        [
+            "prosesmasher",
+            "dump-config",
+            "--full-config",
+            "--preset",
+            "tweet-en",
+        ],
+        "dump-config sources should conflict",
+    );
 }

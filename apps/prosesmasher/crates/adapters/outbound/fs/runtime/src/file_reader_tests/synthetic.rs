@@ -1,6 +1,16 @@
 use super::*;
+use prosesmasher_adapters_outbound_fs_assertions::{
+    assert_io_error, assert_not_found_error, assert_permission_denied_error,
+};
 use prosesmasher_ports_outbound_traits::FileReader;
-use std::path::Path;
+use std::path::{Path, PathBuf};
+use std::sync::atomic::{AtomicU64, Ordering};
+
+fn unique_temp_path(name: &str) -> PathBuf {
+    static COUNTER: AtomicU64 = AtomicU64::new(0);
+    let id = COUNTER.fetch_add(1, Ordering::Relaxed);
+    std::env::temp_dir().join(format!("prosesmasher-file-reader-{name}-{id}"))
+}
 
 #[test]
 #[allow(clippy::panic)] // test assertion
@@ -22,9 +32,10 @@ fn read_existing_file() {
 fn read_nonexistent_file_is_not_found() {
     let reader = FsFileReader;
     let result = reader.read_to_string(Path::new("/nonexistent/path/to/file.txt"));
-    assert!(
-        matches!(result, Err(ReadError::NotFound(_))),
-        "should be NotFound — got {result:?}"
+    assert_not_found_error(
+        &result,
+        "/nonexistent/path/to/file.txt",
+        "missing file should be NotFound",
     );
 }
 
@@ -32,29 +43,17 @@ fn read_nonexistent_file_is_not_found() {
 fn not_found_error_contains_path() {
     let reader = FsFileReader;
     let result = reader.read_to_string(Path::new("/does/not/exist.json"));
-    match result {
-        Err(ReadError::NotFound(msg)) => {
-            assert!(
-                msg.contains("exist.json"),
-                "should contain filename — got: {msg}"
-            );
-        }
-        other => {
-            assert!(
-                matches!(other, Err(ReadError::NotFound(_))),
-                "expected NotFound, got {other:?}"
-            );
-        }
-    }
+    assert_not_found_error(
+        &result,
+        "exist.json",
+        "not found message should preserve filename",
+    );
 }
 
 #[test]
 #[allow(clippy::panic)] // test assertion
 fn read_empty_file_returns_empty_string() {
-    use std::sync::atomic::{AtomicU64, Ordering};
-    static CTR: AtomicU64 = AtomicU64::new(0);
-    let id = CTR.fetch_add(1, Ordering::Relaxed);
-    let path = std::env::temp_dir().join(format!("prosesmasher-test-empty-file-{id}"));
+    let path = unique_temp_path("empty.txt");
     #[allow(clippy::disallowed_methods)]
     std::fs::write(&path, "").unwrap_or_else(|e| panic!("failed to write: {e}"));
     let reader = FsFileReader;
@@ -67,19 +66,58 @@ fn read_empty_file_returns_empty_string() {
 }
 
 #[test]
-fn read_directory_returns_error() {
+fn read_directory_returns_io_error_with_path() {
     let reader = FsFileReader;
-    let result = reader.read_to_string(Path::new("/tmp"));
-    assert!(
-        result.is_err(),
-        "reading directory should fail — got {result:?}"
+    let path = unique_temp_path("directory");
+    let path_str = path.display().to_string();
+
+    #[allow(clippy::disallowed_methods)]
+    std::fs::create_dir(&path).unwrap_or_else(|e| panic!("failed to create temp dir: {e}"));
+    let result = reader.read_to_string(&path);
+    #[allow(clippy::disallowed_methods)]
+    std::fs::remove_dir(&path).unwrap_or_else(|e| panic!("failed to remove temp dir: {e}"));
+
+    assert_io_error(
+        &result,
+        &path_str,
+        "directory Io error should preserve path",
     );
-    // Should NOT be NotFound — the path exists, it's just not a file
-    // On macOS/Linux this is typically an Io error
-    assert!(
-        !matches!(result, Err(ReadError::NotFound(_))),
-        "directory read should not be NotFound — got {result:?}"
-    );
+}
+
+#[cfg(unix)]
+#[test]
+fn unreadable_file_returns_permission_denied_with_path() {
+    use std::os::unix::fs::{MetadataExt, PermissionsExt};
+
+    let reader = FsFileReader;
+    let path = unique_temp_path("permission-denied.txt");
+    let path_str = path.display().to_string();
+
+    #[allow(clippy::disallowed_methods)]
+    std::fs::write(&path, "secret").unwrap_or_else(|e| panic!("failed to write temp file: {e}"));
+
+    let metadata =
+        std::fs::metadata(&path).unwrap_or_else(|e| panic!("failed to stat temp file: {e}"));
+    if metadata.uid() == 0 {
+        #[allow(clippy::disallowed_methods)]
+        std::fs::remove_file(&path).unwrap_or_else(|e| panic!("failed to clean temp file: {e}"));
+        return;
+    }
+
+    let original_mode = metadata.permissions().mode();
+    #[allow(clippy::disallowed_methods)]
+    std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o000))
+        .unwrap_or_else(|e| panic!("failed to chmod temp file: {e}"));
+
+    let result = reader.read_to_string(&path);
+
+    #[allow(clippy::disallowed_methods)]
+    std::fs::set_permissions(&path, std::fs::Permissions::from_mode(original_mode))
+        .unwrap_or_else(|e| panic!("failed to restore temp file permissions: {e}"));
+    #[allow(clippy::disallowed_methods)]
+    std::fs::remove_file(&path).unwrap_or_else(|e| panic!("failed to clean temp file: {e}"));
+
+    assert_permission_denied_error(&result, &path_str, "permission denied should preserve path");
 }
 
 #[test]

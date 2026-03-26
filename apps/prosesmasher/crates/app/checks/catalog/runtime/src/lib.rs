@@ -152,5 +152,5 @@ pub fn filter_checks_by_id(checks: Vec<BoxedCheck>, ids_csv: &str) -> CheckResul
 }
 
 #[cfg(test)]
-#[path = "catalog_tests/mod.rs"]
+#[path = "lib_tests/mod.rs"]
 mod tests;

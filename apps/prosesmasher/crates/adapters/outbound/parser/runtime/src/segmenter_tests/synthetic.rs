@@ -1,13 +1,18 @@
 use super::*;
-use prosesmasher_adapters_outbound_parser_assertions::assert_sentence_count as assert_sentences;
+use prosesmasher_adapters_outbound_parser_assertions::{
+    assert_non_zero_syllables, assert_sentence_count, assert_sentence_texts, assert_word_syllable,
+    assert_word_texts,
+};
 use prosesmasher_domain_types::Locale;
 
-fn sentences(text: &str, locale: Locale, expected_count: usize) -> Vec<prosesmasher_domain_types::Sentence> {
-    assert_sentences(
-        segment_paragraph(text, locale),
-        expected_count,
-        text,
-    )
+fn sentences(
+    text: &str,
+    locale: Locale,
+    expected_count: usize,
+) -> Vec<prosesmasher_domain_types::Sentence> {
+    let sentences = segment_paragraph(text, locale);
+    assert_sentence_count(&sentences, expected_count, text);
+    sentences
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -27,25 +32,16 @@ fn whitespace_only_returns_empty() {
 #[test]
 fn single_sentence() {
     let result = sentences("Hello world.", Locale::En, 1);
-    assert_eq!(
-        result.first().map(|s| s.text.as_str()),
-        Some("Hello world."),
-        "sentence text"
-    );
+    assert_sentence_texts(&result, &["Hello world."], "single sentence text");
 }
 
 #[test]
 fn two_sentences() {
     let result = sentences("Hello world. How are you?", Locale::En, 2);
-    assert_eq!(
-        result.first().map(|s| s.text.as_str()),
-        Some("Hello world."),
-        "first sentence exact text"
-    );
-    assert_eq!(
-        result.get(1).map(|s| s.text.as_str()),
-        Some("How are you?"),
-        "second sentence exact text"
+    assert_sentence_texts(
+        &result,
+        &["Hello world.", "How are you?"],
+        "two sentence texts",
     );
 }
 
@@ -54,15 +50,10 @@ fn abbreviation_splits_in_icu4x() {
     // ICU4X treats "Dr." as a sentence boundary — this is ICU4X behavior,
     // not a bug in our code. Pinning the actual behavior.
     let result = sentences("Dr. Smith went home.", Locale::En, 2);
-    assert_eq!(
-        result.first().map(|s| s.text.as_str()),
-        Some("Dr."),
-        "first fragment"
-    );
-    assert_eq!(
-        result.get(1).map(|s| s.text.as_str()),
-        Some("Smith went home."),
-        "second fragment"
+    assert_sentence_texts(
+        &result,
+        &["Dr.", "Smith went home."],
+        "abbreviation split behavior",
     );
 }
 
@@ -135,17 +126,10 @@ fn punctuation_not_counted_as_words() {
 #[test]
 fn word_text_is_correct() {
     let result = sentences("Hello world.", Locale::En, 1);
-    let sentence = result.first().map(|s| &s.words);
-    assert_eq!(
-        sentence.and_then(|w| w.first()).map(|w| w.text.as_str()),
-        Some("Hello"),
-        "first word"
-    );
-    assert_eq!(
-        sentence.and_then(|w| w.get(1)).map(|w| w.text.as_str()),
-        Some("world"),
-        "second word"
-    );
+    let sentence = result
+        .first()
+        .unwrap_or_else(|| panic!("word_text_is_correct: missing sentence"));
+    assert_word_texts(sentence, &["Hello", "world"], "word texts");
 }
 
 #[test]
@@ -235,30 +219,19 @@ fn single_word_no_period() {
 #[test]
 fn hello_has_two_syllables() {
     let result = sentences("Hello.", Locale::En, 1);
-    let words = &result.first().map(|s| &s.words);
-    let word = words.and_then(|ws| ws.first());
-    assert_eq!(word.map(|w| w.text.as_str()), Some("Hello"), "word text");
-    assert_eq!(
-        word.map(|w| w.syllable_count),
-        Some(2),
-        "Hello = 2 syllables"
-    );
+    let sentence = result
+        .first()
+        .unwrap_or_else(|| panic!("hello_has_two_syllables: missing sentence"));
+    assert_word_syllable(sentence, 0, "Hello", 2, "Hello syllables");
 }
 
 #[test]
 fn multi_syllable_word_exact() {
     let result = sentences("Beautiful.", Locale::En, 1);
-    let word = result.first().and_then(|s| s.words.first());
-    assert_eq!(
-        word.map(|w| w.text.as_str()),
-        Some("Beautiful"),
-        "word text"
-    );
-    assert_eq!(
-        word.map(|w| w.syllable_count),
-        Some(3),
-        "Beautiful = 3 syllables"
-    );
+    let sentence = result
+        .first()
+        .unwrap_or_else(|| panic!("multi_syllable_word_exact: missing sentence"));
+    assert_word_syllable(sentence, 0, "Beautiful", 3, "Beautiful syllables");
 }
 
 #[test]
@@ -266,16 +239,11 @@ fn syllable_count_never_zero() {
     // Every word in the output must have syllable_count >= 1.
     // Test with a longer sentence to exercise multiple words.
     let result = sentences("The quick brown fox jumps over.", Locale::En, 1);
-    if let Some(sentence) = result.first() {
-        assert!(sentence.word_count() >= 5, "should have multiple words");
-        for word in &sentence.words {
-            assert!(
-                word.syllable_count >= 1,
-                "{}: syllable_count must be >= 1",
-                word.text
-            );
-        }
-    }
+    let sentence = result
+        .first()
+        .unwrap_or_else(|| panic!("syllable_count_never_zero: missing sentence"));
+    assert!(sentence.word_count() >= 5, "should have multiple words");
+    assert_non_zero_syllables(&result, "non-zero syllables");
 }
 
 // ═══════════════════════════════════════════════════════════════

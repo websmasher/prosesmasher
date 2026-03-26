@@ -1,6 +1,6 @@
 <!--
 EXPECTED PARSE RESULTS:
-- Section count: 17
+- Section count: 10
 - H1: 1, H2: 9, H3: 7
 - Total paragraphs: 70
 - Per-language paragraph counts: En=8, Ru=5, De=5, Fr=5, Es=5, Pt=5, Id=5, Mixed=32

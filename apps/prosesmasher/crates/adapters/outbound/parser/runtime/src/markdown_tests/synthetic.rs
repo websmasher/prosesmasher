@@ -1,5 +1,9 @@
 use super::*;
-use prosesmasher_adapters_outbound_parser_assertions::assert_first_paragraph;
+use prosesmasher_adapters_outbound_parser_assertions::{
+    assert_first_paragraph, assert_first_paragraph_formatting, assert_first_paragraph_link,
+    assert_first_paragraph_text, assert_heading_counts, assert_section_headings,
+    assert_top_level_blockquote_count, assert_top_level_list_counts, assert_total_sections,
+};
 use prosesmasher_domain_types::{Block, Locale};
 
 #[allow(clippy::disallowed_methods, clippy::panic)] // test fixture loading
@@ -24,35 +28,31 @@ fn empty_input() {
 #[test]
 fn single_paragraph_no_heading() {
     let doc = parse_markdown("Hello world.", Locale::En);
-    assert_eq!(doc.sections.len(), 1, "one section");
-    assert!(
-        doc.sections
-            .first()
-            .and_then(|s| s.heading.as_ref())
-            .is_none(),
-        "no heading"
-    );
+    assert_total_sections(&doc, 1, "single paragraph section count");
+    assert_section_headings(&doc, &[(0, None)], "single paragraph headings");
 }
 
 #[test]
 fn h1_creates_first_section() {
     let doc = parse_markdown("# Title\n\nSome text.", Locale::En);
-    assert_eq!(doc.sections.len(), 1, "one section");
-    let heading = doc.sections.first().and_then(|s| s.heading.as_ref());
-    assert_eq!(heading.map(|h| h.level), Some(1), "H1 level");
-    assert_eq!(heading.map(|h| h.text.as_str()), Some("Title"), "H1 text");
+    assert_section_headings(&doc, &[(1, Some("Title"))], "h1 starts first section");
 }
 
 #[test]
 fn h2_splits_sections() {
     let doc = parse_markdown("## First\n\nText.\n\n## Second\n\nMore text.", Locale::En);
-    assert_eq!(doc.sections.len(), 2, "two sections at H2 boundaries");
+    assert_section_headings(
+        &doc,
+        &[(2, Some("First")), (2, Some("Second"))],
+        "h2 section boundaries",
+    );
 }
 
 #[test]
 fn h3_does_not_split_sections() {
     let doc = parse_markdown("## Section\n\n### Sub\n\nText.", Locale::En);
-    assert_eq!(doc.sections.len(), 1, "H3 does not create new section");
+    assert_total_sections(&doc, 1, "h3 should not split sections");
+    assert_heading_counts(&doc, 0, 1, 1, 0, "h3 tracked in metadata");
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -62,77 +62,25 @@ fn h3_does_not_split_sections() {
 #[test]
 fn bold_detected() {
     let doc = parse_markdown("**Bold text** here.", Locale::En);
-    let para = doc
-        .sections
-        .first()
-        .and_then(|s| s.blocks.first())
-        .and_then(|b| {
-            if let Block::Paragraph(p) = b {
-                Some(p)
-            } else {
-                None
-            }
-        });
-    assert_eq!(para.map(|p| p.has_bold), Some(true), "has_bold");
+    let _ = assert_first_paragraph_formatting(&doc, true, false, "bold detection");
 }
 
 #[test]
 fn italic_detected() {
     let doc = parse_markdown("*Italic text* here.", Locale::En);
-    let para = doc
-        .sections
-        .first()
-        .and_then(|s| s.blocks.first())
-        .and_then(|b| {
-            if let Block::Paragraph(p) = b {
-                Some(p)
-            } else {
-                None
-            }
-        });
-    assert_eq!(para.map(|p| p.has_italic), Some(true), "has_italic");
+    let _ = assert_first_paragraph_formatting(&doc, false, true, "italic detection");
 }
 
 #[test]
 fn plain_paragraph_no_formatting() {
     let doc = parse_markdown("Plain text without any formatting.", Locale::En);
-    let para = doc
-        .sections
-        .first()
-        .and_then(|s| s.blocks.first())
-        .and_then(|b| {
-            if let Block::Paragraph(p) = b {
-                Some(p)
-            } else {
-                None
-            }
-        });
-    assert_eq!(para.map(|p| p.has_bold), Some(false), "no bold");
-    assert_eq!(para.map(|p| p.has_italic), Some(false), "no italic");
+    let _ = assert_first_paragraph_formatting(&doc, false, false, "plain formatting");
 }
 
 #[test]
 fn link_extracted() {
     let doc = parse_markdown("Visit [example](https://example.com) for info.", Locale::En);
-    let para = doc
-        .sections
-        .first()
-        .and_then(|s| s.blocks.first())
-        .and_then(|b| {
-            if let Block::Paragraph(p) = b {
-                Some(p)
-            } else {
-                None
-            }
-        });
-    assert_eq!(para.map(|p| p.links.len()), Some(1), "one link");
-    let link = para.and_then(|p| p.links.first());
-    assert_eq!(link.map(|l| l.text.as_str()), Some("example"), "link text");
-    assert_eq!(
-        link.map(|l| l.url.as_str()),
-        Some("https://example.com"),
-        "link url"
-    );
+    let _ = assert_first_paragraph_link(&doc, "example", "https://example.com", "link extraction");
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -376,28 +324,14 @@ fn fixture_02_code_blocks_dont_leak() {
 fn fixture_03_section_count() {
     let md = load_fixture("03-lists-and-quotes.md");
     let doc = parse_markdown(&md, Locale::En);
-    assert_eq!(
-        doc.sections.len(),
-        15,
-        "03: section count — got {}",
-        doc.sections.len()
-    );
+    assert_total_sections(&doc, 15, "03: section count");
 }
 
 #[test]
 fn fixture_03_blockquote_exists() {
     let md = load_fixture("03-lists-and-quotes.md");
     let doc = parse_markdown(&md, Locale::En);
-    let quote_count: usize = doc
-        .sections
-        .iter()
-        .flat_map(|s| &s.blocks)
-        .filter(|b| matches!(b, Block::BlockQuote(_)))
-        .count();
-    assert!(
-        quote_count >= 8,
-        "03: at least 8 top-level blockquotes — got {quote_count}"
-    );
+    assert_top_level_blockquote_count(&doc, 18, "03: top-level blockquote count");
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -408,16 +342,10 @@ fn fixture_03_blockquote_exists() {
 fn fixture_04_section_count() {
     let md = load_fixture("04-multilingual-stress.md");
     let doc = parse_markdown(&md, Locale::En);
-    // Fixture header says 14 (H2=10 + H3 sections), but H3s don't split
-    // sections. With H2=10, we get content-before-first-H2 + 10 = 11 max.
-    // Parser produces 10 — likely the H1 pre-content section isn't emitted
-    // when it only contains the H1 heading with no blocks before the first H2.
-    assert_eq!(
-        doc.sections.len(),
-        10,
-        "04: section count — got {}",
-        doc.sections.len()
-    );
+    // Sections split only on H1/H2. This fixture has one H1 and nine H2s;
+    // the seven H3s are metadata-only and should not create sections.
+    assert_total_sections(&doc, 10, "04: section count");
+    assert_heading_counts(&doc, 1, 9, 7, 0, "04: heading counts");
 }
 
 #[test]
@@ -782,14 +710,7 @@ fn multiple_paragraphs_in_section() {
 fn fixture_03_list_count() {
     let md = load_fixture("03-lists-and-quotes.md");
     let doc = parse_markdown(&md, Locale::En);
-    let list_count: usize = doc
-        .sections
-        .iter()
-        .flat_map(|s| &s.blocks)
-        .filter(|b| matches!(b, Block::List(_)))
-        .count();
-    // Fixture has 18 lists (12 unordered + 6 ordered)
-    assert!(list_count >= 10, "03: at least 10 lists — got {list_count}");
+    assert_top_level_list_counts(&doc, 6, 12, "03: top-level list counts");
 }
 
 // --- Fixture heading text verification ---
@@ -1155,22 +1076,7 @@ fn strikethrough_text_preserved_in_paragraph() {
 #[test]
 fn paragraph_text_content_exact() {
     let doc = parse_markdown("Hello beautiful world.", Locale::En);
-    let para = doc
-        .sections
-        .first()
-        .and_then(|s| s.blocks.first())
-        .and_then(|b| {
-            if let Block::Paragraph(p) = b {
-                Some(p)
-            } else {
-                None
-            }
-        });
-    assert!(para.is_some(), "paragraph must exist");
-    if let Some(p) = para {
-        let text = p.sentences.first().map(|s| s.text.as_str());
-        assert_eq!(text, Some("Hello beautiful world."), "exact paragraph text");
-    }
+    let _ = assert_first_paragraph_text(&doc, "Hello beautiful world.", "exact paragraph text");
 }
 
 // --- ANGLE 3: bold+italic simultaneous ---
@@ -1402,9 +1308,7 @@ fn inline_html_not_in_paragraph_text() {
 #[test]
 fn html_block_aside_text_is_preserved() {
     let doc = parse_markdown("<aside>Inside aside paragraph.</aside>", Locale::En);
-    let p = assert_first_paragraph(&doc);
-    let text: String = p.sentences.iter().map(|s| s.text.clone()).collect();
-    assert_eq!(text, "Inside aside paragraph.", "aside text preserved");
+    let _ = assert_first_paragraph_text(&doc, "Inside aside paragraph.", "aside text");
     assert_eq!(
         doc.metadata.total_words, 3,
         "word count includes aside text"
@@ -1469,9 +1373,7 @@ fn html_block_ignores_non_visible_tags() {
         "<aside>Visible <script>hidden()</script><style>.x{}</style>text.</aside>",
         Locale::En,
     );
-    let p = assert_first_paragraph(&doc);
-    let text: String = p.sentences.iter().map(|s| s.text.clone()).collect();
-    assert_eq!(text, "Visible text.", "script/style content ignored");
+    let _ = assert_first_paragraph_text(&doc, "Visible text.", "script/style content ignored");
 }
 
 // --- ANGLE 4: task list marker ignored ---

@@ -1,111 +1,94 @@
-use super::*;
+use low_expectations::ExpectationSuite;
+use prosesmasher_adapters_inbound_cli_assertions::output::{
+    ExpectedCheck, ExpectedFailure, assert_check_count, assert_check_present, assert_checks_hidden,
+    assert_failure_count, assert_failure_present, assert_no_failures, assert_result_summary,
+    assert_rewrite_brief_contains, assert_status_line, build, format,
+};
+use std::path::Path;
 
 #[test]
 fn format_pass_contains_pass() {
-    let line = format_line(true, "Some Check", "42");
-    assert!(line.contains("PASS"), "should contain PASS — got: {line}");
+    let line = format(true, "Some Check", "42");
+    assert_status_line(&line, true, "Some Check", "42", "format pass line");
 }
 
 #[test]
 fn format_fail_contains_fail() {
-    let line = format_line(false, "Some Check", "99");
-    assert!(line.contains("FAIL"), "should contain FAIL — got: {line}");
+    let line = format(false, "Some Check", "99");
+    assert_status_line(&line, false, "Some Check", "99", "format fail line");
 }
 
 #[test]
 fn format_line_contains_label() {
-    let line = format_line(true, "Word Count", "800");
-    assert!(
-        line.contains("Word Count"),
-        "should contain label — got: {line}"
-    );
+    let line = format(true, "Word Count", "800");
+    assert_status_line(&line, true, "Word Count", "800", "format line label");
 }
 
 #[test]
 fn format_line_contains_observed() {
-    let line = format_line(false, "Em Dashes", "3");
-    assert!(
-        line.contains('3'),
-        "should contain observed value — got: {line}"
-    );
+    let line = format(false, "Em Dashes", "3");
+    assert_status_line(&line, false, "Em Dashes", "3", "format line observed value");
 }
 
 #[test]
 fn format_line_empty_observed() {
-    let line = format_line(true, "Clean", "");
-    assert!(
-        line.contains("PASS"),
-        "should still contain PASS — got: {line}"
-    );
-    assert!(
-        line.contains("Clean"),
-        "should still contain label — got: {line}"
-    );
+    let line = format(true, "Clean", "");
+    assert_status_line(&line, true, "Clean", "", "format line empty observed");
 }
 
 #[test]
 fn build_file_result_json_serializable() {
-    use low_expectations::ExpectationSuite;
-    use std::path::Path;
-
     let mut suite = ExpectationSuite::new("test");
-    let _r = suite
+    let _result = suite
         .expect_value_to_be_between("word-count", 800, 650, 1000)
         .label("Word Count");
+
     let result = suite.into_suite_result();
-    let file_result = build_file_result(Path::new("test.md"), &result, true);
+    let file_result = build(Path::new("test.md"), &result, true);
 
-    assert_eq!(file_result.schema_version, 1, "schema version");
-    assert!(file_result.success, "should be success");
-    assert_eq!(file_result.exit_reason, "success", "success exit reason");
-    assert_eq!(file_result.evaluated, 1, "1 check");
-    assert_eq!(file_result.passed, 1, "1 passed");
-    assert_eq!(file_result.failed, 0, "0 failed");
-    assert_eq!(file_result.summary.evaluated, 1, "summary evaluated");
-    assert_eq!(file_result.summary.passed, 1, "summary passed");
-    assert_eq!(file_result.summary.failed, 0, "summary failed");
-    assert!(!file_result.rewrite_needed, "no rewrite needed on success");
-    assert!(
-        file_result.rewrite_brief.is_empty(),
-        "no rewrite brief on success"
+    assert_result_summary(
+        &file_result,
+        "test.md",
+        true,
+        "success",
+        1,
+        1,
+        0,
+        "success result summary",
     );
-    assert!(file_result.failures.is_empty(), "no failures on success");
-    assert_eq!(file_result.file, "test.md", "file path");
-    assert_eq!(
-        file_result.checks.as_ref().map(Vec::len),
-        Some(1),
-        "1 check output"
+    assert_no_failures(&file_result, "success results should have no failures");
+    assert_check_count(&file_result, 1, "checks should be included on request");
+    assert_check_present(
+        &file_result,
+        ExpectedCheck {
+            id: "word-count",
+            label: "Word Count",
+            kind: "document-policy",
+            success: true,
+            observed: Some(serde_json::json!(800)),
+        },
+        "success results should preserve check metadata",
     );
 
-    if let Some(check) = file_result
-        .checks
-        .as_ref()
-        .and_then(|checks| checks.first())
-    {
-        assert_eq!(check.id, "word-count", "check id");
-        assert_eq!(check.label, "Word Count", "check label");
-        assert_eq!(check.kind, "document-policy", "check kind");
-        assert!(check.success, "check success");
-    }
-
-    // Verify it serializes to valid JSON
     #[allow(clippy::disallowed_methods)]
     let json = serde_json::to_string(&file_result);
-    assert!(json.is_ok(), "should serialize to JSON — got {json:?}");
-    let json_str = json.unwrap_or_default();
-    assert!(json_str.contains("word-count"), "JSON contains check id");
-    assert!(json_str.contains("Word Count"), "JSON contains label");
+    let json_str = json.unwrap_or_else(|err| panic!("should serialize to JSON: {err}"));
+    assert!(
+        json_str.contains("word-count"),
+        "json should include check id"
+    );
+    assert!(
+        json_str.contains("Word Count"),
+        "json should include check label"
+    );
     assert!(
         json_str.contains("rewrite_needed"),
-        "JSON contains rewrite flag"
+        "json should include rewrite_needed"
     );
 }
 
 #[test]
 fn build_file_result_includes_rewrite_guidance_for_failures() {
-    use low_expectations::ExpectationSuite;
-    use std::path::Path;
-
     let mut suite = ExpectationSuite::new("test");
     let _word_count_result = suite
         .expect_value_to_be_between("word-count", 1200, 650, 1000)
@@ -114,116 +97,70 @@ fn build_file_result_includes_rewrite_guidance_for_failures() {
         .expect_value_to_be_between("em-dashes", 2, 0, 0)
         .label("No Closed Em-Dashes")
         .checking("closed em dash count");
+
     let result = suite.into_suite_result();
-    let file_result = build_file_result(Path::new("draft.md"), &result, false);
+    let file_result = build(Path::new("draft.md"), &result, false);
 
-    assert!(!file_result.success, "should be failure");
-    assert_eq!(
-        file_result.exit_reason, "check-failures",
-        "failure exit reason"
+    assert_result_summary(
+        &file_result,
+        "draft.md",
+        false,
+        "check-failures",
+        2,
+        0,
+        2,
+        "failure result summary",
     );
-    assert!(file_result.rewrite_needed, "rewrite should be needed");
-    assert_eq!(file_result.failures.len(), 2, "2 failed checks");
-    assert_eq!(file_result.rewrite_brief.len(), 2, "2 rewrite instructions");
-    assert!(
-        file_result
-            .rewrite_brief
-            .iter()
-            .any(|s| s.contains("word-count range")),
-        "word-count rewrite brief present"
+    assert_failure_count(&file_result, 2, "failure count");
+    assert_checks_hidden(&file_result, "checks should stay hidden by default");
+    assert_rewrite_brief_contains(&file_result, "word-count range", "word-count rewrite brief");
+    assert_rewrite_brief_contains(
+        &file_result,
+        "Replace closed em dashes",
+        "em-dashes rewrite brief",
     );
-    assert!(
-        file_result
-            .rewrite_brief
-            .iter()
-            .any(|s| s.contains("Replace closed em dashes")),
-        "em-dash rewrite brief present"
-    );
-    assert!(file_result.checks.is_none(), "checks hidden by default");
-
-    let word_count = file_result.failures.iter().find(|f| f.id == "word-count");
-    assert!(word_count.is_some(), "word-count failure present");
-    if let Some(failure) = word_count {
-        assert_eq!(failure.severity, "error", "word-count severity");
-        assert_eq!(failure.kind, "document-policy", "word-count kind");
-        assert!(
-            failure.message.contains("outside the configured range"),
-            "word-count message"
-        );
-        assert!(
-            failure.checking.is_none(),
-            "no checking on bare test suite value"
-        );
-        assert_eq!(
-            failure.expected,
-            Some(serde_json::json!({
+    assert_failure_present(
+        &file_result,
+        ExpectedFailure {
+            id: "word-count",
+            label: "Word Count",
+            kind: "document-policy",
+            severity: "error",
+            message_contains: "outside the configured range",
+            checking: None,
+            expected: Some(serde_json::json!({
                 "min": 650,
                 "max": 1000
             })),
-            "word-count expected"
-        );
-        assert!(
-            failure.rewrite_hint.contains("word-count range"),
-            "word-count hint"
-        );
-        assert!(
-            failure.evidence.is_none(),
-            "no evidence for scalar range failure"
-        );
-        assert_eq!(
-            failure.observed,
-            Some(serde_json::json!(1200)),
-            "word-count observed"
-        );
-    }
-
-    let em_dashes = file_result.failures.iter().find(|f| f.id == "em-dashes");
-    assert!(em_dashes.is_some(), "em-dashes failure present");
-    if let Some(failure) = em_dashes {
-        assert_eq!(
-            failure.label, "No Closed Em-Dashes",
-            "failure label uses check label"
-        );
-        assert_eq!(failure.kind, "heuristics", "em-dashes kind");
-        assert_eq!(failure.severity, "error", "em-dashes severity");
-        assert!(
-            failure.message.contains("Found closed em dashes"),
-            "em-dashes message"
-        );
-        assert_eq!(
-            failure.checking.as_deref(),
-            Some("closed em dash count"),
-            "em-dashes checking"
-        );
-        assert_eq!(
-            failure.expected,
-            Some(serde_json::json!({
+            observed: Some(serde_json::json!(1200)),
+            evidence_len: None,
+            rewrite_hint_contains: "word-count range",
+        },
+        "word-count failure contract",
+    );
+    assert_failure_present(
+        &file_result,
+        ExpectedFailure {
+            id: "em-dashes",
+            label: "No Closed Em-Dashes",
+            kind: "heuristics",
+            severity: "error",
+            message_contains: "Found closed em dashes",
+            checking: Some("closed em dash count"),
+            expected: Some(serde_json::json!({
                 "min": 0,
                 "max": 0
             })),
-            "em-dashes expected"
-        );
-        assert!(
-            failure.rewrite_hint.contains("Replace closed em dashes"),
-            "em-dashes hint"
-        );
-        assert!(
-            failure.evidence.is_none(),
-            "no evidence for scalar count failure"
-        );
-        assert_eq!(
-            failure.observed,
-            Some(serde_json::json!(2)),
-            "em-dashes observed"
-        );
-    }
+            observed: Some(serde_json::json!(2)),
+            evidence_len: None,
+            rewrite_hint_contains: "Replace closed em dashes",
+        },
+        "em-dashes failure contract",
+    );
 }
 
 #[test]
 fn build_file_result_sanitizes_readability_output() {
-    use low_expectations::ExpectationSuite;
-    use std::path::Path;
-
     let mut suite = ExpectationSuite::new("test");
     let _result = suite
         .record_custom_values(
@@ -247,36 +184,34 @@ fn build_file_result_sanitizes_readability_output() {
         .label("Gunning Fog Index");
 
     let result = suite.into_suite_result();
-    let file_result = build_file_result(Path::new("draft.md"), &result, false);
-    let failure = file_result.failures.first();
-    assert!(failure.is_some(), "failure present");
-    if let Some(failure) = failure {
-        assert_eq!(
-            failure.expected,
-            Some(serde_json::json!({
+    let file_result = build(Path::new("draft.md"), &result, false);
+
+    assert_failure_present(
+        &file_result,
+        ExpectedFailure {
+            id: "gunning-fog",
+            label: "Gunning Fog Index",
+            kind: "readability",
+            severity: "error",
+            message_contains: "Readability complexity is above the allowed maximum",
+            checking: None,
+            expected: Some(serde_json::json!({
                 "formula": "fog",
                 "maximum_score": 14.0
-            }))
-        );
-        assert_eq!(
-            failure.observed,
-            Some(serde_json::json!({
+            })),
+            observed: Some(serde_json::json!({
                 "score": 14.67,
                 "total_words": 100
-            }))
-        );
-        assert!(
-            failure.evidence.is_none(),
-            "duplicate scalar evidence removed"
-        );
-    }
+            })),
+            evidence_len: None,
+            rewrite_hint_contains: "lower complexity",
+        },
+        "readability fields should be sanitized",
+    );
 }
 
 #[test]
 fn build_file_result_strips_internal_index_fields_from_evidence() {
-    use low_expectations::ExpectationSuite;
-    use std::path::Path;
-
     let mut suite = ExpectationSuite::new("test");
     let _result = suite
         .record_custom_values(
@@ -297,55 +232,72 @@ fn build_file_result_strips_internal_index_fields_from_evidence() {
         .label("Negation-Reframe Pattern");
 
     let result = suite.into_suite_result();
-    let file_result = build_file_result(Path::new("draft.md"), &result, false);
-    let failure = file_result.failures.first();
-    assert!(failure.is_some(), "failure present");
-    if let Some(failure) = failure {
-        let evidence = failure.evidence.as_ref();
-        assert!(evidence.is_some(), "evidence preserved");
-        if let Some(evidence) = evidence.and_then(|items| items.first()) {
-            assert!(
-                evidence.get("section_index").is_none(),
-                "section index removed"
-            );
-            assert!(
-                evidence.get("paragraph_index").is_none(),
-                "paragraph index removed"
-            );
-            assert!(
-                evidence.get("sentence_index").is_none(),
-                "sentence index removed"
-            );
-            assert!(
-                evidence.get("sentence_index_next").is_none(),
-                "next index removed"
-            );
-            assert!(
-                evidence.get("pattern_type").is_none(),
-                "pattern type removed"
-            );
-            assert_eq!(
-                evidence
-                    .get("matched_text")
-                    .and_then(serde_json::Value::as_str),
-                Some("x, not y")
-            );
-        }
-    }
+    let file_result = build(Path::new("draft.md"), &result, false);
+
+    assert_failure_present(
+        &file_result,
+        ExpectedFailure {
+            id: "negation-reframe",
+            label: "Negation-Reframe Pattern",
+            kind: "heuristics",
+            severity: "error",
+            message_contains: "Found negation-reframe rhetoric",
+            checking: None,
+            expected: Some(serde_json::json!({ "min": 0, "max": 0 })),
+            observed: Some(serde_json::json!(1)),
+            evidence_len: Some(1),
+            rewrite_hint_contains: "not-X-it-is-Y pattern",
+        },
+        "heuristic evidence should survive with public fields only",
+    );
+
+    let evidence = file_result
+        .failures
+        .first()
+        .and_then(|failure| failure.evidence.as_ref())
+        .and_then(|items| items.first())
+        .unwrap_or_else(|| panic!("evidence should be preserved"));
+    assert!(
+        evidence.get("section_index").is_none(),
+        "section_index removed"
+    );
+    assert!(
+        evidence.get("paragraph_index").is_none(),
+        "paragraph_index removed"
+    );
+    assert!(
+        evidence.get("sentence_index").is_none(),
+        "sentence_index removed"
+    );
+    assert!(
+        evidence.get("sentence_index_next").is_none(),
+        "sentence_index_next removed"
+    );
+    assert!(
+        evidence.get("pattern_type").is_none(),
+        "pattern_type removed"
+    );
+    assert_eq!(
+        evidence
+            .get("matched_text")
+            .and_then(serde_json::Value::as_str),
+        Some("x, not y")
+    );
 }
 
 #[test]
 fn build_file_result_includes_checks_when_requested() {
-    use low_expectations::ExpectationSuite;
-    use std::path::Path;
-
     let mut suite = ExpectationSuite::new("test");
     let _result = suite
         .expect_value_to_be_between("word-count", 800, 650, 1000)
         .label("Word Count");
 
     let result = suite.into_suite_result();
-    let file_result = build_file_result(Path::new("draft.md"), &result, true);
+    let file_result = build(Path::new("draft.md"), &result, true);
 
-    assert_eq!(file_result.checks.as_ref().map(Vec::len), Some(1));
+    assert_check_count(
+        &file_result,
+        1,
+        "include_checks should expose check outputs",
+    );
 }

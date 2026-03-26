@@ -1,8 +1,8 @@
 <!--
 EXPECTED PARSE RESULTS:
-- Section count: 8
+- Section count: 9
 - H1: 1, H2: 8, H3: 5
-- Total paragraphs: 86
+- Total paragraphs: 87
 - Paragraphs with bold: 22
 - Paragraphs with italic: 18
 - Total links: 16

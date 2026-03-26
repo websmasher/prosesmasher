@@ -460,6 +460,12 @@ const fn apply_readability_dto(config: &mut CheckConfig, dto: &ReadabilityDto) {
 
     readability.enabled = dto.enabled;
     readability.defaults = dto.defaults;
+    if !dto.defaults {
+        readability.flesch_kincaid_min = None;
+        readability.gunning_fog_max = None;
+        readability.coleman_liau_max = None;
+        readability.avg_sentence_length_max = None;
+    }
     if dto.flesch_kincaid_min.is_some() {
         readability.flesch_kincaid_min = dto.flesch_kincaid_min;
     }
