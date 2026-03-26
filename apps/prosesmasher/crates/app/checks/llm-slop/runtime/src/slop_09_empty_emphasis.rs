@@ -51,6 +51,7 @@ impl Check for EmptyEmphasisCheck {
 const LEADING_PREFIXES: &[&str] = &["and ", "but ", "so ", "because "];
 const EMPHASIS_REFERENTS: &[&str] = &["part", "bit"];
 const EMPHASIS_QUALIFIERS: &[&str] = &["last", "first", "main"];
+const WEAKENING_REFERENTS: &[&str] = &["pattern", "cycle", "loop"];
 
 fn collect_empty_emphasis_evidence(doc: &Document) -> Vec<serde_json::Value> {
     collect_sentence_evidence(
@@ -114,6 +115,25 @@ fn match_empty_emphasis(sentence: &str) -> Option<&'static str> {
                 && something == "something" =>
         {
             Some("deictic-telling-you-something")
+        }
+        [deictic, is, still, real, change]
+            if is_deictic(deictic.as_str())
+                && is == "is"
+                && still == "still"
+                && real == "real"
+                && change == "change" =>
+        {
+            Some("deictic-real-change")
+        }
+        [deictic, is, how, the, referent, weakens]
+            if is_deictic(deictic.as_str())
+                && is == "is"
+                && how == "how"
+                && the == "the"
+                && WEAKENING_REFERENTS.contains(&referent.as_str())
+                && weakens == "weakens" =>
+        {
+            Some("deictic-pattern-weakens")
         }
         _ => None,
     }

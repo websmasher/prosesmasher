@@ -42,10 +42,11 @@ impl Check for GenericSignpostingCheck {
         let max_i64 = i64::try_from(max).unwrap_or(i64::MAX);
         let evidence = collect_generic_signposting_evidence(doc);
         let observed = i64::try_from(evidence.len()).unwrap_or(i64::MAX);
+        let has_strong_meta_frame = evidence.iter().any(is_strong_meta_evidence);
         let _result = suite
             .record_custom_values(
                 "generic-signposting",
-                observed <= max_i64,
+                !has_strong_meta_frame && observed <= max_i64,
                 json!({ "max": max_i64 }),
                 json!(observed),
                 &evidence,
@@ -109,6 +110,16 @@ fn collect_generic_signposting_evidence(doc: &Document) -> Vec<Value> {
                 )
             })
         },
+    )
+}
+
+fn is_strong_meta_evidence(evidence: &Value) -> bool {
+    let Some(pattern_kind) = evidence.get("pattern_kind").and_then(Value::as_str) else {
+        return false;
+    };
+    matches!(
+        pattern_kind,
+        "question-frame" | "answer-frame" | "sequence-frame"
     )
 }
 

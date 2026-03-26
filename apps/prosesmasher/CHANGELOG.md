@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.1
+
+- Tightened `generic-signposting` so empty guidance frames like `The useful move is ...` and `The useful question is ...` fail even when they appear alone, while ordinary note/consultation signposts remain accumulative.
+- Expanded `empty-emphasis` with deictic significance lines like `That is still real change.` and `That is how the pattern weakens.` without widening into longer explanatory prose.
+- Refreshed the generated `gpt_5_4_mini` fixture baselines after reviewing the one new additive `generic-signposting` hit and keeping the rest of the six-model corpus stable.
+
 ## 0.3.0
 
 - Breaking: renamed the `slogan-punchline` check to `contrastive-aphorism`, including the public check ID, label, and config key (`contrastiveAphorism`).
