@@ -177,30 +177,45 @@ fn one_signpost_passes() {
 }
 
 #[test]
-fn single_question_frame_passes() {
+fn single_question_frame_fails() {
     let doc = make_doc(
         "The useful question is whether the setup is helping or hurting.",
         Locale::En,
     );
     let config = CheckConfig::default();
-    assertions::assert_passes(
+    assertions::assert_signposting_failure(
         &doc,
         &config,
-        "single question frame should stay under default threshold",
+        "question-frame",
+        "the useful question is",
+        "single empty question frame should now fail",
     );
 }
 
 #[test]
-fn useful_move_frame_passes_once() {
+fn useful_move_frame_fails() {
     let doc = make_doc(
         "The useful move is to respect the intensity mismatch.",
         Locale::En,
     );
     let config = CheckConfig::default();
+    assertions::assert_signposting_failure(
+        &doc,
+        &config,
+        "question-frame",
+        "the useful move is",
+        "single useful-move frame should now fail",
+    );
+}
+
+#[test]
+fn single_note_signpost_still_passes() {
+    let doc = make_doc("Please note that this is general information.", Locale::En);
+    let config = CheckConfig::default();
     assertions::assert_passes(
         &doc,
         &config,
-        "single useful move frame should stay under default threshold",
+        "plain note signposts should remain accumulative rather than immediate",
     );
 }
 

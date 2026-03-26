@@ -63,6 +63,30 @@ fn deictic_telling_you_something_fails() {
 }
 
 #[test]
+fn deictic_real_change_fails() {
+    let doc = make_doc("That is still real change.", Locale::En);
+    let config = CheckConfig::default();
+    assertions::assert_emphasis_failure(
+        &doc,
+        &config,
+        "deictic-real-change",
+        "deictic real-change magnifier should fail",
+    );
+}
+
+#[test]
+fn deictic_pattern_weakens_fails() {
+    let doc = make_doc("That is how the pattern weakens.", Locale::En);
+    let config = CheckConfig::default();
+    assertions::assert_emphasis_failure(
+        &doc,
+        &config,
+        "deictic-pattern-weakens",
+        "deictic pattern-weakens line should fail",
+    );
+}
+
+#[test]
 fn longer_explanatory_sentence_passes() {
     let doc = make_doc(
         "That last part matters because the contract changes the failure mode completely.",
@@ -92,6 +116,34 @@ fn concrete_noun_matters_passes() {
     let doc = make_doc("That contract term matters.", Locale::En);
     let config = CheckConfig::default();
     assertions::assert_passes(&doc, &config, "concrete noun statements should pass");
+}
+
+#[test]
+fn explanatory_real_change_passes() {
+    let doc = make_doc(
+        "That is still real change in how the family handles the morning transition.",
+        Locale::En,
+    );
+    let config = CheckConfig::default();
+    assertions::assert_passes(
+        &doc,
+        &config,
+        "longer explanatory real-change sentence should pass",
+    );
+}
+
+#[test]
+fn technical_pattern_explanation_passes() {
+    let doc = make_doc(
+        "This is how the circuit weakens under repeated over-voltage conditions.",
+        Locale::En,
+    );
+    let config = CheckConfig::default();
+    assertions::assert_passes(
+        &doc,
+        &config,
+        "technical weakening explanation should pass",
+    );
 }
 
 #[test]

@@ -11,15 +11,15 @@ keywords = ["markdown", "validation", "writing", "lint"]
 categories = ["text-processing", "parser-implementations"]
 
 [dependencies]
-prosesmasher-domain-types = { version = "0.3.0", path = "../../../../domain/types" }
-prosesmasher-ports-outbound-traits = { version = "0.3.0", path = "../../../../ports/outbound/traits" }
+prosesmasher-domain-types = { version = "0.3.1", path = "../../../../domain/types" }
+prosesmasher-ports-outbound-traits = { version = "0.3.1", path = "../../../../ports/outbound/traits" }
 hyphenation = { workspace = true }
 icu_segmenter = { workspace = true }
 pulldown-cmark = { workspace = true }
 scraper = { workspace = true }
 
 [dev-dependencies]
-prosesmasher-adapters-outbound-parser-assertions = { version = "0.3.0", path = "../assertions" }
+prosesmasher-adapters-outbound-parser-assertions = { version = "0.3.1", path = "../assertions" }
 
 [lints]
 workspace = true
