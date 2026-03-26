@@ -78,6 +78,7 @@ const CONSULTATION_PATTERNS: &[&str] = &[
 const NOTE_PATTERNS: &[&str] = &["please note that", "please note"];
 const QUESTION_PATTERNS: &[&str] = &[
     "the useful question is",
+    "the useful move is",
     "the real question is",
     "the better question is",
 ];

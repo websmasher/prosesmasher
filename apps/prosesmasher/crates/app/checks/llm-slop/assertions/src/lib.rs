@@ -52,8 +52,8 @@ pub mod llm_disclaimer;
 pub mod llm_vocabulary;
 #[path = "slop_02_response_wrapper.rs"]
 pub mod response_wrapper;
-#[path = "slop_10_slogan_punchline.rs"]
-pub mod slogan_punchline;
+#[path = "slop_10_contrastive_aphorism.rs"]
+pub mod contrastive_aphorism;
 #[path = "slop_06_softening_language.rs"]
 pub mod softening_language;
 #[path = "slop_07_universalizing_claims.rs"]

@@ -30,8 +30,8 @@ pub mod llm_disclaimer;
 pub mod llm_vocabulary;
 #[path = "slop_02_response_wrapper.rs"]
 pub mod response_wrapper;
-#[path = "slop_10_slogan_punchline.rs"]
-pub mod slogan_punchline;
+#[path = "slop_10_contrastive_aphorism.rs"]
+pub mod contrastive_aphorism;
 #[path = "slop_06_softening_language.rs"]
 pub mod softening_language;
 #[path = "slop_07_universalizing_claims.rs"]
@@ -45,7 +45,7 @@ pub use generic_signposting::GenericSignpostingCheck;
 pub use llm_disclaimer::LlmDisclaimerCheck;
 pub use llm_vocabulary::LlmVocabularyCheck;
 pub use response_wrapper::ResponseWrapperCheck;
-pub use slogan_punchline::SloganPunchlineCheck;
+pub use contrastive_aphorism::ContrastiveAphorismCheck;
 pub use softening_language::SofteningLanguageCheck;
 pub use universalizing_claims::UniversalizingClaimsCheck;
 
@@ -59,7 +59,7 @@ pub fn all_checks() -> Vec<check::BoxedCheck> {
         Box::new(BoilerplateConclusionCheck),
         Box::new(BlameReframeCheck),
         Box::new(EmptyEmphasisCheck),
-        Box::new(SloganPunchlineCheck),
+        Box::new(ContrastiveAphorismCheck),
         Box::new(LlmVocabularyCheck),
         Box::new(SofteningLanguageCheck),
         Box::new(UniversalizingClaimsCheck),

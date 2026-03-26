@@ -124,7 +124,7 @@ pub struct HeuristicsDto {
     pub empty_emphasis: Option<EnabledDto>,
     #[garde(skip)]
     #[serde(default)]
-    pub slogan_punchline: Option<EnabledDto>,
+    pub contrastive_aphorism: Option<EnabledDto>,
     #[garde(skip)]
     #[serde(default)]
     pub llm_vocabulary: Option<AccumulativeDto>,
@@ -487,8 +487,8 @@ const fn apply_toggle_heuristics(
     if let Some(enabled) = dto.empty_emphasis {
         heuristics.empty_emphasis.enabled = enabled.enabled;
     }
-    if let Some(enabled) = dto.slogan_punchline {
-        heuristics.slogan_punchline.enabled = enabled.enabled;
+    if let Some(enabled) = dto.contrastive_aphorism {
+        heuristics.contrastive_aphorism.enabled = enabled.enabled;
     }
     if let Some(accumulative) = dto.llm_vocabulary.as_ref() {
         heuristics.llm_vocabulary.enabled = accumulative.enabled;

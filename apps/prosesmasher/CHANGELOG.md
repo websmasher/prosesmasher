@@ -1,10 +1,18 @@
 # Changelog
 
-## 0.2.9
+## 0.3.0
 
-- Expanded `negation-reframe` with two narrow corrective branches: quantified human `do not need -> they need` pairs such as `Most new moms do not need ... They need ...`, and a transformation-specific `do not want -> want to turn ... into ...` branch.
-- Expanded `slogan-punchline` with short contrastive coaching aphorisms such as `Kids get kind in reps, not revelations.`, `Bring a pattern, not a vibe.`, and `Mostly by treating ... like scripts, not virtues.`
-- Verified the new branches against the six generated-model regression buckets and kept all of those compares clean.
+- Breaking: renamed the `slogan-punchline` check to `contrastive-aphorism`, including the public check ID, label, and config key (`contrastiveAphorism`).
+- Expanded `negation-reframe` with two additional safe corrective branches:
+  - `The biggest sign is not X. It is Y.`
+  - `X is not the problem. Y is.`
+- Expanded `contrastive-aphorism` with short coaching contrasts such as `Watch for a pattern, not one bad week.` and `You handle it like a nervous-system problem, not a manners problem.`
+- Expanded `generic-signposting` with `the useful move is ...` as another narrow meta-framing family while keeping it accumulative.
+
+- Also in this release:
+  - quantified human `do not need -> they need` pairs such as `Most new moms do not need ... They need ...`
+  - a transformation-specific `do not want -> want to turn ... into ...` branch
+- Verified all of the new branches against the six generated-model regression buckets and kept all of those compares clean.
 
 ## 0.2.8
 
