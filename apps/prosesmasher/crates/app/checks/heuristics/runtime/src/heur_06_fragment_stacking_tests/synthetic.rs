@@ -1,5 +1,5 @@
-use crate::check::Check;
-use low_expectations::ExpectationSuite;
+use crate::fragment_stacking::classify_fragment;
+use prosesmasher_app_checks_heuristics_assertions::fragment_stacking as assertions;
 use prosesmasher_domain_types::{
     Block, CheckConfig, Document, DocumentMetadata, Locale, Paragraph, Section, Sentence, Word,
 };
@@ -69,25 +69,12 @@ fn clipped_fragments_fail() {
         Locale::En,
     );
     let config = CheckConfig::default();
-    let mut suite = ExpectationSuite::new("test");
-    super::FragmentStackingCheck.run(&doc, &config, &mut suite);
-    let result = suite.into_suite_result();
-    assert_eq!(result.statistics.unsuccessful_expectations, 1);
-    let vr = result.results.get("fragment-stacking");
-    assert!(vr.is_some());
-    if let Some(vr) = vr {
-        let evidence = vr.result.partial_unexpected_list.as_ref();
-        assert!(evidence.is_some());
-        assert_eq!(
-            evidence
-                .and_then(|items| items.first())
-                .and_then(|item| item.get("sentences"))
-                .and_then(serde_json::Value::as_array)
-                .and_then(|items| items.first())
-                .and_then(serde_json::Value::as_str),
-            Some("Completely unreasonable.")
-        );
-    }
+    assertions::assert_fragment_failure_with_first_sentence(
+        &doc,
+        &config,
+        "Completely unreasonable.",
+        "clipped fragments should fail",
+    );
 }
 
 #[test]
@@ -104,16 +91,12 @@ fn skipped_snack_style_fragments_merge_into_one_run() {
         Locale::En,
     );
     let config = CheckConfig::default();
-    let mut suite = ExpectationSuite::new("test");
-    super::FragmentStackingCheck.run(&doc, &config, &mut suite);
-    let result = suite.into_suite_result();
-    assert_eq!(result.statistics.unsuccessful_expectations, 1);
-    let vr = result.results.get("fragment-stacking");
-    assert!(vr.is_some());
-    if let Some(vr) = vr {
-        let evidence = vr.result.partial_unexpected_list.as_ref();
-        assert_eq!(evidence.map(Vec::len), Some(1));
-    }
+    assertions::assert_fragment_failure_count(
+        &doc,
+        &config,
+        1,
+        "skipped snack style fragments should merge into one run",
+    );
 }
 
 #[test]
@@ -127,24 +110,21 @@ fn short_short_long_payoff_fails() {
         Locale::En,
     );
     let config = CheckConfig::default();
-    let mut suite = ExpectationSuite::new("test");
-    super::FragmentStackingCheck.run(&doc, &config, &mut suite);
-    let result = suite.into_suite_result();
-    assert_eq!(result.statistics.unsuccessful_expectations, 1);
+    assertions::assert_fails(&doc, &config, "short short long payoff fails");
 }
 
 #[test]
 fn classification_catches_not_not_more_like_shape() {
     assert_eq!(
-        super::classify_fragment(&make_sentence("Not morally wrong.")),
+        classify_fragment(&make_sentence("Not morally wrong.")),
         Some("noun-fragment")
     );
     assert_eq!(
-        super::classify_fragment(&make_sentence("Not bad-parent wrong.")),
+        classify_fragment(&make_sentence("Not bad-parent wrong.")),
         Some("noun-fragment")
     );
     assert_eq!(
-        super::classify_fragment(&make_sentence(
+        classify_fragment(&make_sentence(
             "More like systems-failing-one-by-one wrong."
         )),
         Some("modifier-fragment")
@@ -155,10 +135,7 @@ fn classification_catches_not_not_more_like_shape() {
 fn short_narration_with_verbs_passes() {
     let doc = make_doc_with_sentences(&["Door slammed.", "Cat ran.", "Kids screamed."], Locale::En);
     let config = CheckConfig::default();
-    let mut suite = ExpectationSuite::new("test");
-    super::FragmentStackingCheck.run(&doc, &config, &mut suite);
-    let result = suite.into_suite_result();
-    assert_eq!(result.statistics.successful_expectations, 1);
+    assertions::assert_passes(&doc, &config, "short narration with verbs passes");
 }
 
 #[test]
@@ -169,10 +146,7 @@ fn disabled_check_skips() {
     );
     let mut config = CheckConfig::default();
     config.quality.heuristics.fragment_stacking.enabled = false;
-    let mut suite = ExpectationSuite::new("test");
-    super::FragmentStackingCheck.run(&doc, &config, &mut suite);
-    let result = suite.into_suite_result();
-    assert_eq!(result.statistics.evaluated_expectations, 0);
+    assertions::assert_skips(&doc, &config, "disabled check skips");
 }
 
 #[test]
@@ -182,8 +156,5 @@ fn non_english_is_skipped() {
         Locale::De,
     );
     let config = CheckConfig::default();
-    let mut suite = ExpectationSuite::new("test");
-    super::FragmentStackingCheck.run(&doc, &config, &mut suite);
-    let result = suite.into_suite_result();
-    assert_eq!(result.statistics.evaluated_expectations, 0);
+    assertions::assert_skips(&doc, &config, "non-english is skipped");
 }

@@ -1,5 +1,4 @@
-use crate::check::Check;
-use low_expectations::ExpectationSuite;
+use prosesmasher_app_checks_readability_assertions::coleman_liau as assertions;
 use prosesmasher_domain_types::{
     Block, CheckConfig, Document, DocumentMetadata, Locale, Paragraph, Section, Sentence, Word,
 };
@@ -61,14 +60,7 @@ fn short_words_low_grade_passes() {
     // score = 0.0588×400 - 0.296×10 - 15.8 = 23.52 - 2.96 - 15.8 = 4.76
     let doc = make_coleman_doc(100, 4, 10);
     let config = config_with_cl_max(10.0);
-    let mut suite = ExpectationSuite::new("test");
-    super::ColemanLiauCheck.run(&doc, &config, &mut suite);
-    let result = suite.into_suite_result();
-    assert_eq!(
-        result.statistics.successful_expectations, 1,
-        "grade ~4.76 should pass (max 10)"
-    );
-    assert_eq!(result.statistics.unsuccessful_expectations, 0);
+    assertions::assert_passes(&doc, &config, "grade ~4.76 should pass (max 10)");
 }
 
 #[test]
@@ -79,55 +71,26 @@ fn long_words_high_grade_fails() {
     // score = 0.0588×800 - 0.296×5 - 15.8 = 47.04 - 1.48 - 15.8 = 29.76
     let doc = make_coleman_doc(100, 8, 5);
     let config = config_with_cl_max(10.0);
-    let mut suite = ExpectationSuite::new("test");
-    super::ColemanLiauCheck.run(&doc, &config, &mut suite);
-    let result = suite.into_suite_result();
-    assert_eq!(
-        result.statistics.unsuccessful_expectations, 1,
-        "grade ~29.76 should fail (max 10)"
-    );
-    let vr = result.results.get("coleman-liau");
-    assert!(vr.is_some(), "coleman-liau result should exist");
-    if let Some(vr) = vr {
-        let evidence = vr.result.partial_unexpected_list.as_ref();
-        assert!(evidence.is_some(), "evidence should be present");
-        assert_eq!(
-            evidence
-                .and_then(|e| e.first())
-                .and_then(|item| item.get("score_x100"))
-                .and_then(serde_json::Value::as_i64),
-            Some(2976),
-            "score x100"
-        );
-    }
+    assertions::assert_score_failure(&doc, &config, 2976, "grade ~29.76 should fail (max 10)");
 }
 
 #[test]
 fn zero_words_skips() {
     let doc = make_coleman_doc(0, 4, 0);
     let config = config_with_cl_max(10.0);
-    let mut suite = ExpectationSuite::new("test");
-    super::ColemanLiauCheck.run(&doc, &config, &mut suite);
-    let result = suite.into_suite_result();
-    assert_eq!(result.statistics.evaluated_expectations, 0);
+    assertions::assert_skips(&doc, &config, "zero words skips");
 }
 
 #[test]
 fn no_threshold_skips() {
     let doc = make_coleman_doc(100, 4, 10);
     let config = CheckConfig::default();
-    let mut suite = ExpectationSuite::new("test");
-    super::ColemanLiauCheck.run(&doc, &config, &mut suite);
-    let result = suite.into_suite_result();
-    assert_eq!(result.statistics.successful_expectations, 1);
+    assertions::assert_passes(&doc, &config, "no threshold uses default pass");
 }
 
 #[test]
 fn check_id_and_label() {
-    let check = super::ColemanLiauCheck;
-    assert_eq!(check.id(), "coleman-liau");
-    assert_eq!(check.label(), "Coleman-Liau Index");
-    assert!(check.supported_locales().is_none());
+    assertions::assert_check_metadata();
 }
 
 #[test]
@@ -135,11 +98,9 @@ fn zero_sentences_with_words_skips() {
     // Words present but zero sentences → guard should skip (no expectation).
     let doc = make_coleman_doc(50, 4, 0);
     let config = config_with_cl_max(10.0);
-    let mut suite = ExpectationSuite::new("test");
-    super::ColemanLiauCheck.run(&doc, &config, &mut suite);
-    let result = suite.into_suite_result();
-    assert_eq!(
-        result.statistics.evaluated_expectations, 0,
-        "zero sentences with words present → should skip"
+    assertions::assert_skips(
+        &doc,
+        &config,
+        "zero sentences with words present → should skip",
     );
 }

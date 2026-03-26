@@ -28,6 +28,27 @@ pub fn assert_skipped(result: &SuiteValidationResult, message: &str) {
     assert_eq!(result.statistics.evaluated_expectations, 0, "{message}");
 }
 
+pub fn assert_success_count(result: &SuiteValidationResult, expected: usize, message: &str) {
+    assert_eq!(
+        result.statistics.successful_expectations, expected,
+        "{message}"
+    );
+}
+
+pub fn assert_failure_count(result: &SuiteValidationResult, expected: usize, message: &str) {
+    assert_eq!(
+        result.statistics.unsuccessful_expectations, expected,
+        "{message}"
+    );
+}
+
+pub fn assert_evaluated_count(result: &SuiteValidationResult, expected: usize, message: &str) {
+    assert_eq!(
+        result.statistics.evaluated_expectations, expected,
+        "{message}"
+    );
+}
+
 #[must_use]
 pub fn validation<'a>(result: &'a SuiteValidationResult, check_id: &str) -> &'a ValidationResult {
     result
@@ -55,6 +76,20 @@ pub fn assert_observed_i64(result: &SuiteValidationResult, check_id: &str, expec
         Some(expected),
         "observed value for `{check_id}`"
     );
+}
+
+pub fn assert_observed_strs(result: &SuiteValidationResult, check_id: &str, expected: &[&str]) {
+    let observed = validation(result, check_id)
+        .result
+        .observed_value
+        .as_ref()
+        .and_then(Value::as_array)
+        .unwrap_or_else(|| panic!("missing observed array for `{check_id}`"))
+        .iter()
+        .filter_map(Value::as_str)
+        .collect::<Vec<_>>();
+
+    assert_eq!(observed, expected, "observed strings for `{check_id}`");
 }
 
 pub fn assert_expectation_kwarg_i64(
@@ -105,6 +140,22 @@ pub fn assert_first_evidence_u64(
             .first()
             .and_then(|item: &Value| item.get(key))
             .and_then(Value::as_u64),
+        Some(expected),
+        "first evidence `{key}` for `{check_id}`"
+    );
+}
+
+pub fn assert_first_evidence_i64(
+    result: &SuiteValidationResult,
+    check_id: &str,
+    key: &str,
+    expected: i64,
+) {
+    assert_eq!(
+        evidence(result, check_id)
+            .first()
+            .and_then(|item: &Value| item.get(key))
+            .and_then(Value::as_i64),
         Some(expected),
         "first evidence `{key}` for `{check_id}`"
     );

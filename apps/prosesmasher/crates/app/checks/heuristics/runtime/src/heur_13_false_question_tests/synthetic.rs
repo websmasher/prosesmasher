@@ -1,6 +1,5 @@
-use crate::check::Check;
 use crate::test_helpers::make_doc;
-use low_expectations::ExpectationSuite;
+use prosesmasher_app_checks_heuristics_assertions::false_question as assertions;
 use prosesmasher_domain_types::{CheckConfig, Locale};
 
 fn config_with_patterns() -> CheckConfig {
@@ -11,60 +10,30 @@ fn config_with_patterns() -> CheckConfig {
 fn false_question_detected() {
     let doc = make_doc("And isn't that what we all want?", Locale::En);
     let config = config_with_patterns();
-    let mut suite = ExpectationSuite::new("test");
-    super::FalseQuestionCheck.run(&doc, &config, &mut suite);
-    let result = suite.into_suite_result();
-    assert_eq!(
-        result.statistics.unsuccessful_expectations, 1,
-        "false question should fail"
+    assertions::assert_false_question_failure(
+        &doc,
+        &config,
+        "isn't that what we all",
+        "And isn't that what we all want?",
+        "false question should fail",
     );
-    let vr = result.results.get("false-question");
-    assert!(vr.is_some(), "false-question result should exist");
-    if let Some(vr) = vr {
-        let evidence = vr.result.partial_unexpected_list.as_ref();
-        assert!(evidence.is_some(), "evidence should be present");
-        assert_eq!(
-            evidence
-                .and_then(|e| e.first())
-                .and_then(|item| item.get("matched_text"))
-                .and_then(serde_json::Value::as_str),
-            Some("isn't that what we all"),
-            "matched phrase"
-        );
-        assert_eq!(
-            evidence
-                .and_then(|e| e.first())
-                .and_then(|item| item.get("sentence"))
-                .and_then(serde_json::Value::as_str),
-            Some("And isn't that what we all want?"),
-            "sentence evidence"
-        );
-    }
 }
 
 #[test]
 fn genuine_question_passes() {
     let doc = make_doc("So who's going to build the alternative?", Locale::En);
     let config = config_with_patterns();
-    let mut suite = ExpectationSuite::new("test");
-    super::FalseQuestionCheck.run(&doc, &config, &mut suite);
-    let result = suite.into_suite_result();
-    assert_eq!(
-        result.statistics.successful_expectations, 1,
-        "genuine question should pass"
-    );
+    assertions::assert_passes(&doc, &config, "genuine question should pass");
 }
 
 #[test]
 fn non_question_passes() {
     let doc = make_doc("That's what we all want.", Locale::En);
     let config = config_with_patterns();
-    let mut suite = ExpectationSuite::new("test");
-    super::FalseQuestionCheck.run(&doc, &config, &mut suite);
-    let result = suite.into_suite_result();
-    assert_eq!(
-        result.statistics.successful_expectations, 1,
-        "non-question should pass even with matching text"
+    assertions::assert_passes(
+        &doc,
+        &config,
+        "non-question should pass even with matching text",
     );
 }
 
@@ -72,21 +41,12 @@ fn non_question_passes() {
 fn default_config_runs() {
     let doc = make_doc("And isn't that what we all want?", Locale::En);
     let config = CheckConfig::default();
-    let mut suite = ExpectationSuite::new("test");
-    super::FalseQuestionCheck.run(&doc, &config, &mut suite);
-    let result = suite.into_suite_result();
-    assert_eq!(
-        result.statistics.unsuccessful_expectations, 1,
-        "default false-question patterns should run"
-    );
+    assertions::assert_fails(&doc, &config, "default false-question patterns should run");
 }
 
 #[test]
 fn check_id_and_label() {
-    let check = super::FalseQuestionCheck;
-    assert_eq!(check.id(), "false-question");
-    assert_eq!(check.label(), "False Question");
-    assert!(check.supported_locales().is_none());
+    assertions::assert_check_metadata();
 }
 
 #[test]
@@ -100,11 +60,9 @@ fn false_question_in_middle_section_detected() {
         Locale::En,
     );
     let config = config_with_patterns();
-    let mut suite = ExpectationSuite::new("test");
-    super::FalseQuestionCheck.run(&doc, &config, &mut suite);
-    let result = suite.into_suite_result();
-    assert_eq!(
-        result.statistics.unsuccessful_expectations, 1,
-        "false question in section 2 of 3 should fail"
+    assertions::assert_fails(
+        &doc,
+        &config,
+        "false question in section 2 of 3 should fail",
     );
 }

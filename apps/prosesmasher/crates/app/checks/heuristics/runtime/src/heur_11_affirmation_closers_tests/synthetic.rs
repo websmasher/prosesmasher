@@ -1,6 +1,5 @@
-use crate::check::Check;
 use crate::test_helpers::make_doc;
-use low_expectations::ExpectationSuite;
+use prosesmasher_app_checks_heuristics_assertions::affirmation_closers as assertions;
 use prosesmasher_domain_types::{
     Block, CheckConfig, Document, DocumentMetadata, Locale, Paragraph, Section, Sentence, Word,
 };
@@ -48,69 +47,36 @@ fn make_doc_with_sentences(texts: &[&str], locale: Locale) -> Document {
 fn affirmation_closer_detected() {
     let doc = make_doc("We worked hard and that's the key.", Locale::En);
     let config = config_with_closers();
-    let mut suite = ExpectationSuite::new("test");
-    super::AffirmationClosersCheck.run(&doc, &config, &mut suite);
-    let result = suite.into_suite_result();
-    assert_eq!(
-        result.statistics.unsuccessful_expectations, 1,
-        "affirmation closer should fail"
+    assertions::assert_affirmation_closer_failure(
+        &doc,
+        &config,
+        "and that's the key.",
+        "We worked hard and that's the key.",
+        "affirmation closer should fail",
     );
-    let vr = result.results.get("affirmation-closers");
-    assert!(vr.is_some(), "affirmation-closers result should exist");
-    if let Some(vr) = vr {
-        let evidence = vr.result.partial_unexpected_list.as_ref();
-        assert!(evidence.is_some(), "evidence should be present");
-        assert_eq!(
-            evidence
-                .and_then(|e| e.first())
-                .and_then(|item| item.get("matched_text"))
-                .and_then(serde_json::Value::as_str),
-            Some("and that's the key."),
-            "matched closer"
-        );
-        assert_eq!(
-            evidence
-                .and_then(|e| e.first())
-                .and_then(|item| item.get("sentence"))
-                .and_then(serde_json::Value::as_str),
-            Some("We worked hard and that's the key."),
-            "sentence evidence"
-        );
-    }
 }
 
 #[test]
 fn normal_closer_passes() {
     let doc = make_doc("The data supports this conclusion.", Locale::En);
     let config = config_with_closers();
-    let mut suite = ExpectationSuite::new("test");
-    super::AffirmationClosersCheck.run(&doc, &config, &mut suite);
-    let result = suite.into_suite_result();
-    assert_eq!(
-        result.statistics.successful_expectations, 1,
-        "normal closer should pass"
-    );
+    assertions::assert_passes(&doc, &config, "normal closer should pass");
 }
 
 #[test]
 fn default_config_runs() {
     let doc = make_doc("We worked hard and that's the key.", Locale::En);
     let config = CheckConfig::default();
-    let mut suite = ExpectationSuite::new("test");
-    super::AffirmationClosersCheck.run(&doc, &config, &mut suite);
-    let result = suite.into_suite_result();
-    assert_eq!(
-        result.statistics.unsuccessful_expectations, 1,
-        "default affirmation closer patterns should run"
+    assertions::assert_fails(
+        &doc,
+        &config,
+        "default affirmation closer patterns should run",
     );
 }
 
 #[test]
 fn check_id_and_label() {
-    let check = super::AffirmationClosersCheck;
-    assert_eq!(check.id(), "affirmation-closers");
-    assert_eq!(check.label(), "Affirmation Closers");
-    assert!(check.supported_locales().is_none());
+    assertions::assert_check_metadata();
 }
 
 #[test]
@@ -124,12 +90,10 @@ fn affirmation_closer_in_middle_section_detected() {
         Locale::En,
     );
     let config = config_with_closers();
-    let mut suite = ExpectationSuite::new("test");
-    super::AffirmationClosersCheck.run(&doc, &config, &mut suite);
-    let result = suite.into_suite_result();
-    assert_eq!(
-        result.statistics.unsuccessful_expectations, 1,
-        "affirmation closer in section 2 of 3 should fail"
+    assertions::assert_fails(
+        &doc,
+        &config,
+        "affirmation closer in section 2 of 3 should fail",
     );
 }
 
@@ -137,22 +101,13 @@ fn affirmation_closer_in_middle_section_detected() {
 fn thats_the_formula_detected_mid_section() {
     let doc = make_doc_with_sentences(&["Sixty seconds.", "That's the whole repair."], Locale::En);
     let config = config_with_closers();
-    let mut suite = ExpectationSuite::new("test");
-    super::AffirmationClosersCheck.run(&doc, &config, &mut suite);
-    let result = suite.into_suite_result();
-    assert_eq!(result.statistics.unsuccessful_expectations, 1);
-    let vr = result.results.get("affirmation-closers");
-    assert!(vr.is_some());
-    if let Some(vr) = vr {
-        let evidence = vr.result.partial_unexpected_list.as_ref();
-        assert_eq!(
-            evidence
-                .and_then(|e| e.first())
-                .and_then(|item| item.get("matched_text"))
-                .and_then(serde_json::Value::as_str),
-            Some("that's the ...")
-        );
-    }
+    assertions::assert_affirmation_closer_failure(
+        &doc,
+        &config,
+        "that's the ...",
+        "That's the whole repair.",
+        "that's the formula should fail mid-section",
+    );
 }
 
 #[test]
@@ -162,8 +117,5 @@ fn ordinary_thats_the_sentence_passes() {
         Locale::En,
     );
     let config = config_with_closers();
-    let mut suite = ExpectationSuite::new("test");
-    super::AffirmationClosersCheck.run(&doc, &config, &mut suite);
-    let result = suite.into_suite_result();
-    assert_eq!(result.statistics.successful_expectations, 1);
+    assertions::assert_passes(&doc, &config, "ordinary that's-the sentence passes");
 }
