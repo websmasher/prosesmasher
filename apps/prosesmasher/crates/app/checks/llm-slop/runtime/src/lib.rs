@@ -14,25 +14,25 @@ pub mod test_helpers {
 
 mod support;
 
-#[path = "slop_01_llm_disclaimer.rs"]
-pub mod llm_disclaimer;
-#[path = "slop_02_response_wrapper.rs"]
-pub mod response_wrapper;
-#[path = "slop_03_generic_signposting.rs"]
-pub mod generic_signposting;
 #[path = "slop_04_boilerplate_framing.rs"]
 pub mod boilerplate_framing;
+#[path = "slop_03_generic_signposting.rs"]
+pub mod generic_signposting;
+#[path = "slop_01_llm_disclaimer.rs"]
+pub mod llm_disclaimer;
 #[path = "slop_05_llm_vocabulary.rs"]
 pub mod llm_vocabulary;
+#[path = "slop_02_response_wrapper.rs"]
+pub mod response_wrapper;
 #[path = "slop_06_softening_language.rs"]
 pub mod softening_language;
 #[path = "slop_07_universalizing_claims.rs"]
 pub mod universalizing_claims;
 
 pub use boilerplate_framing::BoilerplateFramingCheck;
-pub use llm_vocabulary::LlmVocabularyCheck;
-pub use llm_disclaimer::LlmDisclaimerCheck;
 pub use generic_signposting::GenericSignpostingCheck;
+pub use llm_disclaimer::LlmDisclaimerCheck;
+pub use llm_vocabulary::LlmVocabularyCheck;
 pub use response_wrapper::ResponseWrapperCheck;
 pub use softening_language::SofteningLanguageCheck;
 pub use universalizing_claims::UniversalizingClaimsCheck;

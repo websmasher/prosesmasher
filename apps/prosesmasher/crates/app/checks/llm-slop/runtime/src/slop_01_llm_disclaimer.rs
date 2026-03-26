@@ -74,17 +74,20 @@ const CONTAINS_PATTERNS: &[&str] = &[
 ];
 
 fn collect_llm_disclaimer_evidence(doc: &Document) -> Vec<Value> {
-    collect_sentence_evidence(doc, |sentence, section_index, paragraph_index, sentence_index| {
-        match_disclaimer_pattern(sentence).map(|pattern| {
-            json!({
-                "section_index": section_index,
-                "paragraph_index": paragraph_index,
-                "sentence_index": sentence_index,
-                "matched_text": pattern,
-                "sentence": sentence,
+    collect_sentence_evidence(
+        doc,
+        |sentence, section_index, paragraph_index, sentence_index| {
+            match_disclaimer_pattern(sentence).map(|pattern| {
+                json!({
+                    "section_index": section_index,
+                    "paragraph_index": paragraph_index,
+                    "sentence_index": sentence_index,
+                    "matched_text": pattern,
+                    "sentence": sentence,
+                })
             })
-        })
-    })
+        },
+    )
 }
 
 fn match_disclaimer_pattern(sentence: &str) -> Option<&'static str> {

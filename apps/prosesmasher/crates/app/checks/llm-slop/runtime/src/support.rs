@@ -85,7 +85,10 @@ pub(crate) fn strip_leading_prefixes<'a>(mut text: &'a str, prefixes: &[&str]) -
 }
 
 pub(crate) fn contains_any<'a>(text: &str, patterns: &'a [&str]) -> Option<&'a str> {
-    patterns.iter().find(|pattern| text.contains(**pattern)).copied()
+    patterns
+        .iter()
+        .find(|pattern| text.contains(**pattern))
+        .copied()
 }
 
 pub(crate) fn strip_quoted_segments(text: &str) -> String {
@@ -112,9 +115,18 @@ pub(crate) fn sentence_evidence(
     pairs: &[(&str, &str)],
 ) -> serde_json::Value {
     let mut map = serde_json::Map::new();
-    let _ = map.insert("section_index".to_string(), serde_json::json!(section_index));
-    let _ = map.insert("paragraph_index".to_string(), serde_json::json!(paragraph_index));
-    let _ = map.insert("sentence_index".to_string(), serde_json::json!(sentence_index));
+    let _ = map.insert(
+        "section_index".to_string(),
+        serde_json::json!(section_index),
+    );
+    let _ = map.insert(
+        "paragraph_index".to_string(),
+        serde_json::json!(paragraph_index),
+    );
+    let _ = map.insert(
+        "sentence_index".to_string(),
+        serde_json::json!(sentence_index),
+    );
     for (key, value) in pairs {
         let _ = map.insert((*key).to_string(), serde_json::json!(*value));
     }

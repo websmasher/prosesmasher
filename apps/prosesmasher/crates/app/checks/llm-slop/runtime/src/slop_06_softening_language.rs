@@ -5,7 +5,9 @@ use prosesmasher_domain_types::{CheckConfig, Document, Locale};
 use serde_json::{Value, json};
 
 use crate::check::Check;
-use crate::support::{collect_sentence_evidence, normalize, sentence_evidence, strip_quoted_segments};
+use crate::support::{
+    collect_sentence_evidence, normalize, sentence_evidence, strip_quoted_segments,
+};
 
 #[derive(Debug)]
 pub struct SofteningLanguageCheck;
@@ -31,7 +33,11 @@ impl Check for SofteningLanguageCheck {
             return;
         }
 
-        let max = config.quality.heuristics.softening_language.max_per_document;
+        let max = config
+            .quality
+            .heuristics
+            .softening_language
+            .max_per_document;
         let max_i64 = i64::try_from(max).unwrap_or(i64::MAX);
         let evidence = collect_softening_language_evidence(doc);
         let observed = i64::try_from(evidence.len()).unwrap_or(i64::MAX);
@@ -95,20 +101,23 @@ const QUANTIFIER_TARGETS: &[&str] = &[
 ];
 
 fn collect_softening_language_evidence(doc: &Document) -> Vec<Value> {
-    collect_sentence_evidence(doc, |sentence, section_index, paragraph_index, sentence_index| {
-        match_softening_sentence(sentence).map(|(pattern_kind, matched_text)| {
-            sentence_evidence(
-                section_index,
-                paragraph_index,
-                sentence_index,
-                &[
-                    ("pattern_kind", pattern_kind),
-                    ("matched_text", &matched_text),
-                    ("sentence", sentence),
-                ],
-            )
-        })
-    })
+    collect_sentence_evidence(
+        doc,
+        |sentence, section_index, paragraph_index, sentence_index| {
+            match_softening_sentence(sentence).map(|(pattern_kind, matched_text)| {
+                sentence_evidence(
+                    section_index,
+                    paragraph_index,
+                    sentence_index,
+                    &[
+                        ("pattern_kind", pattern_kind),
+                        ("matched_text", &matched_text),
+                        ("sentence", sentence),
+                    ],
+                )
+            })
+        },
+    )
 }
 
 fn match_softening_sentence(sentence: &str) -> Option<(&'static str, String)> {
@@ -141,10 +150,7 @@ fn match_softening_sentence(sentence: &str) -> Option<(&'static str, String)> {
     }
 
     if let (Some((_, modal_match)), Some((_, qualifier_match))) = (modal, qualifier) {
-        return Some((
-            "hedged-claim",
-            format!("{modal_match} + {qualifier_match}"),
-        ));
+        return Some(("hedged-claim", format!("{modal_match} + {qualifier_match}")));
     }
 
     if let (Some((_, modal_match)), Some((_, quantifier_match))) = (modal, quantifier.as_ref()) {
@@ -196,7 +202,10 @@ fn find_quantifier_pair(text: &str) -> Option<String> {
         if !QUANTIFIER_LEADS.contains(&lead) {
             continue;
         }
-        if let Some(target) = window.iter().skip(1).find(|token| QUANTIFIER_TARGETS.contains(token))
+        if let Some(target) = window
+            .iter()
+            .skip(1)
+            .find(|token| QUANTIFIER_TARGETS.contains(token))
         {
             return Some(format!("{lead} {target}"));
         }

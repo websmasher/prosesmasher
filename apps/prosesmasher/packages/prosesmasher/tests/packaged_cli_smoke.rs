@@ -93,7 +93,10 @@ fn wrapper_binary_lists_presets() {
 fn wrapper_binary_reports_release_version() {
     let output = run_wrapper(&["--version"]);
 
-    assert_success(&output, "--version should succeed through the packaged binary");
+    assert_success(
+        &output,
+        "--version should succeed through the packaged binary",
+    );
     assert_stderr_empty(&output, "--version should not emit stderr");
     assert_stdout_contains(
         &output,

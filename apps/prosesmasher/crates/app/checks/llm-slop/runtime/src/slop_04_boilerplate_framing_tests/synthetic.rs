@@ -19,7 +19,10 @@ fn make_sentence(text: &str) -> Sentence {
 
 fn make_multi_sentence_doc(sentences: &[&str], locale: Locale) -> Document {
     let sentence_values: Vec<Sentence> = sentences.iter().map(|text| make_sentence(text)).collect();
-    let total_words: usize = sentence_values.iter().map(|sentence| sentence.words.len()).sum();
+    let total_words: usize = sentence_values
+        .iter()
+        .map(|sentence| sentence.words.len())
+        .sum();
     Document {
         locale,
         sections: vec![Section {
@@ -41,7 +44,10 @@ fn make_multi_sentence_doc(sentences: &[&str], locale: Locale) -> Document {
 
 fn make_multi_sentence_blockquote_doc(sentences: &[&str], locale: Locale) -> Document {
     let sentence_values: Vec<Sentence> = sentences.iter().map(|text| make_sentence(text)).collect();
-    let total_words: usize = sentence_values.iter().map(|sentence| sentence.words.len()).sum();
+    let total_words: usize = sentence_values
+        .iter()
+        .map(|sentence| sentence.words.len())
+        .sum();
     Document {
         locale,
         sections: vec![Section {
@@ -87,7 +93,11 @@ fn two_distinct_framing_moves_in_one_sentence_fail() {
         Locale::En,
     );
     let mut config = CheckConfig::default();
-    config.quality.heuristics.boilerplate_framing.max_per_document = 0;
+    config
+        .quality
+        .heuristics
+        .boilerplate_framing
+        .max_per_document = 0;
     assertions::assert_framing_failure(
         &doc,
         &config,
@@ -185,7 +195,10 @@ fn code_block_framing_passes() {
 
 #[test]
 fn non_english_is_skipped() {
-    let doc = make_doc("When it comes to eczema, triggers vary by person.", Locale::Fr);
+    let doc = make_doc(
+        "When it comes to eczema, triggers vary by person.",
+        Locale::Fr,
+    );
     let config = CheckConfig::default();
     assertions::assert_skips(&doc, &config, "non-English locales should skip");
 }
@@ -214,7 +227,11 @@ fn raised_threshold_passes_two_hits() {
         Locale::En,
     );
     let mut config = CheckConfig::default();
-    config.quality.heuristics.boilerplate_framing.max_per_document = 2;
+    config
+        .quality
+        .heuristics
+        .boilerplate_framing
+        .max_per_document = 2;
     assertions::assert_passes(
         &doc,
         &config,
