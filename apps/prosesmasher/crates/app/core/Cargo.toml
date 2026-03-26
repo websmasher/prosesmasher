@@ -11,16 +11,16 @@ keywords = ["markdown", "validation", "writing", "lint"]
 categories = ["text-processing", "development-tools"]
 
 [dependencies]
-prosesmasher-app-checks-core-runtime = { version = "0.2.4", path = "../checks/core/runtime" }
-prosesmasher-app-checks-lexical-runtime = { version = "0.2.4", path = "../checks/lexical/runtime" }
-prosesmasher-app-checks-style-signals-runtime = { version = "0.2.4", path = "../checks/style-signals/runtime" }
-prosesmasher-app-checks-cadence-patterns-runtime = { version = "0.2.4", path = "../checks/cadence-patterns/runtime" }
-prosesmasher-app-checks-rhetorical-framing-runtime = { version = "0.2.4", path = "../checks/rhetorical-framing/runtime" }
-prosesmasher-app-checks-persona-signals-runtime = { version = "0.2.4", path = "../checks/persona-signals/runtime" }
-prosesmasher-app-checks-llm-slop-runtime = { version = "0.2.4", path = "../checks/llm-slop/runtime" }
-prosesmasher-app-checks-flow-runtime = { version = "0.2.4", path = "../checks/flow/runtime" }
-prosesmasher-app-checks-readability-runtime = { version = "0.2.4", path = "../checks/readability/runtime" }
-prosesmasher-app-checks-document-policy-runtime = { version = "0.2.4", path = "../checks/document-policy/runtime" }
+prosesmasher-app-checks-core-runtime = { version = "0.2.5", path = "../checks/core/runtime" }
+prosesmasher-app-checks-lexical-runtime = { version = "0.2.5", path = "../checks/lexical/runtime" }
+prosesmasher-app-checks-style-signals-runtime = { version = "0.2.5", path = "../checks/style-signals/runtime" }
+prosesmasher-app-checks-cadence-patterns-runtime = { version = "0.2.5", path = "../checks/cadence-patterns/runtime" }
+prosesmasher-app-checks-rhetorical-framing-runtime = { version = "0.2.5", path = "../checks/rhetorical-framing/runtime" }
+prosesmasher-app-checks-persona-signals-runtime = { version = "0.2.5", path = "../checks/persona-signals/runtime" }
+prosesmasher-app-checks-llm-slop-runtime = { version = "0.2.5", path = "../checks/llm-slop/runtime" }
+prosesmasher-app-checks-flow-runtime = { version = "0.2.5", path = "../checks/flow/runtime" }
+prosesmasher-app-checks-readability-runtime = { version = "0.2.5", path = "../checks/readability/runtime" }
+prosesmasher-app-checks-document-policy-runtime = { version = "0.2.5", path = "../checks/document-policy/runtime" }
 
 [lints]
 workspace = true

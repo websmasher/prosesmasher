@@ -1,0 +1,17 @@
+{
+  "preset": "general-en",
+  "failures": [
+    {
+      "rule": "prohibited-terms",
+      "count": 1
+    },
+    {
+      "rule": "sentence-case",
+      "count": 5
+    },
+    {
+      "rule": "triple-repeat",
+      "count": 1
+    }
+  ]
+}

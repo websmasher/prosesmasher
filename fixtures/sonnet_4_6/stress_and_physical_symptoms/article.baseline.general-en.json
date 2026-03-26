@@ -1,0 +1,13 @@
+{
+  "preset": "general-en",
+  "failures": [
+    {
+      "rule": "sentence-case",
+      "count": 4
+    },
+    {
+      "rule": "word-repetition",
+      "count": 1
+    }
+  ]
+}

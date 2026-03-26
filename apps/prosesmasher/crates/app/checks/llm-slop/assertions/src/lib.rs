@@ -36,6 +36,8 @@ macro_rules! define_rule_assertions {
 
 pub(crate) use define_rule_assertions;
 
+#[path = "slop_08_boilerplate_conclusion.rs"]
+pub mod boilerplate_conclusion;
 #[path = "slop_04_boilerplate_framing.rs"]
 pub mod boilerplate_framing;
 #[path = "slop_03_generic_signposting.rs"]
