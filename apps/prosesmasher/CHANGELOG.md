@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.2.0
+
+- Added the `llm-slop` family with the first live rules for:
+  - `llm-disclaimer`
+  - `response-wrapper`
+  - `generic-signposting`
+  - `boilerplate-framing`
+  - `llm-vocabulary`
+- Split the old heuristic bucket into smaller owned rule families and aligned their sidecar/assertions test structure with the GuardRails test architecture.
+- Added per-fixture expected-failure sidecars for the growing corpus, including the new Medical Outline AI-written fixture set.
+- Standardized release versioning across the workspace and now enforce `prosesmasher --version` through packaged smoke coverage.
+
 ## 0.1.7
 
 - Preserve visible text inside raw HTML embedded in markdown instead of dropping it. This fixes aside-heavy content copied from tools like Notion.

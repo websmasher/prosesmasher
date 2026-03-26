@@ -9,14 +9,14 @@ description = "Internal document-policy checks runtime crate for the prosesmashe
 readme = "../../../../../../README.md"
 
 [dependencies]
-prosesmasher-domain-types = { version = "0.1.7", path = "../../../../domain/types" }
-prosesmasher-app-checks-core-runtime = { version = "0.1.7", path = "../../core/runtime" }
+prosesmasher-domain-types = { version = "0.2.0", path = "../../../../domain/types" }
+prosesmasher-app-checks-core-runtime = { version = "0.2.0", path = "../../core/runtime" }
 low-expectations.workspace = true
 serde_json.workspace = true
 
 [dev-dependencies]
-prosesmasher-app-checks-document-policy-assertions = { version = "0.1.7", path = "../assertions" }
-prosesmasher-app-checks-test-support = { version = "0.1.7", path = "../../test-support" }
+prosesmasher-app-checks-document-policy-assertions = { version = "0.2.0", path = "../assertions" }
+prosesmasher-app-checks-test-support = { version = "0.2.0", path = "../../test-support" }
 
 [lints]
 workspace = true
