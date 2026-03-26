@@ -1,0 +1,11 @@
+{
+  "requiredFailures": [
+    {
+      "rule": "smart-quotes",
+      "evidenceContains": [
+        "’",
+        "As a language model, I don’t have real-time data and my knowledge cutoff date is September 2021."
+      ]
+    }
+  ]
+}

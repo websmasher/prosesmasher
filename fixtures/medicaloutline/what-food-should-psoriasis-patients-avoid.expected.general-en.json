@@ -1,0 +1,12 @@
+{
+  "requiredFailures": [
+    {
+      "rule": "smart-quotes",
+      "evidenceContains": [
+        "’",
+        "It’s always best to consult with a qualified healthcare professional or a registered dietitian for personalized dietary advice.",
+        "It’s important to note that triggers for psoriasis can vary greatly from person to person, and what may trigger symptoms in one individual may not affect another."
+      ]
+    }
+  ]
+}

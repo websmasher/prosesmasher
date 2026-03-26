@@ -1,0 +1,11 @@
+{
+  "requiredFailures": [
+    {
+      "rule": "smart-quotes",
+      "evidenceContains": [
+        "’",
+        "It’s important to consult with a qualified healthcare professional for an accurate diagnosis and appropriate treatment plan if you suspect you have a skin disorder."
+      ]
+    }
+  ]
+}

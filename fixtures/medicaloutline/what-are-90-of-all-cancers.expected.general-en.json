@@ -1,0 +1,13 @@
+{
+  "requiredFailures": [
+    {
+      "rule": "smart-quotes",
+      "evidenceContains": [
+        "’",
+        "As a language model, I don’t have access to real-time data, and my knowledge is based on my training data up until September 2021.",
+        "However, based on historical data and general medical knowledge, it’s important to note that the distribution of cancer types can vary by region, population, and time period.",
+        "It’s important to note that cancer incidence and prevalence can vary by country, population, and other factors, and these rankings may change over time."
+      ]
+    }
+  ]
+}
