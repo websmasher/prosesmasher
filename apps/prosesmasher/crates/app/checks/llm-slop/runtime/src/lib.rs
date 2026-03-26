@@ -18,11 +18,18 @@ mod support;
 pub mod llm_disclaimer;
 #[path = "slop_02_response_wrapper.rs"]
 pub mod response_wrapper;
+#[path = "slop_03_generic_signposting.rs"]
+pub mod generic_signposting;
 
 pub use llm_disclaimer::LlmDisclaimerCheck;
+pub use generic_signposting::GenericSignpostingCheck;
 pub use response_wrapper::ResponseWrapperCheck;
 
 #[must_use]
 pub fn all_checks() -> Vec<check::BoxedCheck> {
-    vec![Box::new(LlmDisclaimerCheck), Box::new(ResponseWrapperCheck)]
+    vec![
+        Box::new(LlmDisclaimerCheck),
+        Box::new(ResponseWrapperCheck),
+        Box::new(GenericSignpostingCheck),
+    ]
 }

@@ -26,6 +26,20 @@
       }
     },
     {
+      "rule": "generic-signposting",
+      "evidenceContainsByField": {
+        "pattern_kind": [
+          "consultation-signpost"
+        ],
+        "matched_text": [
+          "it's always best to consult"
+        ],
+        "sentence": [
+          "It’s always best to consult with a qualified healthcare professional or a registered dietitian for personalized dietary advice."
+        ]
+      }
+    },
+    {
       "rule": "smart-quotes",
       "evidenceContainsByField": {
         "matched_text": [

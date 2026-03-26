@@ -26,6 +26,20 @@
       }
     },
     {
+      "rule": "generic-signposting",
+      "evidenceContainsByField": {
+        "pattern_kind": [
+          "important-to"
+        ],
+        "matched_text": [
+          "it's important to note"
+        ],
+        "sentence": [
+          "However, it’s important to note that eczema triggers can vary from person to person, and what may trigger one person’s eczema may not necessarily trigger another’s."
+        ]
+      }
+    },
+    {
       "rule": "smart-quotes",
       "evidenceContainsByField": {
         "matched_text": [

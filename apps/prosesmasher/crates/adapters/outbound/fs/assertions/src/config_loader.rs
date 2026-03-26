@@ -185,6 +185,15 @@ pub fn assert_shared_quality_defaults(config: &CheckConfig, context: &str) {
         config.quality.heuristics.response_wrapper.enabled,
         "{context}: response wrapper enabled by default"
     );
+    assert!(
+        config.quality.heuristics.generic_signposting.enabled,
+        "{context}: generic signposting enabled by default"
+    );
+    assert_eq!(
+        config.quality.heuristics.generic_signposting.max_per_document,
+        1,
+        "{context}: generic signposting default threshold"
+    );
     assert_eq!(
         config
             .quality

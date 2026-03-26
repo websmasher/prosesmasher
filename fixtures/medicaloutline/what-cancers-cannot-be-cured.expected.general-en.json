@@ -12,6 +12,20 @@
       }
     },
     {
+      "rule": "generic-signposting",
+      "evidenceContainsByField": {
+        "pattern_kind": [
+          "important-to"
+        ],
+        "matched_text": [
+          "it's important to note"
+        ],
+        "sentence": [
+          "However, it’s important to note that the field of oncology is constantly evolving, and new treatments and therapies may become available that could potentially change the outcomes for different types of cancers."
+        ]
+      }
+    },
+    {
       "rule": "smart-quotes",
       "evidenceContainsByField": {
         "matched_text": [
