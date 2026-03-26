@@ -119,8 +119,29 @@ const NEED_AFFIRMATIVE_STARTS: &[(&str, &str)] = &[
     ("they", "they need to "),
     ("they", "they just need to "),
 ];
-const NEED_NOUN_NEGATION_PHRASES: &[&str] = &[" does not need ", " doesn't need "];
+const NEED_NOUN_NEGATION_PHRASES: &[&str] = &[
+    " does not need ",
+    " doesn't need ",
+    " do not need ",
+    " don't need ",
+];
 const NEED_NOUN_AFFIRMATIVE_PHRASES: &[&str] = &[" needs ", " just needs "];
+const NEED_PRONOUN_AFFIRMATIVE_PHRASES: &[&str] = &["they need ", "they just need "];
+const HUMAN_PLURAL_NOUNS: &[&str] = &[
+    "adults",
+    "children",
+    "families",
+    "kids",
+    "moms",
+    "parents",
+    "people",
+    "students",
+    "teachers",
+    "women",
+    "men",
+];
+const WANT_NEGATION_STARTS: &[&str] = &["you do not want to ", "you don't want to "];
+const WANT_TRANSFORM_AFFIRMATIVE_STARTS: &[&str] = &["you want to turn "];
 
 const FRAMING_VERBS: &[FramingVerb] = &[
     ("mean", "means"),
@@ -393,6 +414,16 @@ fn non_copular_corrective_evidence(
         }));
     }
 
+    if let Some(matched_text) =
+        repeated_want_transform_corrective(a_text, b_text, a.word_count(), b.word_count())
+    {
+        return Some(json!({
+            "matched_text": matched_text,
+            "sentence": a.text,
+            "next_sentence": b.text,
+        }));
+    }
+
     None
 }
 
@@ -422,14 +453,27 @@ fn interrupted_corrective_evidence(
         }));
     }
 
-    repeated_need_corrective(&a_text, &c_text, a.word_count(), c.word_count()).map(|matched_text| {
-        json!({
+    if let Some(matched_text) =
+        repeated_need_corrective(&a_text, &c_text, a.word_count(), c.word_count())
+    {
+        return Some(json!({
             "matched_text": matched_text,
             "sentence": a.text,
             "interrupting_sentence": b.text,
             "next_sentence": c.text,
-        })
-    })
+        }));
+    }
+
+    repeated_want_transform_corrective(&a_text, &c_text, a.word_count(), c.word_count()).map(
+        |matched_text| {
+            json!({
+                "matched_text": matched_text,
+                "sentence": a.text,
+                "interrupting_sentence": b.text,
+                "next_sentence": c.text,
+            })
+        },
+    )
 }
 
 fn inline_corrective_match(text: &str, word_count: usize) -> Option<&'static str> {
@@ -714,9 +758,53 @@ fn repeated_noun_need_corrective(a_text: &str, b_text: &str) -> Option<&'static 
                 return Some("x does not need y -> x needs z");
             }
         }
+
+        if looks_like_quantified_human_plural_subject(subject)
+            && NEED_PRONOUN_AFFIRMATIVE_PHRASES
+                .iter()
+                .any(|phrase| b_text.starts_with(phrase))
+        {
+            return Some("x does not need y -> they need z");
+        }
     }
 
     None
+}
+
+fn repeated_want_transform_corrective(
+    a_text: &str,
+    b_text: &str,
+    a_word_count: usize,
+    b_word_count: usize,
+) -> Option<&'static str> {
+    if a_word_count > 18 || b_word_count > 18 {
+        return None;
+    }
+    if !WANT_NEGATION_STARTS.iter().any(|prefix| a_text.starts_with(prefix)) {
+        return None;
+    }
+    if !WANT_TRANSFORM_AFFIRMATIVE_STARTS
+        .iter()
+        .any(|prefix| b_text.starts_with(prefix))
+    {
+        return None;
+    }
+    b_text.contains(" into ")
+        .then_some("do not want x -> want to turn y into z")
+}
+
+fn looks_like_quantified_human_plural_subject(subject: &str) -> bool {
+    let tokens: Vec<&str> = subject.split_whitespace().collect();
+    let Some(first) = tokens.first() else {
+        return false;
+    };
+    if !matches!(*first, "most" | "many" | "some") {
+        return false;
+    }
+    let Some(last) = tokens.last() else {
+        return false;
+    };
+    HUMAN_PLURAL_NOUNS.contains(last)
 }
 
 fn looks_like_short_interrupt_sentence(text: &str, word_count: usize) -> bool {
