@@ -90,6 +90,19 @@ fn wrapper_binary_lists_presets() {
 }
 
 #[test]
+fn wrapper_binary_reports_release_version() {
+    let output = run_wrapper(&["--version"]);
+
+    assert_success(&output, "--version should succeed through the packaged binary");
+    assert_stderr_empty(&output, "--version should not emit stderr");
+    assert_stdout_contains(
+        &output,
+        env!("CARGO_PKG_VERSION"),
+        "--version should print the packaged release version",
+    );
+}
+
+#[test]
 fn wrapper_binary_dump_config_uses_preset_assets() {
     let output = run_wrapper(&["dump-config", "--preset", "article-en"]);
 
