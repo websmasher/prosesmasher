@@ -1,5 +1,4 @@
-use crate::check::Check;
-use low_expectations::ExpectationSuite;
+use prosesmasher_app_checks_document_policy_assertions::heading_hierarchy as assertions;
 use prosesmasher_domain_types::{
     Block, CheckConfig, Document, DocumentMetadata, DocumentPolicyConfig, Heading, Locale,
     Paragraph, Section, Sentence,
@@ -48,40 +47,18 @@ fn config_enforcing_heading_hierarchy() -> CheckConfig {
 fn h1_present_fails() {
     let doc = make_headed_doc(&[(1, "My Title")]);
     let config = config_enforcing_heading_hierarchy();
-    let mut suite = ExpectationSuite::new("test");
-    super::HeadingHierarchyCheck.run(&doc, &config, &mut suite);
-    let result = suite.into_suite_result();
-    assert_eq!(
-        result.statistics.unsuccessful_expectations, 1,
-        "H1 in body should fail"
-    );
-    let vr = result.results.values().next();
-    assert!(vr.is_some(), "heading hierarchy result should exist");
-    if let Some(vr) = vr {
-        let evidence = vr.result.partial_unexpected_list.as_ref();
-        assert!(evidence.is_some(), "evidence should be present");
-        assert_eq!(
-            evidence
-                .and_then(|e| e.first())
-                .and_then(|item| item.get("heading_text"))
-                .and_then(serde_json::Value::as_str),
-            Some("My Title"),
-            "heading text evidence"
-        );
-    }
+    assertions::assert_h1_failure(&doc, &config, "My Title", "H1 in body should fail");
 }
 
 #[test]
 fn h2_to_h4_skip_fails() {
     let doc = make_headed_doc(&[(2, "Section A"), (4, "Deep section")]);
     let config = config_enforcing_heading_hierarchy();
-    let mut suite = ExpectationSuite::new("test");
-    super::HeadingHierarchyCheck.run(&doc, &config, &mut suite);
-    let result = suite.into_suite_result();
-    // H4 triggers both "H4+ not allowed" AND "level skip H2→H4" = 2 failures
-    assert_eq!(
-        result.statistics.unsuccessful_expectations, 2,
-        "H2→H4 skip should produce 2 failures (H4+ and skip)"
+    assertions::assert_failure_total(
+        &doc,
+        &config,
+        2,
+        "H2→H4 skip should produce 2 failures (H4+ and skip)",
     );
 }
 
@@ -89,26 +66,14 @@ fn h2_to_h4_skip_fails() {
 fn h2_h3_h2_passes() {
     let doc = make_headed_doc(&[(2, "First"), (3, "Sub"), (2, "Second")]);
     let config = config_enforcing_heading_hierarchy();
-    let mut suite = ExpectationSuite::new("test");
-    super::HeadingHierarchyCheck.run(&doc, &config, &mut suite);
-    let result = suite.into_suite_result();
-    assert_eq!(
-        result.statistics.unsuccessful_expectations, 0,
-        "H2→H3→H2 should pass"
-    );
+    assertions::assert_clean(&doc, &config, "H2→H3→H2 should pass");
 }
 
 #[test]
 fn h4_plus_fails() {
     let doc = make_headed_doc(&[(2, "Section"), (3, "Sub"), (5, "Too deep")]);
     let config = config_enforcing_heading_hierarchy();
-    let mut suite = ExpectationSuite::new("test");
-    super::HeadingHierarchyCheck.run(&doc, &config, &mut suite);
-    let result = suite.into_suite_result();
-    assert!(
-        result.statistics.unsuccessful_expectations >= 1,
-        "H5 should be flagged"
-    );
+    assertions::assert_failure_total(&doc, &config, 2, "H5 should be flagged");
 }
 
 #[test]
@@ -122,19 +87,10 @@ fn no_headings_passes() {
         metadata: DocumentMetadata::default(),
     };
     let config = config_enforcing_heading_hierarchy();
-    let mut suite = ExpectationSuite::new("test");
-    super::HeadingHierarchyCheck.run(&doc, &config, &mut suite);
-    let result = suite.into_suite_result();
-    assert_eq!(
-        result.statistics.unsuccessful_expectations, 0,
-        "no headings should pass"
-    );
+    assertions::assert_clean(&doc, &config, "no headings should pass");
 }
 
 #[test]
 fn check_id_and_label() {
-    let check = super::HeadingHierarchyCheck;
-    assert_eq!(check.id(), "heading-hierarchy", "id");
-    assert_eq!(check.label(), "Heading Hierarchy", "label");
-    assert!(check.supported_locales().is_none(), "supports all locales");
+    assertions::assert_check_metadata();
 }

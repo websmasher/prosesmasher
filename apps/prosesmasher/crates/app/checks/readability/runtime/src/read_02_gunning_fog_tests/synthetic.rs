@@ -1,5 +1,4 @@
-use crate::check::Check;
-use low_expectations::ExpectationSuite;
+use prosesmasher_app_checks_readability_assertions::gunning_fog as assertions;
 use prosesmasher_domain_types::{
     Block, CheckConfig, Document, DocumentMetadata, Locale, Paragraph, Section, Sentence, Word,
 };
@@ -59,14 +58,7 @@ fn simple_text_passes() {
     let syllables = vec![1; 20];
     let doc = make_fog_doc(&syllables, 2);
     let config = config_with_fog_max(12.0);
-    let mut suite = ExpectationSuite::new("test");
-    super::GunningFogCheck.run(&doc, &config, &mut suite);
-    let result = suite.into_suite_result();
-    assert_eq!(
-        result.statistics.successful_expectations, 1,
-        "simple text should pass"
-    );
-    assert_eq!(result.statistics.unsuccessful_expectations, 0);
+    assertions::assert_passes(&doc, &config, "simple text should pass");
 }
 
 #[test]
@@ -77,37 +69,19 @@ fn complex_text_fails() {
     syllables.extend(vec![3; 10]); // 10 complex words
     let doc = make_fog_doc(&syllables, 2);
     let config = config_with_fog_max(12.0);
-    let mut suite = ExpectationSuite::new("test");
-    super::GunningFogCheck.run(&doc, &config, &mut suite);
-    let result = suite.into_suite_result();
-    assert_eq!(
-        result.statistics.unsuccessful_expectations, 1,
-        "complex text should fail (fog 24 > max 12)"
+    assertions::assert_complex_word_failure(
+        &doc,
+        &config,
+        10,
+        "complex text should fail (fog 24 > max 12)",
     );
-    let vr = result.results.get("gunning-fog");
-    assert!(vr.is_some(), "gunning-fog result should exist");
-    if let Some(vr) = vr {
-        let evidence = vr.result.partial_unexpected_list.as_ref();
-        assert!(evidence.is_some(), "evidence should be present");
-        assert_eq!(
-            evidence
-                .and_then(|e| e.first())
-                .and_then(|item| item.get("complex_word_count"))
-                .and_then(serde_json::Value::as_i64),
-            Some(10),
-            "complex word count"
-        );
-    }
 }
 
 #[test]
 fn zero_words_skips() {
     let doc = make_fog_doc(&[], 0);
     let config = config_with_fog_max(12.0);
-    let mut suite = ExpectationSuite::new("test");
-    super::GunningFogCheck.run(&doc, &config, &mut suite);
-    let result = suite.into_suite_result();
-    assert_eq!(result.statistics.evaluated_expectations, 0);
+    assertions::assert_skips(&doc, &config, "zero words skips");
 }
 
 #[test]
@@ -115,10 +89,7 @@ fn zero_sentences_skips() {
     let syllables = vec![1; 10];
     let doc = make_fog_doc(&syllables, 0);
     let config = config_with_fog_max(12.0);
-    let mut suite = ExpectationSuite::new("test");
-    super::GunningFogCheck.run(&doc, &config, &mut suite);
-    let result = suite.into_suite_result();
-    assert_eq!(result.statistics.evaluated_expectations, 0);
+    assertions::assert_skips(&doc, &config, "zero sentences skips");
 }
 
 #[test]
@@ -126,16 +97,10 @@ fn no_threshold_skips() {
     let syllables = vec![1; 20];
     let doc = make_fog_doc(&syllables, 2);
     let config = CheckConfig::default();
-    let mut suite = ExpectationSuite::new("test");
-    super::GunningFogCheck.run(&doc, &config, &mut suite);
-    let result = suite.into_suite_result();
-    assert_eq!(result.statistics.successful_expectations, 1);
+    assertions::assert_passes(&doc, &config, "no threshold uses default pass");
 }
 
 #[test]
 fn check_id_and_label() {
-    let check = super::GunningFogCheck;
-    assert_eq!(check.id(), "gunning-fog");
-    assert_eq!(check.label(), "Gunning Fog Index");
-    assert!(check.supported_locales().is_none());
+    assertions::assert_check_metadata();
 }
