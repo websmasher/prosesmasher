@@ -42,3 +42,5 @@ pub mod llm_disclaimer;
 pub mod response_wrapper;
 #[path = "slop_03_generic_signposting.rs"]
 pub mod generic_signposting;
+#[path = "slop_04_boilerplate_framing.rs"]
+pub mod boilerplate_framing;

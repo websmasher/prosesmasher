@@ -112,6 +112,9 @@ pub struct HeuristicsDto {
     pub generic_signposting: Option<AccumulativeDto>,
     #[garde(skip)]
     #[serde(default)]
+    pub boilerplate_framing: Option<AccumulativeDto>,
+    #[garde(skip)]
+    #[serde(default)]
     pub affirmation_closers: Option<EnabledDto>,
     #[garde(skip)]
     #[serde(default)]
@@ -446,6 +449,12 @@ const fn apply_toggle_heuristics(
         heuristics.generic_signposting.enabled = accumulative.enabled;
         if let Some(max) = accumulative.max_per_document {
             heuristics.generic_signposting.max_per_document = max;
+        }
+    }
+    if let Some(accumulative) = dto.boilerplate_framing.as_ref() {
+        heuristics.boilerplate_framing.enabled = accumulative.enabled;
+        if let Some(max) = accumulative.max_per_document {
+            heuristics.boilerplate_framing.max_per_document = max;
         }
     }
     if let Some(enabled) = dto.affirmation_closers {

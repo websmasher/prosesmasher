@@ -194,6 +194,15 @@ pub fn assert_shared_quality_defaults(config: &CheckConfig, context: &str) {
         1,
         "{context}: generic signposting default threshold"
     );
+    assert!(
+        config.quality.heuristics.boilerplate_framing.enabled,
+        "{context}: boilerplate framing enabled by default"
+    );
+    assert_eq!(
+        config.quality.heuristics.boilerplate_framing.max_per_document,
+        1,
+        "{context}: boilerplate framing default threshold"
+    );
     assert_eq!(
         config
             .quality

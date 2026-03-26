@@ -1,6 +1,20 @@
 {
   "requiredFailures": [
     {
+      "rule": "boilerplate-framing",
+      "evidenceContainsByField": {
+        "pattern_kind": [
+          "preview-frame"
+        ],
+        "matched_text": [
+          "following + explore"
+        ],
+        "sentence": [
+          "In the following sections, we will explore the various theories on the purpose of dream sleep and the neuroscience behind it all."
+        ]
+      }
+    },
+    {
       "rule": "paragraph-length",
       "evidenceContainsByField": {
         "paragraph_text": [
