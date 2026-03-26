@@ -93,11 +93,14 @@ const ABSTRACT_FRAME_NEGATIONS: &[(&str, &str)] = &[
     ("point", "the point isn't "),
     ("aim", "the aim is not "),
     ("aim", "the aim isn't "),
+    ("biggest sign", "the biggest sign is not "),
+    ("biggest sign", "the biggest sign isn't "),
 ];
 const ABSTRACT_FRAME_AFFIRMATIVES: &[(&str, &str)] = &[
     ("goal", "the goal is "),
     ("point", "the point is "),
     ("aim", "the aim is "),
+    ("biggest sign", "the biggest sign is "),
 ];
 const NEED_NEGATION_STARTS: &[(&str, &str)] = &[
     ("i", "i do not need to "),
@@ -424,6 +427,16 @@ fn non_copular_corrective_evidence(
         }));
     }
 
+    if let Some(matched_text) =
+        problem_reframe_corrective(a_text, b_text, a.word_count(), b.word_count())
+    {
+        return Some(json!({
+            "matched_text": matched_text,
+            "sentence": a.text,
+            "next_sentence": b.text,
+        }));
+    }
+
     None
 }
 
@@ -473,7 +486,18 @@ fn interrupted_corrective_evidence(
                 "next_sentence": c.text,
             })
         },
-    )
+    ).or_else(|| {
+        problem_reframe_corrective(&a_text, &c_text, a.word_count(), c.word_count()).map(
+            |matched_text| {
+                json!({
+                    "matched_text": matched_text,
+                    "sentence": a.text,
+                    "interrupting_sentence": b.text,
+                    "next_sentence": c.text,
+                })
+            },
+        )
+    })
 }
 
 fn inline_corrective_match(text: &str, word_count: usize) -> Option<&'static str> {
@@ -791,6 +815,28 @@ fn repeated_want_transform_corrective(
     }
     b_text.contains(" into ")
         .then_some("do not want x -> want to turn y into z")
+}
+
+fn problem_reframe_corrective(
+    a_text: &str,
+    b_text: &str,
+    a_word_count: usize,
+    b_word_count: usize,
+) -> Option<&'static str> {
+    if a_word_count > 18 || b_word_count > 18 {
+        return None;
+    }
+    let problem_negations = [
+        " is not the problem",
+        " isn't the problem",
+    ];
+    if problem_negations.iter().any(|suffix| a_text.ends_with(suffix))
+        && (b_text.starts_with("the ") || b_text.starts_with("it "))
+        && (b_text.ends_with(" is") || b_text.starts_with("it is "))
+    {
+        return Some("x is not the problem -> y is");
+    }
+    None
 }
 
 fn looks_like_quantified_human_plural_subject(subject: &str) -> bool {

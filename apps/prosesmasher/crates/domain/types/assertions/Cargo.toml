@@ -10,7 +10,7 @@ description = "Reusable assertions for the domain types runtime crate."
 readme = "../../../../README.md"
 
 [dependencies]
-prosesmasher-domain-types-runtime = { version = "0.2.7", path = "../runtime" }
+prosesmasher-domain-types-runtime = { version = "0.3.0", path = "../runtime" }
 
 [lints]
 workspace = true

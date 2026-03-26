@@ -72,7 +72,7 @@
     "boilerplateConclusion": { "enabled": true },
     "blameReframe": { "enabled": true },
     "emptyEmphasis": { "enabled": true },
-    "sloganPunchline": { "enabled": true },
+    "contrastiveAphorism": { "enabled": true },
     "llmVocabulary": { "enabled": true, "maxPerDocument": 1 },
       "softeningLanguage": { "enabled": true, "maxPerDocument": 1 },
       "universalizingClaims": { "enabled": true, "maxPerDocument": 1 },

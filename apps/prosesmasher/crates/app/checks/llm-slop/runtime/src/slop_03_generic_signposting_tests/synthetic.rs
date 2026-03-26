@@ -191,6 +191,20 @@ fn single_question_frame_passes() {
 }
 
 #[test]
+fn useful_move_frame_passes_once() {
+    let doc = make_doc(
+        "The useful move is to respect the intensity mismatch.",
+        Locale::En,
+    );
+    let config = CheckConfig::default();
+    assertions::assert_passes(
+        &doc,
+        &config,
+        "single useful move frame should stay under default threshold",
+    );
+}
+
+#[test]
 fn ordinary_consultation_without_signpost_passes() {
     let doc = make_doc(
         "Consult a qualified healthcare professional for personalized advice.",

@@ -80,7 +80,7 @@ pub struct HeuristicsConfig {
     pub boilerplate_conclusion: EnabledCheck,
     pub blame_reframe: EnabledCheck,
     pub empty_emphasis: EnabledCheck,
-    pub slogan_punchline: EnabledCheck,
+    pub contrastive_aphorism: EnabledCheck,
     pub llm_vocabulary: AccumulativeCheck,
     pub softening_language: AccumulativeCheck,
     pub universalizing_claims: AccumulativeCheck,
@@ -124,7 +124,7 @@ impl Default for HeuristicsConfig {
             boilerplate_conclusion: EnabledCheck { enabled: true },
             blame_reframe: EnabledCheck { enabled: true },
             empty_emphasis: EnabledCheck { enabled: true },
-            slogan_punchline: EnabledCheck { enabled: true },
+            contrastive_aphorism: EnabledCheck { enabled: true },
             llm_vocabulary: AccumulativeCheck {
                 enabled: true,
                 max_per_document: 1,

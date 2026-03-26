@@ -439,6 +439,59 @@ fn repeated_want_without_transform_passes() {
 }
 
 #[test]
+fn biggest_sign_reframe_detected() {
+    let doc = make_doc_with_sentences(
+        &[
+            "The biggest sign is not age.",
+            "It is whether your life gets easier or uglier when you start.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    assertions::assert_negation_reframe_failure(
+        &doc,
+        &config,
+        "goal is not x -> it is y",
+        "biggest-sign corrective reframe should fail",
+    );
+}
+
+#[test]
+fn problem_reframe_detected() {
+    let doc = make_doc_with_sentences(
+        &[
+            "The sensitivity is not the problem.",
+            "The mismatch between the child and the environment usually is.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    assertions::assert_negation_reframe_failure(
+        &doc,
+        &config,
+        "x is not the problem -> y is",
+        "problem corrective reframe should fail",
+    );
+}
+
+#[test]
+fn technical_problem_reframe_passes() {
+    let doc = make_doc_with_sentences(
+        &[
+            "Latency is not the problem.",
+            "The parser already is fast enough.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    assertions::assert_passes(
+        &doc,
+        &config,
+        "technical problem sentence should pass",
+    );
+}
+
+#[test]
 fn less_more_like_pair_detected() {
     let doc = make_doc_with_sentences(
         &[

@@ -1,4 +1,4 @@
-//! Slogan-punchline check — flags short sloganized punchlines and paired moral curricula lines.
+//! Contrastive-aphorism check — flags short sloganized contrasts and paired moral curricula lines.
 
 use low_expectations::ExpectationSuite;
 use prosesmasher_domain_types::{CheckConfig, Document, Locale};
@@ -11,15 +11,15 @@ use crate::support::{
 };
 
 #[derive(Debug)]
-pub struct SloganPunchlineCheck;
+pub struct ContrastiveAphorismCheck;
 
-impl Check for SloganPunchlineCheck {
+impl Check for ContrastiveAphorismCheck {
     fn id(&self) -> &'static str {
-        "slogan-punchline"
+        "contrastive-aphorism"
     }
 
     fn label(&self) -> &'static str {
-        "Slogan Punchline"
+        "Contrastive Aphorism"
     }
 
     fn supported_locales(&self) -> Option<&'static [Locale]> {
@@ -27,24 +27,24 @@ impl Check for SloganPunchlineCheck {
     }
 
     fn run(&self, doc: &Document, config: &CheckConfig, suite: &mut ExpectationSuite) {
-        if !config.quality.heuristics.slogan_punchline.enabled {
+        if !config.quality.heuristics.contrastive_aphorism.enabled {
             return;
         }
         if doc.locale != Locale::En {
             return;
         }
 
-        let evidence = collect_slogan_punchline_evidence(doc);
+        let evidence = collect_contrastive_aphorism_evidence(doc);
         let _result = suite
             .record_custom_values(
-                "slogan-punchline",
+                "contrastive-aphorism",
                 evidence.is_empty(),
                 json!({ "min": 0, "max": 0 }),
                 json!(evidence.len()),
                 &evidence,
             )
-            .label("Slogan Punchline")
-            .checking("short sloganized punchline lines");
+            .label("Contrastive Aphorism")
+            .checking("short contrastive aphorism lines");
     }
 }
 
@@ -53,7 +53,7 @@ const ENOUGH_FOR_SUFFIXES: &[&str] = &[" is enough for this", " is enough for th
 const ABSTRACT_CONTRAST_NOUNS: &[&str] = &["revelations", "vibe", "virtues"];
 const HUMAN_PLURAL_SUBJECTS: &[&str] = &["kids", "children", "people"];
 
-fn collect_slogan_punchline_evidence(doc: &Document) -> Vec<serde_json::Value> {
+fn collect_contrastive_aphorism_evidence(doc: &Document) -> Vec<serde_json::Value> {
     let mut evidence = collect_sentence_evidence(
         doc,
         |sentence, section_index, paragraph_index, sentence_index| {
@@ -110,6 +110,12 @@ fn match_single_sentence(sentence: &str) -> Option<&'static str> {
     }
     if matches_treating_like_not_virtues_shape(&stripped) {
         return Some("treating-like-not-virtues");
+    }
+    if matches_watch_for_x_not_y(&stripped) {
+        return Some("watch-for-pattern-not-week");
+    }
+    if matches_like_a_problem_not_a_problem(&stripped) {
+        return Some("like-a-problem-not-a-problem");
     }
 
     None
@@ -195,6 +201,24 @@ fn matches_treating_like_not_virtues_shape(text: &str) -> bool {
         && tokens.iter().any(|token| *token == "not")
 }
 
+fn matches_watch_for_x_not_y(text: &str) -> bool {
+    let tokens = tokens(text);
+    matches!(
+        tokens.as_slice(),
+        ["watch", "for", article, "pattern", "not", "one", "bad", _]
+            if is_article(article)
+    )
+}
+
+fn matches_like_a_problem_not_a_problem(text: &str) -> bool {
+    let tokens = tokens(text);
+    matches!(
+        tokens.as_slice(),
+        [_, _, _, "like", article_a, _, "problem", "not", article_b, _, "problem"]
+            if is_article(article_a) && is_article(article_b)
+    )
+}
+
 fn is_article(token: &str) -> bool {
     matches!(token, "a" | "an" | "the")
 }
@@ -207,5 +231,5 @@ fn tokens(text: &str) -> Vec<&str> {
 }
 
 #[cfg(test)]
-#[path = "slop_10_slogan_punchline_tests/mod.rs"]
+#[path = "slop_10_contrastive_aphorism_tests/mod.rs"]
 mod tests;

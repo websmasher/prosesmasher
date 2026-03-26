@@ -1,5 +1,5 @@
 use crate::test_helpers::{make_doc, make_doc_code_only};
-use prosesmasher_app_checks_llm_slop_assertions::slogan_punchline as assertions;
+use prosesmasher_app_checks_llm_slop_assertions::contrastive_aphorism as assertions;
 use prosesmasher_domain_types::{
     Block, CheckConfig, Document, DocumentMetadata, Locale, Paragraph, Section, Sentence, Word,
 };
@@ -49,7 +49,7 @@ fn make_doc_with_sentences(texts: &[&str], locale: Locale) -> Document {
 fn part_that_sticks_fails() {
     let doc = make_doc("The rehearsal is the part that sticks.", Locale::En);
     let config = CheckConfig::default();
-    assertions::assert_punchline_failure(
+    assertions::assert_aphorism_failure(
         &doc,
         &config,
         "part-that-sticks",
@@ -61,7 +61,7 @@ fn part_that_sticks_fails() {
 fn part_most_families_miss_fails() {
     let doc = make_doc("That is the part most families miss.", Locale::En);
     let config = CheckConfig::default();
-    assertions::assert_punchline_failure(
+    assertions::assert_aphorism_failure(
         &doc,
         &config,
         "part-most-x-miss",
@@ -73,7 +73,7 @@ fn part_most_families_miss_fails() {
 fn it_changes_everything_fails() {
     let doc = make_doc("It sounds small, and it changes everything.", Locale::En);
     let config = CheckConfig::default();
-    assertions::assert_punchline_failure(
+    assertions::assert_aphorism_failure(
         &doc,
         &config,
         "it-changes-everything",
@@ -91,7 +91,7 @@ fn enough_for_this_curriculum_pair_fails() {
         Locale::En,
     );
     let config = CheckConfig::default();
-    assertions::assert_punchline_failure(
+    assertions::assert_aphorism_failure(
         &doc,
         &config,
         "x-is-enough-x-is-curriculum",
@@ -103,7 +103,7 @@ fn enough_for_this_curriculum_pair_fails() {
 fn imperative_contrast_aphorism_fails() {
     let doc = make_doc("Bring a pattern, not a vibe.", Locale::En);
     let config = CheckConfig::default();
-    assertions::assert_punchline_failure(
+    assertions::assert_aphorism_failure(
         &doc,
         &config,
         "imperative-contrast-aphorism",
@@ -115,7 +115,7 @@ fn imperative_contrast_aphorism_fails() {
 fn reps_not_revelations_shape_fails() {
     let doc = make_doc("Kids get kind in reps, not revelations.", Locale::En);
     let config = CheckConfig::default();
-    assertions::assert_punchline_failure(
+    assertions::assert_aphorism_failure(
         &doc,
         &config,
         "reps-not-revelations",
@@ -130,11 +130,38 @@ fn treating_like_not_virtues_shape_fails() {
         Locale::En,
     );
     let config = CheckConfig::default();
-    assertions::assert_punchline_failure(
+    assertions::assert_aphorism_failure(
         &doc,
         &config,
         "treating-like-not-virtues",
         "treating-like-not-virtues contrast should fail",
+    );
+}
+
+#[test]
+fn watch_for_pattern_not_week_fails() {
+    let doc = make_doc("Watch for a pattern, not one bad week.", Locale::En);
+    let config = CheckConfig::default();
+    assertions::assert_aphorism_failure(
+        &doc,
+        &config,
+        "watch-for-pattern-not-week",
+        "watch-for-a-pattern contrast should fail",
+    );
+}
+
+#[test]
+fn like_problem_not_problem_fails() {
+    let doc = make_doc(
+        "You handle it like a nervous-system problem, not a manners problem.",
+        Locale::En,
+    );
+    let config = CheckConfig::default();
+    assertions::assert_aphorism_failure(
+        &doc,
+        &config,
+        "like-a-problem-not-a-problem",
+        "like-a-problem contrast should fail",
     );
 }
 
@@ -189,6 +216,31 @@ fn treating_like_x_not_magic_passes() {
 }
 
 #[test]
+fn watch_for_concrete_object_contrast_passes() {
+    let doc = make_doc("Watch for a leak, not one loose screw.", Locale::En);
+    let config = CheckConfig::default();
+    assertions::assert_passes(
+        &doc,
+        &config,
+        "concrete watch-for contrast should pass",
+    );
+}
+
+#[test]
+fn like_a_problem_technical_passes() {
+    let doc = make_doc(
+        "Handle it like a cache problem, not a parser problem.",
+        Locale::En,
+    );
+    let config = CheckConfig::default();
+    assertions::assert_passes(
+        &doc,
+        &config,
+        "technical like-a-problem sentence should pass",
+    );
+}
+
+#[test]
 fn with_rent_near_miss_passes() {
     let doc = make_doc("Doing it is the part with rent.", Locale::En);
     let config = CheckConfig::default();
@@ -237,7 +289,7 @@ fn non_english_is_skipped() {
 fn disabled_check_skips() {
     let doc = make_doc("The rehearsal is the part that sticks.", Locale::En);
     let mut config = CheckConfig::default();
-    config.quality.heuristics.slogan_punchline.enabled = false;
+    config.quality.heuristics.contrastive_aphorism.enabled = false;
     assertions::assert_skips(&doc, &config, "disabled check should skip");
 }
 
