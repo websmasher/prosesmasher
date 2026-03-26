@@ -3,11 +3,11 @@
   "failures": [
     {
       "rule": "em-dashes",
-      "count": 1
+      "count": 11
     },
     {
       "rule": "prohibited-terms",
-      "count": 1
+      "count": 5
     },
     {
       "rule": "sentence-case",

@@ -7,11 +7,11 @@
     },
     {
       "rule": "em-dashes",
-      "count": 1
+      "count": 5
     },
     {
       "rule": "prohibited-terms",
-      "count": 1
+      "count": 2
     },
     {
       "rule": "sentence-case",

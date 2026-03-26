@@ -3,7 +3,7 @@
   "failures": [
     {
       "rule": "colon-dramatic",
-      "count": 1
+      "count": 3
     },
     {
       "rule": "negation-reframe",
@@ -15,11 +15,11 @@
     },
     {
       "rule": "smart-quotes",
-      "count": 1
+      "count": 18
     },
     {
       "rule": "triple-repeat",
-      "count": 1
+      "count": 2
     }
   ]
 }

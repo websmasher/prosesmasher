@@ -3,11 +3,15 @@
   "failures": [
     {
       "rule": "fragment-stacking",
+      "count": 2
+    },
+    {
+      "rule": "negation-reframe",
       "count": 1
     },
     {
       "rule": "paragraph-length",
-      "count": 1
+      "count": 4
     },
     {
       "rule": "sentence-case",

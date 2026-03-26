@@ -7,11 +7,11 @@
     },
     {
       "rule": "colon-dramatic",
-      "count": 1
+      "count": 2
     },
     {
       "rule": "fragment-stacking",
-      "count": 1
+      "count": 2
     },
     {
       "rule": "negation-reframe",
@@ -19,11 +19,11 @@
     },
     {
       "rule": "paragraph-length",
-      "count": 1
+      "count": 5
     },
     {
       "rule": "smart-quotes",
-      "count": 1
+      "count": 3
     }
   ]
 }

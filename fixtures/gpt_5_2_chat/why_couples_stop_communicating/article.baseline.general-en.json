@@ -3,19 +3,19 @@
   "failures": [
     {
       "rule": "colon-dramatic",
-      "count": 1
+      "count": 15
     },
     {
       "rule": "negation-reframe",
-      "count": 1
+      "count": 3
     },
     {
       "rule": "paragraph-length",
-      "count": 1
+      "count": 7
     },
     {
       "rule": "smart-quotes",
-      "count": 1
+      "count": 8
     },
     {
       "rule": "triple-repeat",

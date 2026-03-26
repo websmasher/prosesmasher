@@ -40,6 +40,8 @@ pub(crate) use define_rule_assertions;
 pub mod boilerplate_conclusion;
 #[path = "slop_04_boilerplate_framing.rs"]
 pub mod boilerplate_framing;
+#[path = "slop_09_empty_emphasis.rs"]
+pub mod empty_emphasis;
 #[path = "slop_03_generic_signposting.rs"]
 pub mod generic_signposting;
 #[path = "slop_01_llm_disclaimer.rs"]

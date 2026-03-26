@@ -11,7 +11,7 @@
     },
     {
       "rule": "prohibited-terms",
-      "count": 1
+      "count": 2
     },
     {
       "rule": "sentence-case",

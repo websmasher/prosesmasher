@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.6
+
+- Added `empty-emphasis` for short deictic filler lines such as `That last part matters.` while keeping explanatory sentences and quoted discussion out of scope.
+- Expanded `negation-reframe` with safe corrective families like `The goal is not ... The goal is ...` and `You do not need ... You need ...`, then explicitly rejected a broader `comes from x, not y` branch after false-positive review.
+- Fixed the generated-fixture baseline tool to track real observed hit counts instead of one failure per rule and refreshed the generated article baselines to that stricter contract.
+
 ## 0.2.5
 
 - Added `boilerplate-conclusion` and a generated-fixture baseline compare workflow for model-written article corpora.

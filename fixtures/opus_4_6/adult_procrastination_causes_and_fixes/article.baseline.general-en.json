@@ -7,11 +7,11 @@
     },
     {
       "rule": "negation-reframe",
-      "count": 1
+      "count": 2
     },
     {
       "rule": "paragraph-length",
-      "count": 1
+      "count": 2
     },
     {
       "rule": "prohibited-terms",

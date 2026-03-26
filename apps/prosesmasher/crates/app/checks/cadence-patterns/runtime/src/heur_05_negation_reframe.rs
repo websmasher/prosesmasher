@@ -86,6 +86,39 @@ const FRAME_BLOCKING_PREPOSITIONS: &[&str] = &[
 ];
 const LESS_LIKE_STARTS: &[&str] = &["less like "];
 const MORE_LIKE_STARTS: &[&str] = &["more like "];
+const ABSTRACT_FRAME_NEGATIONS: &[(&str, &str)] = &[
+    ("goal", "the goal is not "),
+    ("goal", "the goal isn't "),
+    ("point", "the point is not "),
+    ("point", "the point isn't "),
+    ("aim", "the aim is not "),
+    ("aim", "the aim isn't "),
+];
+const ABSTRACT_FRAME_AFFIRMATIVES: &[(&str, &str)] = &[
+    ("goal", "the goal is "),
+    ("point", "the point is "),
+    ("aim", "the aim is "),
+];
+const NEED_NEGATION_STARTS: &[(&str, &str)] = &[
+    ("i", "i do not need to "),
+    ("i", "i don't need to "),
+    ("you", "you do not need to "),
+    ("you", "you don't need to "),
+    ("we", "we do not need to "),
+    ("we", "we don't need to "),
+    ("they", "they do not need to "),
+    ("they", "they don't need to "),
+];
+const NEED_AFFIRMATIVE_STARTS: &[(&str, &str)] = &[
+    ("i", "i need to "),
+    ("i", "i just need to "),
+    ("you", "you need to "),
+    ("you", "you just need to "),
+    ("we", "we need to "),
+    ("we", "we just need to "),
+    ("they", "they need to "),
+    ("they", "they just need to "),
+];
 
 const FRAMING_VERBS: &[FramingVerb] = &[
     ("mean", "means"),
@@ -210,6 +243,23 @@ fn collect_negation_reframe_evidence_from_paragraph(
             evidence.push(item);
         }
     }
+
+    for (sentence_index, triplet) in para.sentences.windows(3).enumerate() {
+        let Some(a) = triplet.first() else {
+            continue;
+        };
+        let Some(b) = triplet.get(1) else {
+            continue;
+        };
+        let Some(c) = triplet.get(2) else {
+            continue;
+        };
+        if let Some(item) =
+            interrupted_corrective_evidence(a, b, c, section_index, paragraph_index, sentence_index)
+        {
+            evidence.push(item);
+        }
+    }
 }
 
 fn inline_corrective_evidence(
@@ -219,12 +269,10 @@ fn inline_corrective_evidence(
     _sentence_index: usize,
 ) -> Option<Value> {
     let text = normalize_text(&sentence.text);
-    if !looks_like_inline_corrective(&text, sentence.word_count()) {
-        return None;
-    }
+    let matched_text = inline_corrective_match(&text, sentence.word_count())?;
 
     Some(json!({
-        "matched_text": "x, not y",
+        "matched_text": matched_text,
         "sentence": sentence.text,
     }))
 }
@@ -323,21 +371,79 @@ fn non_copular_corrective_evidence(
         }));
     }
 
+    if let Some(matched_text) =
+        repeated_abstract_frame_corrective(a_text, b_text, a.word_count(), b.word_count())
+    {
+        return Some(json!({
+            "matched_text": matched_text,
+            "sentence": a.text,
+            "next_sentence": b.text,
+        }));
+    }
+
+    if let Some(matched_text) =
+        repeated_need_corrective(a_text, b_text, a.word_count(), b.word_count())
+    {
+        return Some(json!({
+            "matched_text": matched_text,
+            "sentence": a.text,
+            "next_sentence": b.text,
+        }));
+    }
+
     None
 }
 
-fn looks_like_inline_corrective(text: &str, word_count: usize) -> bool {
-    if word_count > 24 || !text.contains(" not ") {
-        return false;
-    }
-    if contains_action_negation(text) {
-        return false;
-    }
-    if text.contains(", not ") || text.contains(" but not ") {
-        return has_copular_frame_before_not(text);
+fn interrupted_corrective_evidence(
+    a: &Sentence,
+    b: &Sentence,
+    c: &Sentence,
+    _section_index: usize,
+    _paragraph_index: usize,
+    _sentence_index: usize,
+) -> Option<Value> {
+    if !looks_like_short_interrupt_sentence(&normalize_text(&b.text), b.word_count()) {
+        return None;
     }
 
-    false
+    let a_text = normalize_text(&a.text);
+    let c_text = normalize_text(&c.text);
+
+    if let Some(matched_text) =
+        repeated_abstract_frame_corrective(&a_text, &c_text, a.word_count(), c.word_count())
+    {
+        return Some(json!({
+            "matched_text": matched_text,
+            "sentence": a.text,
+            "interrupting_sentence": b.text,
+            "next_sentence": c.text,
+        }));
+    }
+
+    repeated_need_corrective(&a_text, &c_text, a.word_count(), c.word_count()).map(|matched_text| {
+        json!({
+            "matched_text": matched_text,
+            "sentence": a.text,
+            "interrupting_sentence": b.text,
+            "next_sentence": c.text,
+        })
+    })
+}
+
+fn inline_corrective_match(text: &str, word_count: usize) -> Option<&'static str> {
+    if word_count > 24 || !text.contains(" not ") {
+        return None;
+    }
+    if contains_action_negation(text) {
+        return None;
+    }
+    if text.contains(", not ") || text.contains(" but not ") {
+        if has_copular_frame_before_not(text) {
+            return Some("x, not y");
+        }
+    }
+
+    None
 }
 
 fn looks_like_negated_label_sentence(text: &str, word_count: usize) -> bool {
@@ -535,6 +641,63 @@ fn looks_like_less_more_like_pair(
         && MORE_LIKE_STARTS
             .iter()
             .any(|prefix| b_text.starts_with(prefix))
+}
+
+fn repeated_abstract_frame_corrective(
+    a_text: &str,
+    b_text: &str,
+    a_word_count: usize,
+    b_word_count: usize,
+) -> Option<&'static str> {
+    if a_word_count > 20 || b_word_count > 20 {
+        return None;
+    }
+
+    let subject = ABSTRACT_FRAME_NEGATIONS
+        .iter()
+        .find_map(|(subject, prefix)| a_text.starts_with(prefix).then_some(*subject))?;
+
+    if ABSTRACT_FRAME_AFFIRMATIVES
+        .iter()
+        .any(|(candidate, prefix)| *candidate == subject && b_text.starts_with(prefix))
+    {
+        return Some("goal is not x -> goal is y");
+    }
+
+    (b_text.starts_with("it is ") || b_text.starts_with("it's "))
+        .then_some("goal is not x -> it is y")
+}
+
+fn repeated_need_corrective(
+    a_text: &str,
+    b_text: &str,
+    a_word_count: usize,
+    b_word_count: usize,
+) -> Option<&'static str> {
+    if a_word_count > 18 || b_word_count > 18 {
+        return None;
+    }
+
+    let subject = NEED_NEGATION_STARTS
+        .iter()
+        .find_map(|(subject, prefix)| a_text.starts_with(prefix).then_some(*subject))?;
+
+    NEED_AFFIRMATIVE_STARTS
+        .iter()
+        .any(|(candidate, prefix)| *candidate == subject && b_text.starts_with(prefix))
+        .then_some("do not need x -> need y")
+}
+
+fn looks_like_short_interrupt_sentence(text: &str, word_count: usize) -> bool {
+    word_count <= 4
+        && (text == "you will"
+            || text == "you won't"
+            || text == "you can"
+            || text == "you can't"
+            || text == "it will"
+            || text == "it won't"
+            || text == "they will"
+            || text == "they won't")
 }
 
 fn contains_action_negation(text: &str) -> bool {

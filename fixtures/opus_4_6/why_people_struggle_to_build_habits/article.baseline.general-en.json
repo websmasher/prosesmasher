@@ -3,7 +3,7 @@
   "failures": [
     {
       "rule": "negation-reframe",
-      "count": 1
+      "count": 3
     },
     {
       "rule": "prohibited-terms",

@@ -3,15 +3,15 @@
   "failures": [
     {
       "rule": "hedge-stacking",
-      "count": 1
+      "count": 2
     },
     {
       "rule": "negation-reframe",
-      "count": 1
+      "count": 3
     },
     {
       "rule": "paragraph-length",
-      "count": 1
+      "count": 5
     },
     {
       "rule": "prohibited-terms",
@@ -27,7 +27,7 @@
     },
     {
       "rule": "word-repetition",
-      "count": 1
+      "count": 2
     }
   ]
 }
