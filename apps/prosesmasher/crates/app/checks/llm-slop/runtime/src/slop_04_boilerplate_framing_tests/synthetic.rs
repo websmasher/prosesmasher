@@ -81,6 +81,23 @@ fn repeated_enumeration_prefaces_fail() {
 }
 
 #[test]
+fn two_distinct_framing_moves_in_one_sentence_fail() {
+    let doc = make_doc(
+        "There are certain types of failures that show up repeatedly, and some examples of failures include missing ownership and vague contracts.",
+        Locale::En,
+    );
+    let mut config = CheckConfig::default();
+    config.quality.heuristics.boilerplate_framing.max_per_document = 0;
+    assertions::assert_framing_failure(
+        &doc,
+        &config,
+        "existence-frame",
+        "there are certain/common",
+        "two distinct framing moves in one sentence should both count",
+    );
+}
+
+#[test]
 fn mixed_preview_and_topic_frames_fail() {
     let doc = make_multi_sentence_doc(
         &[

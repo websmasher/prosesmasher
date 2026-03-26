@@ -26,6 +26,20 @@
       }
     },
     {
+      "rule": "boilerplate-framing",
+      "evidenceContainsByField": {
+        "pattern_kind": [
+          "existence-frame"
+        ],
+        "matched_text": [
+          "there are certain/common"
+        ],
+        "sentence": [
+          "That being said, there are certain types of cancers that are generally considered difficult to cure, or have a lower likelihood of being cured, due to various reasons such as late-stage diagnosis, aggressive tumor growth, lack of effective treatment options, or high risk of recurrence."
+        ]
+      }
+    },
+    {
       "rule": "smart-quotes",
       "evidenceContainsByField": {
         "matched_text": [
