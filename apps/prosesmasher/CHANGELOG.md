@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.2
+
+- Tightened `softening-language` so a weaker `may + often` sentence no longer fails on its own.
+- Kept the stronger Medical Outline softening hits intact while dropping the borderline `why_do_we_dream` baseline.
+
 ## 0.2.1
 
 - Added `softening-language` as the next accumulative `llm-slop` rule for repeated low-commitment phrasing such as modal-heavy variability disclaimers and tentative reporting.
