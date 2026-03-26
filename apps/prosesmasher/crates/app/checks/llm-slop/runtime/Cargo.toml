@@ -1,0 +1,19 @@
+[package]
+name = "prosesmasher-app-checks-llm-slop-runtime"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Internal LLM-slop checks runtime crate for the prosesmasher workspace."
+readme = "../../../../../../README.md"
+
+[dependencies]
+prosesmasher-app-checks-core-runtime = { version = "0.1.7", path = "../../core/runtime" }
+
+[dev-dependencies]
+prosesmasher-app-checks-llm-slop-assertions = { version = "0.1.7", path = "../assertions" }
+prosesmasher-app-checks-test-support = { version = "0.1.7", path = "../../test-support" }
+
+[lints]
+workspace = true

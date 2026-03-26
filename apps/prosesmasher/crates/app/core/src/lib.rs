@@ -18,7 +18,25 @@ pub mod quality {
     }
 
     pub mod heuristics {
-        pub use prosesmasher_app_checks_heuristics_runtime::*;
+        pub mod cadence_patterns {
+            pub use prosesmasher_app_checks_cadence_patterns_runtime::*;
+        }
+
+        pub mod llm_slop {
+            pub use prosesmasher_app_checks_llm_slop_runtime::*;
+        }
+
+        pub mod persona_signals {
+            pub use prosesmasher_app_checks_persona_signals_runtime::*;
+        }
+
+        pub mod rhetorical_framing {
+            pub use prosesmasher_app_checks_rhetorical_framing_runtime::*;
+        }
+
+        pub mod style_signals {
+            pub use prosesmasher_app_checks_style_signals_runtime::*;
+        }
     }
 
     pub mod flow {
@@ -35,7 +53,11 @@ pub mod quality {
     pub fn all_checks() -> Vec<BoxedCheck> {
         let mut all = Vec::new();
         all.extend(lexical::all_checks());
-        all.extend(heuristics::all_checks());
+        all.extend(prosesmasher_app_checks_style_signals_runtime::all_checks());
+        all.extend(prosesmasher_app_checks_cadence_patterns_runtime::all_checks());
+        all.extend(prosesmasher_app_checks_rhetorical_framing_runtime::all_checks());
+        all.extend(prosesmasher_app_checks_persona_signals_runtime::all_checks());
+        all.extend(prosesmasher_app_checks_llm_slop_runtime::all_checks());
         all.extend(flow::all_checks());
         all.extend(readability::all_checks());
         all
