@@ -96,6 +96,25 @@ fn match_empty_emphasis(sentence: &str) -> Option<&'static str> {
         {
             Some("deictic-part-matters")
         }
+        [deictic, one, change, helped, a, lot]
+            if is_deictic(deictic.as_str())
+                && one == "one"
+                && change == "change"
+                && helped == "helped"
+                && a == "a"
+                && lot == "lot" =>
+        {
+            Some("deictic-change-helped")
+        }
+        [deictic, is, telling, you, something]
+            if is_deictic(deictic.as_str())
+                && is == "is"
+                && telling == "telling"
+                && you == "you"
+                && something == "something" =>
+        {
+            Some("deictic-telling-you-something")
+        }
         _ => None,
     }
 }

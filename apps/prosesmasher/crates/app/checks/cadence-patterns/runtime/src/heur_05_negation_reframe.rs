@@ -119,6 +119,8 @@ const NEED_AFFIRMATIVE_STARTS: &[(&str, &str)] = &[
     ("they", "they need to "),
     ("they", "they just need to "),
 ];
+const NEED_NOUN_NEGATION_PHRASES: &[&str] = &[" does not need ", " doesn't need "];
+const NEED_NOUN_AFFIRMATIVE_PHRASES: &[&str] = &[" needs ", " just needs "];
 
 const FRAMING_VERBS: &[FramingVerb] = &[
     ("mean", "means"),
@@ -678,14 +680,43 @@ fn repeated_need_corrective(
         return None;
     }
 
-    let subject = NEED_NEGATION_STARTS
+    if let Some(subject) = NEED_NEGATION_STARTS
         .iter()
-        .find_map(|(subject, prefix)| a_text.starts_with(prefix).then_some(*subject))?;
+        .find_map(|(subject, prefix)| a_text.starts_with(prefix).then_some(*subject))
+    {
+        if NEED_AFFIRMATIVE_STARTS
+            .iter()
+            .any(|(candidate, prefix)| *candidate == subject && b_text.starts_with(prefix))
+        {
+            return Some("do not need x -> need y");
+        }
+    }
 
-    NEED_AFFIRMATIVE_STARTS
-        .iter()
-        .any(|(candidate, prefix)| *candidate == subject && b_text.starts_with(prefix))
-        .then_some("do not need x -> need y")
+    repeated_noun_need_corrective(a_text, b_text)
+}
+
+fn repeated_noun_need_corrective(a_text: &str, b_text: &str) -> Option<&'static str> {
+    for negation_phrase in NEED_NOUN_NEGATION_PHRASES {
+        let Some((subject, _)) = a_text.split_once(negation_phrase) else {
+            continue;
+        };
+        let subject_word_count = subject.split_whitespace().count();
+        if !(2..=4).contains(&subject_word_count) {
+            continue;
+        }
+        if subject == "there" {
+            continue;
+        }
+
+        for affirmative_phrase in NEED_NOUN_AFFIRMATIVE_PHRASES {
+            let expected = format!("{subject}{affirmative_phrase}");
+            if b_text.starts_with(&expected) {
+                return Some("x does not need y -> x needs z");
+            }
+        }
+    }
+
+    None
 }
 
 fn looks_like_short_interrupt_sentence(text: &str, word_count: usize) -> bool {

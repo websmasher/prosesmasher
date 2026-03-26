@@ -76,6 +76,20 @@ const CONSULTATION_PATTERNS: &[&str] = &[
 ];
 
 const NOTE_PATTERNS: &[&str] = &["please note that", "please note"];
+const QUESTION_PATTERNS: &[&str] = &[
+    "the useful question is",
+    "the real question is",
+    "the better question is",
+];
+const ANSWER_PATTERNS: &[&str] = &[
+    "the answer is simple",
+    "the answer is straightforward",
+];
+const SEQUENCE_PATTERNS: &[&str] = &[
+    "a simple sequence works well",
+    "a simple pattern works well",
+    "a simple rule works well",
+];
 
 fn collect_generic_signposting_evidence(doc: &Document) -> Vec<Value> {
     collect_sentence_evidence(
@@ -110,7 +124,16 @@ fn match_signposting(sentence: &str) -> Option<(&'static str, &'static str)> {
     if let Some(matched) = contains_any(&stripped, CONSULTATION_PATTERNS) {
         return Some(("consultation-signpost", matched));
     }
-    contains_any(&stripped, NOTE_PATTERNS).map(|matched| ("note-signpost", matched))
+    if let Some(matched) = contains_any(&stripped, NOTE_PATTERNS) {
+        return Some(("note-signpost", matched));
+    }
+    if let Some(matched) = contains_any(&stripped, QUESTION_PATTERNS) {
+        return Some(("question-frame", matched));
+    }
+    if let Some(matched) = contains_any(&stripped, ANSWER_PATTERNS) {
+        return Some(("answer-frame", matched));
+    }
+    contains_any(&stripped, SEQUENCE_PATTERNS).map(|matched| ("sequence-frame", matched))
 }
 
 #[cfg(test)]

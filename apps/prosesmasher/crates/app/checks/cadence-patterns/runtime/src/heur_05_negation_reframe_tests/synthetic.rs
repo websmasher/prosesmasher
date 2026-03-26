@@ -317,6 +317,24 @@ fn repeated_need_to_corrective_detected() {
 }
 
 #[test]
+fn repeated_noun_need_corrective_detected() {
+    let doc = make_doc_with_sentences(
+        &[
+            "The child does not need a lesson in dignity while melting down in aisle seven.",
+            "The child needs a steady adult and less sensory noise.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    assertions::assert_negation_reframe_failure(
+        &doc,
+        &config,
+        "x does not need y -> x needs z",
+        "same-subject noun need corrective should fail",
+    );
+}
+
+#[test]
 fn goal_without_reframe_passes() {
     let doc = make_doc_with_sentences(
         &[
@@ -330,6 +348,23 @@ fn goal_without_reframe_passes() {
         &doc,
         &config,
         "goal negation without a paired corrective should pass",
+    );
+}
+
+#[test]
+fn noun_need_without_repeated_subject_passes() {
+    let doc = make_doc_with_sentences(
+        &[
+            "The child does not need a lecture right now.",
+            "A steadier environment usually helps more.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    assertions::assert_passes(
+        &doc,
+        &config,
+        "noun need sentence without repeated subject corrective should pass",
     );
 }
 

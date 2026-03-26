@@ -39,6 +39,30 @@ fn prefixed_part_matters_fails() {
 }
 
 #[test]
+fn deictic_change_helped_fails() {
+    let doc = make_doc("That one change helped a lot.", Locale::En);
+    let config = CheckConfig::default();
+    assertions::assert_emphasis_failure(
+        &doc,
+        &config,
+        "deictic-change-helped",
+        "deictic change-impact line should fail",
+    );
+}
+
+#[test]
+fn deictic_telling_you_something_fails() {
+    let doc = make_doc("This is telling you something.", Locale::En);
+    let config = CheckConfig::default();
+    assertions::assert_emphasis_failure(
+        &doc,
+        &config,
+        "deictic-telling-you-something",
+        "deictic telling-you-something line should fail",
+    );
+}
+
+#[test]
 fn longer_explanatory_sentence_passes() {
     let doc = make_doc(
         "That last part matters because the contract changes the failure mode completely.",
@@ -49,6 +73,17 @@ fn longer_explanatory_sentence_passes() {
         &doc,
         &config,
         "explanatory sentence with actual content should pass",
+    );
+}
+
+#[test]
+fn concrete_body_telling_you_something_passes() {
+    let doc = make_doc("Your body is telling you something important about your stress load.", Locale::En);
+    let config = CheckConfig::default();
+    assertions::assert_passes(
+        &doc,
+        &config,
+        "concrete subject telling-you-something sentence should pass",
     );
 }
 
