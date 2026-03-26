@@ -104,3 +104,19 @@ pub(crate) fn strip_quoted_segments(text: &str) -> String {
 
     unquoted.split_whitespace().collect::<Vec<_>>().join(" ")
 }
+
+pub(crate) fn sentence_evidence(
+    section_index: usize,
+    paragraph_index: usize,
+    sentence_index: usize,
+    pairs: &[(&str, &str)],
+) -> serde_json::Value {
+    let mut map = serde_json::Map::new();
+    let _ = map.insert("section_index".to_string(), serde_json::json!(section_index));
+    let _ = map.insert("paragraph_index".to_string(), serde_json::json!(paragraph_index));
+    let _ = map.insert("sentence_index".to_string(), serde_json::json!(sentence_index));
+    for (key, value) in pairs {
+        let _ = map.insert((*key).to_string(), serde_json::json!(*value));
+    }
+    serde_json::Value::Object(map)
+}

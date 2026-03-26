@@ -75,6 +75,7 @@ pub struct HeuristicsConfig {
     pub llm_openers: EnabledCheck,
     pub llm_disclaimer: EnabledCheck,
     pub response_wrapper: EnabledCheck,
+    pub generic_signposting: AccumulativeCheck,
     pub affirmation_closers: EnabledCheck,
     pub summative_closer: EnabledCheck,
     pub false_question: EnabledCheck,
@@ -104,6 +105,10 @@ impl Default for HeuristicsConfig {
             llm_openers: EnabledCheck { enabled: true },
             llm_disclaimer: EnabledCheck { enabled: true },
             response_wrapper: EnabledCheck { enabled: true },
+            generic_signposting: AccumulativeCheck {
+                enabled: true,
+                max_per_document: 1,
+            },
             affirmation_closers: EnabledCheck { enabled: true },
             summative_closer: EnabledCheck { enabled: true },
             false_question: EnabledCheck { enabled: true },
@@ -134,6 +139,12 @@ pub struct ExclamationDensityConfig {
 pub struct HedgeStackingConfig {
     pub enabled: bool,
     pub max_per_sentence: usize,
+}
+
+#[derive(Debug, Clone, Copy)]
+pub struct AccumulativeCheck {
+    pub enabled: bool,
+    pub max_per_document: usize,
 }
 
 #[derive(Debug, Clone)]

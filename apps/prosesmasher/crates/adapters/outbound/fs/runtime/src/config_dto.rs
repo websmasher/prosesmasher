@@ -109,6 +109,9 @@ pub struct HeuristicsDto {
     pub response_wrapper: Option<EnabledDto>,
     #[garde(skip)]
     #[serde(default)]
+    pub generic_signposting: Option<AccumulativeDto>,
+    #[garde(skip)]
+    #[serde(default)]
     pub affirmation_closers: Option<EnabledDto>,
     #[garde(skip)]
     #[serde(default)]
@@ -224,6 +227,15 @@ pub struct HedgeStackingDto {
     #[serde(default = "default_true")]
     pub enabled: bool,
     pub max_per_sentence: Option<usize>,
+}
+
+#[derive(Deserialize, Default)]
+#[serde(rename_all = "camelCase")]
+#[serde(deny_unknown_fields)]
+pub struct AccumulativeDto {
+    #[serde(default = "default_true")]
+    pub enabled: bool,
+    pub max_per_document: Option<usize>,
 }
 
 #[derive(Deserialize, Default)]
@@ -429,6 +441,12 @@ const fn apply_toggle_heuristics(
     }
     if let Some(enabled) = dto.response_wrapper {
         heuristics.response_wrapper.enabled = enabled.enabled;
+    }
+    if let Some(accumulative) = dto.generic_signposting.as_ref() {
+        heuristics.generic_signposting.enabled = accumulative.enabled;
+        if let Some(max) = accumulative.max_per_document {
+            heuristics.generic_signposting.max_per_document = max;
+        }
     }
     if let Some(enabled) = dto.affirmation_closers {
         heuristics.affirmation_closers.enabled = enabled.enabled;

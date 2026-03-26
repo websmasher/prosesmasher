@@ -26,6 +26,20 @@
       }
     },
     {
+      "rule": "generic-signposting",
+      "evidenceContainsByField": {
+        "pattern_kind": [
+          "transition"
+        ],
+        "matched_text": [
+          "that being said"
+        ],
+        "sentence": [
+          "That being said, some research suggests that certain dietary modifications may help manage ADHD symptoms in some children, although the evidence is limited and further research is needed."
+        ]
+      }
+    },
+    {
       "rule": "smart-quotes",
       "evidenceContainsByField": {
         "matched_text": [

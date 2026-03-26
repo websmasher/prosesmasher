@@ -67,6 +67,7 @@
       "llmOpeners": { "enabled": true },
       "llmDisclaimer": { "enabled": true },
       "responseWrapper": { "enabled": true },
+      "genericSignposting": { "enabled": true, "maxPerDocument": 1 },
       "affirmationClosers": { "enabled": true },
       "summativeCloser": { "enabled": true },
       "falseQuestion": { "enabled": true },
