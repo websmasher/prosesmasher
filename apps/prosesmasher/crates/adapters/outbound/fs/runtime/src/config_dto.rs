@@ -118,7 +118,13 @@ pub struct HeuristicsDto {
     pub boilerplate_conclusion: Option<EnabledDto>,
     #[garde(skip)]
     #[serde(default)]
+    pub blame_reframe: Option<EnabledDto>,
+    #[garde(skip)]
+    #[serde(default)]
     pub empty_emphasis: Option<EnabledDto>,
+    #[garde(skip)]
+    #[serde(default)]
+    pub slogan_punchline: Option<EnabledDto>,
     #[garde(skip)]
     #[serde(default)]
     pub llm_vocabulary: Option<AccumulativeDto>,
@@ -475,8 +481,14 @@ const fn apply_toggle_heuristics(
     if let Some(enabled) = dto.boilerplate_conclusion {
         heuristics.boilerplate_conclusion.enabled = enabled.enabled;
     }
+    if let Some(enabled) = dto.blame_reframe {
+        heuristics.blame_reframe.enabled = enabled.enabled;
+    }
     if let Some(enabled) = dto.empty_emphasis {
         heuristics.empty_emphasis.enabled = enabled.enabled;
+    }
+    if let Some(enabled) = dto.slogan_punchline {
+        heuristics.slogan_punchline.enabled = enabled.enabled;
     }
     if let Some(accumulative) = dto.llm_vocabulary.as_ref() {
         heuristics.llm_vocabulary.enabled = accumulative.enabled;

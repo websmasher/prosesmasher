@@ -23,6 +23,28 @@ where
     evidence
 }
 
+pub(crate) fn collect_adjacent_sentence_evidence<F>(doc: &Document, mut matcher: F) -> Vec<Value>
+where
+    F: FnMut(&str, &str, usize, usize, usize) -> Option<Value>,
+{
+    let mut evidence = Vec::new();
+    let mut paragraph_index: usize = 0;
+
+    for (section_index, section) in doc.sections.iter().enumerate() {
+        for block in &section.blocks {
+            collect_adjacent_from_block(
+                block,
+                section_index,
+                &mut paragraph_index,
+                &mut evidence,
+                &mut matcher,
+            );
+        }
+    }
+
+    evidence
+}
+
 fn collect_from_block<F>(
     block: &Block,
     section_index: usize,
@@ -49,6 +71,51 @@ fn collect_from_block<F>(
         Block::BlockQuote(inner) => {
             for inner_block in inner {
                 collect_from_block(
+                    inner_block,
+                    section_index,
+                    paragraph_index,
+                    evidence,
+                    matcher,
+                );
+            }
+        }
+        Block::List(_) | Block::CodeBlock(_) => {}
+    }
+}
+
+fn collect_adjacent_from_block<F>(
+    block: &Block,
+    section_index: usize,
+    paragraph_index: &mut usize,
+    evidence: &mut Vec<Value>,
+    matcher: &mut F,
+) where
+    F: FnMut(&str, &str, usize, usize, usize) -> Option<Value>,
+{
+    match block {
+        Block::Paragraph(paragraph) => {
+            for (sentence_index, pair) in paragraph.sentences.windows(2).enumerate() {
+                let Some(a) = pair.first() else {
+                    continue;
+                };
+                let Some(b) = pair.get(1) else {
+                    continue;
+                };
+                if let Some(item) = matcher(
+                    &a.text,
+                    &b.text,
+                    section_index,
+                    *paragraph_index,
+                    sentence_index,
+                ) {
+                    evidence.push(item);
+                }
+            }
+            *paragraph_index = paragraph_index.saturating_add(1);
+        }
+        Block::BlockQuote(inner) => {
+            for inner_block in inner {
+                collect_adjacent_from_block(
                     inner_block,
                     section_index,
                     paragraph_index,
