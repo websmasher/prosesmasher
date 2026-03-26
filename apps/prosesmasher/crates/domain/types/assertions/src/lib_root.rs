@@ -31,3 +31,17 @@ where
     );
     assert_eq!(value, cloned, "clone should preserve equality");
 }
+
+#[allow(clippy::missing_panics_doc)]
+pub fn assert_clone_preserves_display_only<T>(value: T)
+where
+    T: Clone + Display,
+{
+    let original = value.to_string();
+    let cloned = value.clone();
+    assert_eq!(
+        original,
+        cloned.to_string(),
+        "clone should preserve Display"
+    );
+}

@@ -24,12 +24,56 @@ pub fn assert_read_ok_contains(path: &Path, expected: &str, context: &str) {
     }
 }
 
-pub fn assert_read_error_kind(path: &Path, predicate: impl FnOnce(&ReadError) -> bool, context: &str) {
+pub fn assert_read_error_kind(
+    path: &Path,
+    predicate: impl FnOnce(&ReadError) -> bool,
+    context: &str,
+) {
     let result = FsFileReader.read_to_string(path);
     assert!(
         matches!(result, Err(ref err) if predicate(err)),
         "{context}: unexpected result {result:?}"
     );
+}
+
+pub fn assert_not_found_error(result: &Result<String, ReadError>, expected: &str, context: &str) {
+    match result {
+        Err(ReadError::NotFound(message)) => {
+            assert!(
+                message.contains(expected),
+                "{context}: expected `{expected}` in `{message}`"
+            );
+        }
+        other => panic!("{context}: expected ReadError::NotFound, got {other:?}"),
+    }
+}
+
+pub fn assert_io_error(result: &Result<String, ReadError>, expected: &str, context: &str) {
+    match result {
+        Err(ReadError::Io(message)) => {
+            assert!(
+                message.contains(expected),
+                "{context}: expected `{expected}` in `{message}`"
+            );
+        }
+        other => panic!("{context}: expected ReadError::Io, got {other:?}"),
+    }
+}
+
+pub fn assert_permission_denied_error(
+    result: &Result<String, ReadError>,
+    expected: &str,
+    context: &str,
+) {
+    match result {
+        Err(ReadError::PermissionDenied(message)) => {
+            assert!(
+                message.contains(expected),
+                "{context}: expected `{expected}` in `{message}`"
+            );
+        }
+        other => panic!("{context}: expected ReadError::PermissionDenied, got {other:?}"),
+    }
 }
 
 pub fn cleanup_temp_file(path: &Path) {

@@ -1,9 +1,22 @@
 use super::*;
+use std::path::PathBuf;
+use std::sync::atomic::{AtomicU64, Ordering};
+
+use crate::full_config_contents;
 use prosesmasher_adapters_outbound_fs_assertions::{
-    load_json_err, load_json_ok, load_preset_ok,
+    assert_config_not_found_contains, assert_config_validation_failed_contains,
+    assert_heading_policy, assert_locale, assert_prohibited_terms, assert_readability_thresholds,
+    assert_recommended_terms, assert_shared_quality_defaults, assert_simplicity_pair,
+    assert_word_count_range, load_json_err, load_json_ok, load_preset_ok,
 };
 use prosesmasher_domain_types_runtime::{ConfigError, Locale, Range};
-use crate::full_config_contents;
+use prosesmasher_ports_outbound_traits::ConfigLoader;
+
+fn unique_temp_path(name: &str) -> PathBuf {
+    static COUNTER: AtomicU64 = AtomicU64::new(0);
+    let id = COUNTER.fetch_add(1, Ordering::Relaxed);
+    std::env::temp_dir().join(format!("prosesmasher-fs-config-loader-{name}-{id}"))
+}
 
 #[test]
 #[allow(clippy::too_many_lines)]
@@ -40,53 +53,114 @@ fn canonical_config_normalizes() {
         }"#,
     );
 
-    assert_eq!(config.locale, Locale::En);
-    assert!(
-        config
-            .quality
-            .lexical
-            .prohibited_terms
-            .add
-            .iter()
-            .any(|term| term == "live coaching calls")
-    );
-    assert!(
-        config
-            .quality
-            .lexical
-            .prohibited_terms
-            .remove
-            .iter()
-            .any(|term| term == "actually")
+    assert_locale(&config, Locale::En, "canonical config");
+    assert_prohibited_terms(
+        &config,
+        &["live coaching calls"],
+        &["actually"],
+        "canonical config",
     );
     assert_eq!(
         config.quality.lexical.required_terms,
         vec!["ownership".to_owned()]
     );
-    assert_eq!(
-        config
-            .quality
-            .lexical
-            .recommended_terms
-            .as_ref()
-            .map(|pool| pool.min_count),
-        Some(1)
+    assert_recommended_terms(
+        &config,
+        &["ownership", "borrowing"],
+        1,
+        true,
+        "canonical config",
     );
+    assert_simplicity_pair(&config, "utilize", "use", "canonical config");
     assert_eq!(config.quality.flow.word_repetition.max, 7);
     assert_eq!(config.quality.flow.paragraph_length.max_sentences, 5);
-    assert_eq!(config.quality.readability.flesch_kincaid_min, Some(44.0));
-    assert_eq!(
-        config
-            .document_policy
-            .word_count
-            .map(Range::min),
-        Some(650)
+    assert_readability_thresholds(
+        &config,
+        true,
+        Some(44.0),
+        Some(14.0),
+        Some(12.5),
+        Some(25),
+        "canonical config",
     );
-    assert_eq!(config.document_policy.heading_counts.h3_min, Some(1));
-    assert!(config.document_policy.heading_hierarchy);
+    assert_word_count_range(&config, Some((650, 1000)), "canonical config");
+    assert_heading_policy(&config, Some(1), true, "canonical config");
     assert!(config.quality.heuristics.sentence_case.enabled);
     assert!(!config.document_policy.allow_code_fences);
     assert_eq!(config.document_policy.bold_density_min, Some(3));
+}
+
+#[test]
+fn readability_defaults_false_replaces_builtin_thresholds() {
+    let config = load_json_ok(
+        r#"{
+          "locale":"en",
+          "quality":{
+            "readability":{
+              "defaults":false,
+              "fleschKincaidMin":44.0
+            }
+          },
+          "documentPolicy":{}
+        }"#,
+    );
+
+    assert_readability_thresholds(
+        &config,
+        false,
+        Some(44.0),
+        None,
+        None,
+        None,
+        "readability defaults=false replacement",
+    );
+}
+
+#[test]
+fn readability_defaults_false_without_overrides_disables_thresholds() {
+    let config = load_json_ok(
+        r#"{
+          "locale":"en",
+          "quality":{"readability":{"defaults":false}},
+          "documentPolicy":{}
+        }"#,
+    );
+
+    assert_readability_thresholds(
+        &config,
+        false,
+        None,
+        None,
+        None,
+        None,
+        "readability defaults=false clear",
+    );
+}
+
+#[test]
+fn readability_defaults_true_merges_with_builtin_thresholds() {
+    let config = load_json_ok(
+        r#"{
+          "locale":"en",
+          "quality":{
+            "readability":{
+              "defaults":true,
+              "fleschKincaidMin":44.0
+            }
+          },
+          "documentPolicy":{}
+        }"#,
+    );
+
+    assert_readability_thresholds(
+        &config,
+        true,
+        Some(44.0),
+        Some(14.0),
+        Some(12.5),
+        Some(25),
+        "readability defaults=true merge",
+    );
 }
 
 #[test]
@@ -105,7 +179,7 @@ fn all_curated_presets_load() {
         "tweet-en",
     ] {
         let config = load_preset_ok(name);
-        assert_eq!(config.locale, Locale::En, "{name}: locale should be en");
+        assert_locale(&config, Locale::En, &format!("{name}: locale should be en"));
     }
 }
 
@@ -114,24 +188,8 @@ fn presets_keep_shared_quality_defaults() {
     let article = load_preset_ok("article-en");
     let general = load_preset_ok("general-en");
 
-    assert_eq!(
-        article
-            .quality
-            .heuristics
-            .exclamation_density
-            .max_per_paragraph,
-        1
-    );
-    assert_eq!(
-        general
-            .quality
-            .heuristics
-            .exclamation_density
-            .max_per_paragraph,
-        1
-    );
-    assert_eq!(article.quality.flow.paragraph_length.max_sentences, 6);
-    assert_eq!(general.quality.flow.paragraph_length.max_sentences, 6);
+    assert_shared_quality_defaults(&article, "article preset shared defaults");
+    assert_shared_quality_defaults(&general, "general preset shared defaults");
 }
 
 #[test]
@@ -139,18 +197,9 @@ fn tweet_preset_targets_shorter_copy_than_substack() {
     let tweet = load_preset_ok("tweet-en");
     let substack = load_preset_ok("substack-en");
 
+    assert_eq!(tweet.document_policy.word_count.map(Range::max), Some(60));
     assert_eq!(
-        tweet
-            .document_policy
-            .word_count
-            .map(Range::max),
-        Some(60)
-    );
-    assert_eq!(
-        substack
-            .document_policy
-            .word_count
-            .map(Range::min),
+        substack.document_policy.word_count.map(Range::min),
         Some(500)
     );
 }
@@ -186,19 +235,11 @@ fn article_and_substack_use_heading_policy_but_email_and_tweet_do_not() {
     let tweet = load_preset_ok("tweet-en");
 
     assert_eq!(
-        article
-            .document_policy
-            .heading_counts
-            .h2
-            .map(Range::min),
+        article.document_policy.heading_counts.h2.map(Range::min),
         Some(3)
     );
     assert_eq!(
-        substack
-            .document_policy
-            .heading_counts
-            .h2
-            .map(Range::min),
+        substack.document_policy.heading_counts.h2.map(Range::min),
         Some(1)
     );
     assert!(article.document_policy.heading_hierarchy);
@@ -216,25 +257,10 @@ fn email_is_longer_than_tweet_but_shorter_than_article() {
     let email = load_preset_ok("email-en");
     let article = load_preset_ok("article-en");
 
+    assert_eq!(tweet.document_policy.word_count.map(Range::min), Some(8));
+    assert_eq!(email.document_policy.word_count.map(Range::min), Some(80));
     assert_eq!(
-        tweet
-            .document_policy
-            .word_count
-            .map(Range::min),
-        Some(8)
-    );
-    assert_eq!(
-        email
-            .document_policy
-            .word_count
-            .map(Range::min),
-        Some(80)
-    );
-    assert_eq!(
-        article
-            .document_policy
-            .word_count
-            .map(Range::min),
+        article.document_policy.word_count.map(Range::min),
         Some(1000)
     );
 }
@@ -245,7 +271,7 @@ fn locale_validation_errors() {
     assert!(matches!(short_err, ConfigError::ValidationFailed(_)));
 
     let unknown_err = load_json_err(r#"{"locale":"xx","quality":{},"documentPolicy":{}}"#);
-    assert!(matches!(unknown_err, ConfigError::ValidationFailed(ref msg) if msg.contains("xx")));
+    assert_config_validation_failed_contains(&unknown_err, "xx", "unknown locale validation");
 }
 
 #[test]
@@ -311,4 +337,74 @@ fn simplicity_pairs_validate_shape() {
 fn missing_locale_fails() {
     let err = load_json_err(r#"{"quality":{},"documentPolicy":{}}"#);
     assert!(matches!(err, ConfigError::InvalidJson(_)));
+}
+
+#[test]
+fn missing_config_file_maps_to_not_found() {
+    let loader = FsConfigLoader;
+    let path = unique_temp_path("missing.json");
+    let path_str = path.display().to_string();
+
+    #[allow(clippy::disallowed_methods)]
+    let _ = std::fs::remove_file(&path);
+
+    let result = loader.load_config(&path);
+    let err = result.expect_err("missing file should map to ConfigError::NotFound(path)");
+    assert_config_not_found_contains(&err, &path_str, "missing config file");
+}
+
+#[test]
+fn directory_config_path_maps_to_cannot_read_not_found() {
+    let loader = FsConfigLoader;
+    let path = unique_temp_path("directory");
+    let path_str = path.display().to_string();
+
+    #[allow(clippy::disallowed_methods)]
+    std::fs::create_dir(&path).unwrap_or_else(|e| panic!("failed to create temp dir: {e}"));
+    let result = loader.load_config(&path);
+    #[allow(clippy::disallowed_methods)]
+    std::fs::remove_dir(&path).unwrap_or_else(|e| panic!("failed to remove temp dir: {e}"));
+
+    let err = result.expect_err("directory read should map to ConfigError::NotFound");
+    assert_config_not_found_contains(&err, "cannot read config:", "directory config path");
+    assert_config_not_found_contains(&err, &path_str, "directory config path");
+}
+
+#[cfg(unix)]
+#[test]
+fn unreadable_config_file_maps_to_cannot_read_not_found() {
+    use std::os::unix::fs::{MetadataExt, PermissionsExt};
+
+    let loader = FsConfigLoader;
+    let path = unique_temp_path("permission-denied.json");
+    let path_str = path.display().to_string();
+
+    #[allow(clippy::disallowed_methods)]
+    std::fs::write(&path, "{\"locale\":\"en\"}")
+        .unwrap_or_else(|e| panic!("failed to write temp config: {e}"));
+
+    let metadata =
+        std::fs::metadata(&path).unwrap_or_else(|e| panic!("failed to stat temp config: {e}"));
+    if metadata.uid() == 0 {
+        #[allow(clippy::disallowed_methods)]
+        std::fs::remove_file(&path).unwrap_or_else(|e| panic!("failed to clean temp config: {e}"));
+        return;
+    }
+
+    let original_mode = metadata.permissions().mode();
+    #[allow(clippy::disallowed_methods)]
+    std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o000))
+        .unwrap_or_else(|e| panic!("failed to chmod temp config: {e}"));
+
+    let result = loader.load_config(&path);
+
+    #[allow(clippy::disallowed_methods)]
+    std::fs::set_permissions(&path, std::fs::Permissions::from_mode(original_mode))
+        .unwrap_or_else(|e| panic!("failed to restore temp config permissions: {e}"));
+    #[allow(clippy::disallowed_methods)]
+    std::fs::remove_file(&path).unwrap_or_else(|e| panic!("failed to clean temp config: {e}"));
+
+    let err = result.expect_err("unreadable config should map to ConfigError::NotFound");
+    assert_config_not_found_contains(&err, "cannot read config:", "unreadable config path");
+    assert_config_not_found_contains(&err, &path_str, "unreadable config path");
 }

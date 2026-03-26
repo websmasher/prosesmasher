@@ -97,10 +97,6 @@ fn collect_all_equals_sum_of_groups() {
     );
 }
 
-// ═══════════════════════════════════════════════════════════════
-// filter_checks_by_id
-// ═══════════════════════════════════════════════════════════════
-
 #[test]
 #[allow(clippy::panic)]
 fn filter_single_check_by_id() {
@@ -165,7 +161,6 @@ fn filter_with_spaces_around_commas() {
 #[test]
 #[allow(clippy::panic)]
 fn filter_combined_with_group() {
-    // --group lexical --check prohibited-terms → only prohibited-terms from lexical group
     let lexical = collect_checks(Some("lexical")).unwrap_or_else(|e| panic!("{e}"));
     let filtered =
         filter_checks_by_id(lexical, "prohibited-terms").unwrap_or_else(|e| panic!("{e}"));
@@ -174,7 +169,6 @@ fn filter_combined_with_group() {
 
 #[test]
 fn filter_check_not_in_group_errors() {
-    // --group lexical --check em-dashes → em-dashes is a heuristic check, not in lexical
     let lexical = collect_checks(Some("lexical")).unwrap_or_default();
     let result = filter_checks_by_id(lexical, "em-dashes");
     assert!(
@@ -182,6 +176,7 @@ fn filter_check_not_in_group_errors() {
         "em-dashes not in lexical group should error"
     );
 }
+
 #[test]
 #[allow(clippy::panic)] // test assertion
 fn collect_document_policy_returns_6() {

@@ -65,7 +65,7 @@ fn closed_em_dash_inside_blockquote_detected() {
         &config,
         "Hello\u{2014}world.",
         1,
-        "em-dash inside blockquote must be detected"
+        "em-dash inside blockquote must be detected",
     );
 }
 
@@ -73,7 +73,11 @@ fn closed_em_dash_inside_blockquote_detected() {
 fn em_dash_in_code_block_not_detected() {
     let doc = crate::test_helpers::make_doc_code_only("let dash = '\u{2014}';", Locale::En);
     let config = CheckConfig::default();
-    assertions::assert_passes(&doc, &config, "em-dash inside code block must NOT be detected");
+    assertions::assert_passes(
+        &doc,
+        &config,
+        "em-dash inside code block must NOT be detected",
+    );
 }
 
 #[test]
@@ -88,7 +92,7 @@ fn em_dash_across_multiple_sections() {
         &config,
         "Hello\u{2014}world.",
         1,
-        "em-dash in second section must be detected"
+        "em-dash in second section must be detected",
     );
 }
 

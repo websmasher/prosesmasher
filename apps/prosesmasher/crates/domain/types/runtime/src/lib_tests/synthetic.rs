@@ -1,4 +1,9 @@
 use super::*;
+use prosesmasher_domain_types_assertions::{
+    assert_boxed_error_contains, assert_clone_preserves_display_only, assert_config_error_display,
+    assert_english_default_quality, assert_error_source_is_none, assert_parse_error_display,
+    assert_read_error_display, assert_send_sync,
+};
 
 // ═══════════════════════════════════════════════════════════════
 // Locale
@@ -101,6 +106,47 @@ fn check_config_default_locale_is_en() {
 #[test]
 fn check_config_default_has_canonical_defaults() {
     let config = CheckConfig::default();
+    assert_english_default_quality(
+        config
+            .quality
+            .lexical
+            .prohibited_terms
+            .add
+            .iter()
+            .any(|term| term == "actually"),
+        config
+            .quality
+            .lexical
+            .prohibited_terms
+            .add
+            .iter()
+            .any(|term| term == "delve"),
+        config.quality.lexical.prohibited_substrings.defaults,
+        config
+            .quality
+            .lexical
+            .simplicity_pairs
+            .add
+            .iter()
+            .any(|pair| pair.complex == "utilize" && pair.simple == "use"),
+        config
+            .quality
+            .flow
+            .word_repetition
+            .excluded_terms
+            .add
+            .iter()
+            .any(|term| term == "the"),
+        config
+            .quality
+            .flow
+            .word_repetition
+            .excluded_terms
+            .add
+            .iter()
+            .any(|term| term == "that"),
+        "English default quality",
+    );
     assert!(
         config.quality.heuristics.em_dashes.enabled,
         "em dashes enabled"
@@ -114,6 +160,44 @@ fn check_config_default_has_canonical_defaults() {
         config.document_policy.word_count.is_none(),
         "word_count policy off by default"
     );
+}
+
+#[test]
+fn non_english_default_quality_disables_english_lexical_defaults() {
+    for locale in [
+        Locale::Ru,
+        Locale::De,
+        Locale::Es,
+        Locale::Pt,
+        Locale::Fr,
+        Locale::Id,
+    ] {
+        let quality = default_quality_for_locale(locale);
+        assert!(
+            !quality.lexical.prohibited_terms.defaults,
+            "{locale:?}: prohibited term defaults should be off"
+        );
+        assert!(
+            !quality.lexical.simplicity_pairs.defaults,
+            "{locale:?}: simplicity defaults should be off"
+        );
+        assert!(
+            !quality.flow.word_repetition.excluded_terms.defaults,
+            "{locale:?}: repetition exclusions should be off"
+        );
+        assert!(
+            quality.lexical.prohibited_terms.add.is_empty(),
+            "{locale:?}: should not inherit English prohibited terms"
+        );
+        assert!(
+            quality.lexical.simplicity_pairs.add.is_empty(),
+            "{locale:?}: should not inherit English simplicity pairs"
+        );
+        assert!(
+            quality.flow.word_repetition.excluded_terms.add.is_empty(),
+            "{locale:?}: should not inherit English repetition exclusions"
+        );
+    }
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -330,66 +414,82 @@ fn range_construction_and_copy() {
 
 #[test]
 fn read_error_not_found_display() {
-    let err = ReadError::NotFound("/path/to/file".to_owned());
-    let msg = err.to_string();
-    assert!(msg.contains("/path/to/file"), "should contain path");
-    assert!(msg.contains("not found"), "should contain label");
+    assert_read_error_display(
+        ReadError::NotFound("/path/to/file".to_owned()),
+        "/path/to/file",
+        "not found",
+        "ReadError::NotFound display",
+    );
 }
 
 #[test]
 fn read_error_permission_denied_display() {
-    let err = ReadError::PermissionDenied("/secret".to_owned());
-    let msg = err.to_string();
-    assert!(msg.contains("/secret"), "should contain path");
-    assert!(msg.contains("permission denied"), "should contain label");
+    assert_read_error_display(
+        ReadError::PermissionDenied("/secret".to_owned()),
+        "/secret",
+        "permission denied",
+        "ReadError::PermissionDenied display",
+    );
 }
 
 #[test]
 fn read_error_io_display() {
-    let err = ReadError::Io("disk failure".to_owned());
-    let msg = err.to_string();
-    assert!(msg.contains("disk failure"), "should contain message");
-    assert!(msg.contains("io error"), "should contain label");
+    assert_read_error_display(
+        ReadError::Io("disk failure".to_owned()),
+        "disk failure",
+        "io error",
+        "ReadError::Io display",
+    );
 }
 
 #[test]
 fn parse_error_invalid_markdown_display() {
-    let err = ParseError::InvalidMarkdown("bad input".to_owned());
-    let msg = err.to_string();
-    assert!(msg.contains("bad input"), "should contain message");
-    assert!(msg.contains("invalid markdown"), "should contain label");
+    assert_parse_error_display(
+        ParseError::InvalidMarkdown("bad input".to_owned()),
+        "bad input",
+        "invalid markdown",
+        "ParseError::InvalidMarkdown display",
+    );
 }
 
 #[test]
 fn parse_error_segmentation_failed_display() {
-    let err = ParseError::SegmentationFailed("no sentences".to_owned());
-    let msg = err.to_string();
-    assert!(msg.contains("no sentences"), "should contain message");
-    assert!(msg.contains("segmentation failed"), "should contain label");
+    assert_parse_error_display(
+        ParseError::SegmentationFailed("no sentences".to_owned()),
+        "no sentences",
+        "segmentation failed",
+        "ParseError::SegmentationFailed display",
+    );
 }
 
 #[test]
 fn config_error_not_found_display() {
-    let err = ConfigError::NotFound("config.json".to_owned());
-    let msg = err.to_string();
-    assert!(msg.contains("config.json"), "should contain filename");
-    assert!(msg.contains("not found"), "should contain label");
+    assert_config_error_display(
+        ConfigError::NotFound("config.json".to_owned()),
+        "config.json",
+        "not found",
+        "ConfigError::NotFound display",
+    );
 }
 
 #[test]
 fn config_error_invalid_json_display() {
-    let err = ConfigError::InvalidJson("unexpected token".to_owned());
-    let msg = err.to_string();
-    assert!(msg.contains("unexpected token"), "should contain message");
-    assert!(msg.contains("invalid json"), "should contain label");
+    assert_config_error_display(
+        ConfigError::InvalidJson("unexpected token".to_owned()),
+        "unexpected token",
+        "invalid json",
+        "ConfigError::InvalidJson display",
+    );
 }
 
 #[test]
 fn config_error_validation_failed_display() {
-    let err = ConfigError::ValidationFailed("missing field".to_owned());
-    let msg = err.to_string();
-    assert!(msg.contains("missing field"), "should contain message");
-    assert!(msg.contains("validation failed"), "should contain label");
+    assert_config_error_display(
+        ConfigError::ValidationFailed("missing field".to_owned()),
+        "missing field",
+        "validation failed",
+        "ConfigError::ValidationFailed display",
+    );
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -398,77 +498,62 @@ fn config_error_validation_failed_display() {
 
 #[test]
 fn read_error_is_send_sync() {
-    fn assert_send_sync<T: Send + Sync>() {}
     assert_send_sync::<ReadError>();
 }
 
 #[test]
 fn parse_error_is_send_sync() {
-    fn assert_send_sync<T: Send + Sync>() {}
     assert_send_sync::<ParseError>();
 }
 
 #[test]
 fn config_error_is_send_sync() {
-    fn assert_send_sync<T: Send + Sync>() {}
     assert_send_sync::<ConfigError>();
 }
 
 #[test]
 fn read_error_as_boxed_dyn() {
-    let boxed: Box<dyn std::error::Error> = Box::new(ReadError::Io("fail".to_owned()));
-    assert!(
-        boxed.to_string().contains("fail"),
-        "boxed ReadError Display works"
+    assert_boxed_error_contains(
+        ReadError::Io("fail".to_owned()),
+        "fail",
+        "boxed ReadError display",
     );
 }
 
 #[test]
 fn parse_error_as_boxed_dyn() {
-    let boxed: Box<dyn std::error::Error> = Box::new(ParseError::InvalidMarkdown("bad".to_owned()));
-    assert!(
-        boxed.to_string().contains("bad"),
-        "boxed ParseError Display works"
+    assert_boxed_error_contains(
+        ParseError::InvalidMarkdown("bad".to_owned()),
+        "bad",
+        "boxed ParseError display",
     );
 }
 
 #[test]
 fn config_error_as_boxed_dyn() {
-    let boxed: Box<dyn std::error::Error> = Box::new(ConfigError::NotFound("missing".to_owned()));
-    assert!(
-        boxed.to_string().contains("missing"),
-        "boxed ConfigError Display works"
+    assert_boxed_error_contains(
+        ConfigError::NotFound("missing".to_owned()),
+        "missing",
+        "boxed ConfigError display",
     );
 }
 
 #[test]
 fn read_error_source_is_none() {
-    use std::error::Error;
     let read_err = ReadError::NotFound("test".to_owned());
-    assert!(
-        read_err.source().is_none(),
-        "ReadError::source() should be None"
-    );
+    assert_error_source_is_none(&read_err, "ReadError::source()");
 }
 
 #[test]
 fn parse_error_source_is_none() {
-    use std::error::Error;
     let parse_err = ParseError::InvalidMarkdown("test".to_owned());
-    assert!(
-        parse_err.source().is_none(),
-        "ParseError::source() should be None"
-    );
+    assert_error_source_is_none(&parse_err, "ParseError::source()");
 }
 
 #[test]
 fn config_error_source_is_none() {
-    use std::error::Error;
     let config_err = ConfigError::NotFound("test".to_owned());
-    assert!(
-        config_err.source().is_none(),
-        "ConfigError::source() should be None"
-    );
+    assert_error_source_is_none(&config_err, "ConfigError::source()");
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -523,37 +608,19 @@ fn check_config_clone() {
 #[test]
 fn read_error_clone() {
     let read_err = ReadError::NotFound("test".to_owned());
-    #[allow(clippy::redundant_clone)] // intentionally testing Clone trait
-    let cloned = read_err.clone();
-    assert_eq!(
-        read_err.to_string(),
-        cloned.to_string(),
-        "ReadError clone preserves Display"
-    );
+    assert_clone_preserves_display_only(read_err);
 }
 
 #[test]
 fn parse_error_clone() {
     let parse_err = ParseError::InvalidMarkdown("test".to_owned());
-    #[allow(clippy::redundant_clone)] // intentionally testing Clone trait
-    let cloned = parse_err.clone();
-    assert_eq!(
-        parse_err.to_string(),
-        cloned.to_string(),
-        "ParseError clone preserves Display"
-    );
+    assert_clone_preserves_display_only(parse_err);
 }
 
 #[test]
 fn config_error_clone() {
     let config_err = ConfigError::NotFound("test".to_owned());
-    #[allow(clippy::redundant_clone)] // intentionally testing Clone trait
-    let cloned = config_err.clone();
-    assert_eq!(
-        config_err.to_string(),
-        cloned.to_string(),
-        "ConfigError clone preserves Display"
-    );
+    assert_clone_preserves_display_only(config_err);
 }
 
 #[test]

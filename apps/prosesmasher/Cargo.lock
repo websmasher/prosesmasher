@@ -596,6 +596,7 @@ dependencies = [
  "clap",
  "low-expectations",
  "prosesmasher-adapters-inbound-cli-runtime",
+ "serde_json",
 ]
 
 [[package]]
