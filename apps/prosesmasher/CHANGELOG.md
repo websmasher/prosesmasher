@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.3.10
+
+- Expanded `negation-reframe` with additional narrow corrective families:
+  - `The answer is not X. It is Y.`
+  - `That does not make X okay. It does explain Y.`
+  - `X teaches Y. It does not teach regulation/self-control/restraint/repair.`
+- Expanded `empty-emphasis` with the short dismissive meta line `What helps is not brilliant.`
+- Refreshed only the reviewed generated/social baselines for the new approved negation hits while explicitly leaving higher-risk inline single-sentence `..., not ...` contrasts out of scope.
+
 ## 0.3.9
 
 - Refactored `response-wrapper` and `authority-padding` into construction-plus-parts matchers built from constrained subject, auxiliary, action, and predicate families instead of phrase-bag conditionals.

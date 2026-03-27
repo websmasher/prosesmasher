@@ -10,10 +10,10 @@ description = "Internal reusable flow-check assertions for the prosesmasher work
 readme = "../../../../../../README.md"
 
 [dependencies]
-prosesmasher-domain-types = { version = "0.3.9", path = "../../../../domain/types" }
-prosesmasher-app-checks-core-runtime = { version = "0.3.9", path = "../../core/runtime" }
-prosesmasher-app-checks-flow-runtime = { version = "0.3.9", path = "../runtime" }
-prosesmasher-app-checks-test-support = { version = "0.3.9", path = "../../test-support" }
+prosesmasher-domain-types = { version = "0.3.10", path = "../../../../domain/types" }
+prosesmasher-app-checks-core-runtime = { version = "0.3.10", path = "../../core/runtime" }
+prosesmasher-app-checks-flow-runtime = { version = "0.3.10", path = "../runtime" }
+prosesmasher-app-checks-test-support = { version = "0.3.10", path = "../../test-support" }
 low-expectations.workspace = true
 
 [lints]

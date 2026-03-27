@@ -87,6 +87,18 @@ fn deictic_pattern_weakens_fails() {
 }
 
 #[test]
+fn what_helps_is_not_brilliant_fails() {
+    let doc = make_doc("What helps is not brilliant.", Locale::En);
+    let config = CheckConfig::default();
+    assertions::assert_emphasis_failure(
+        &doc,
+        &config,
+        "what-helps-not-brilliant",
+        "short what-helps meta line should fail",
+    );
+}
+
+#[test]
 fn longer_explanatory_sentence_passes() {
     let doc = make_doc(
         "That last part matters because the contract changes the failure mode completely.",
@@ -143,6 +155,20 @@ fn technical_pattern_explanation_passes() {
     );
     let config = CheckConfig::default();
     assertions::assert_passes(&doc, &config, "technical weakening explanation should pass");
+}
+
+#[test]
+fn explanatory_what_helps_passes() {
+    let doc = make_doc(
+        "What helps is not brilliant because the system just needs shorter loops and clearer cues.",
+        Locale::En,
+    );
+    let config = CheckConfig::default();
+    assertions::assert_passes(
+        &doc,
+        &config,
+        "longer explanatory what-helps sentence should pass",
+    );
 }
 
 #[test]
