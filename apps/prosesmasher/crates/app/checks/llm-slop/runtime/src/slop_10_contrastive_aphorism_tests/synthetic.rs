@@ -112,6 +112,30 @@ fn imperative_contrast_aphorism_fails() {
 }
 
 #[test]
+fn modal_advisory_anchor_not_buffet_fails() {
+    let doc = make_doc("I would give one anchor, not a buffet.", Locale::En);
+    let config = CheckConfig::default();
+    assertions::assert_aphorism_failure(
+        &doc,
+        &config,
+        "modal-advisory-contrast-aphorism",
+        "reviewed anchor-not-buffet advisory contrast should fail",
+    );
+}
+
+#[test]
+fn modal_advisory_repetition_not_elegance_fails() {
+    let doc = make_doc("I would expect repetition, not elegance.", Locale::En);
+    let config = CheckConfig::default();
+    assertions::assert_aphorism_failure(
+        &doc,
+        &config,
+        "modal-advisory-contrast-aphorism",
+        "reviewed repetition-not-elegance advisory contrast should fail",
+    );
+}
+
+#[test]
 fn reps_not_revelations_shape_fails() {
     let doc = make_doc("Kids get kind in reps, not revelations.", Locale::En);
     let config = CheckConfig::default();
@@ -184,6 +208,17 @@ fn imperative_concrete_object_contrast_passes() {
     let doc = make_doc("Bring a towel, not a coat.", Locale::En);
     let config = CheckConfig::default();
     assertions::assert_passes(&doc, &config, "concrete imperative contrast should pass");
+}
+
+#[test]
+fn modal_advisory_technical_contrast_passes() {
+    let doc = make_doc("I would use one parser, not a buffer.", Locale::En);
+    let config = CheckConfig::default();
+    assertions::assert_passes(
+        &doc,
+        &config,
+        "technical modal advisory contrast should pass",
+    );
 }
 
 #[test]

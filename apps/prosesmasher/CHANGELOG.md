@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.8
+
+- Refactored `contrastive-aphorism` toward construction-plus-parts helpers instead of handwritten token-shape branches.
+- Added reviewed advisory contrast coverage for short coaching lines such as `I would give one anchor, not a buffet.` and `I would expect repetition, not elegance.`
+- Kept the change set regression-safe across the generated, explainer, and social fixture corpora.
+
 ## 0.3.7
 
 - expand negation-reframe coverage for repeated corrective coaching frames and same-subject copular/action contrasts
