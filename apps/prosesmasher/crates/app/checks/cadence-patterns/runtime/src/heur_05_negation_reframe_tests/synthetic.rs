@@ -298,6 +298,24 @@ fn repeated_best_result_frame_detected() {
 }
 
 #[test]
+fn repeated_answer_frame_detected() {
+    let doc = make_doc_with_sentences(
+        &[
+            "So the answer is not tougher energy.",
+            "It is steadier energy.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    assertions::assert_negation_reframe_failure(
+        &doc,
+        &config,
+        "goal is not x -> it is y",
+        "answer frame corrective should fail",
+    );
+}
+
+#[test]
 fn useful_alternatives_frame_detected() {
     let doc = make_doc_with_sentences(
         &[
@@ -312,6 +330,42 @@ fn useful_alternatives_frame_detected() {
         &config,
         "goal is not x -> it is y",
         "useful alternatives corrective should fail",
+    );
+}
+
+#[test]
+fn make_okay_explain_contrast_detected() {
+    let doc = make_doc_with_sentences(
+        &[
+            "That does not make the hitting okay.",
+            "It does explain the pattern.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    assertions::assert_negation_reframe_failure(
+        &doc,
+        &config,
+        "does not make x okay -> it does explain y",
+        "make-okay then explain contrast should fail",
+    );
+}
+
+#[test]
+fn teaches_regulation_contrast_detected() {
+    let doc = make_doc_with_sentences(
+        &[
+            "Hitting back teaches fear and confusion.",
+            "It does not teach regulation.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    assertions::assert_negation_reframe_failure(
+        &doc,
+        &config,
+        "x teaches y -> it does not teach z",
+        "teaches versus does-not-teach-regulation contrast should fail",
     );
 }
 
@@ -418,6 +472,36 @@ fn legitimate_human_analysis_without_they_followup_does_not_trigger() {
         &doc,
         &config,
         "human subject without corrective they followup should pass",
+    );
+}
+
+#[test]
+fn technical_make_explain_pair_passes() {
+    let doc = make_doc_with_sentences(
+        &[
+            "That does not make the result deterministic.",
+            "It does explain the latency spike under load.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    assertions::assert_passes(&doc, &config, "technical make-then-explain pair should pass");
+}
+
+#[test]
+fn teachs_non_regulation_object_passes() {
+    let doc = make_doc_with_sentences(
+        &[
+            "The training video teaches the setup order.",
+            "It does not teach deployment ergonomics.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    assertions::assert_passes(
+        &doc,
+        &config,
+        "non-regulation teaching contrast should pass",
     );
 }
 

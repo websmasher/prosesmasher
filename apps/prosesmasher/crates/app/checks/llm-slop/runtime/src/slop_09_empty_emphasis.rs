@@ -135,6 +135,11 @@ fn match_empty_emphasis(sentence: &str) -> Option<&'static str> {
         {
             Some("deictic-pattern-weakens")
         }
+        [what, helps, is, not, brilliant]
+            if what == "what" && helps == "helps" && is == "is" && not == "not" && brilliant == "brilliant" =>
+        {
+            Some("what-helps-not-brilliant")
+        }
         _ => None,
     }
 }

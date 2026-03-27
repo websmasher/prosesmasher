@@ -19,7 +19,7 @@
     },
     {
       "rule": "negation-reframe",
-      "count": 4
+      "count": 5
     },
     {
       "rule": "paragraph-length",

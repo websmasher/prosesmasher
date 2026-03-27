@@ -97,6 +97,8 @@ const ABSTRACT_FRAME_NEGATIONS: &[(&str, &str)] = &[
     ("biggest sign", "the biggest sign isn't "),
     ("best result", "the best result is not "),
     ("best result", "the best result isn't "),
+    ("answer", "the answer is not "),
+    ("answer", "the answer isn't "),
     ("replacement", "the replacement is not "),
     ("replacement", "the replacement isn't "),
     ("your job", "your job is not "),
@@ -112,6 +114,7 @@ const ABSTRACT_FRAME_AFFIRMATIVES: &[(&str, &str)] = &[
     ("aim", "the aim is "),
     ("biggest sign", "the biggest sign is "),
     ("best result", "the best result is "),
+    ("answer", "the answer is "),
     ("replacement", "the replacement is "),
     ("your job", "your job is "),
     ("useful alternative", "the useful alternative is "),
@@ -434,6 +437,23 @@ fn non_copular_corrective_evidence(
     if looks_like_explicit_make_contrast_sentence(a_text, b_text, a.word_count(), b.word_count()) {
         return Some(json!({
             "matched_text": "doesn't make x -> but it makes y",
+            "sentence": a.text,
+            "next_sentence": b.text,
+        }));
+    }
+
+    if looks_like_make_okay_explain_contrast_sentence(a_text, b_text, a.word_count(), b.word_count())
+    {
+        return Some(json!({
+            "matched_text": "does not make x okay -> it does explain y",
+            "sentence": a.text,
+            "next_sentence": b.text,
+        }));
+    }
+
+    if looks_like_teaches_not_teach_regulation(a_text, b_text, a.word_count(), b.word_count()) {
+        return Some(json!({
+            "matched_text": "x teaches y -> it does not teach z",
             "sentence": a.text,
             "next_sentence": b.text,
         }));
@@ -778,6 +798,51 @@ fn looks_like_explicit_make_contrast_sentence(
         && ["but it makes ", "but this makes ", "but that makes "]
             .iter()
             .any(|prefix| b_text.starts_with(prefix))
+}
+
+fn looks_like_make_okay_explain_contrast_sentence(
+    a_text: &str,
+    b_text: &str,
+    a_word_count: usize,
+    b_word_count: usize,
+) -> bool {
+    if a_word_count > 12 || b_word_count > 10 {
+        return false;
+    }
+
+    [
+        "that doesn't make ",
+        "that does not make ",
+        "this doesn't make ",
+        "this does not make ",
+        "it doesn't make ",
+        "it does not make ",
+    ]
+    .iter()
+    .any(|prefix| a_text.starts_with(prefix))
+        && a_text.ends_with(" okay")
+        && ["it does explain ", "this does explain ", "that does explain "]
+            .iter()
+            .any(|prefix| b_text.starts_with(prefix))
+}
+
+fn looks_like_teaches_not_teach_regulation(
+    a_text: &str,
+    b_text: &str,
+    a_word_count: usize,
+    b_word_count: usize,
+) -> bool {
+    if a_word_count > 14 || b_word_count > 8 {
+        return false;
+    }
+
+    a_text.contains(" teaches ")
+        && ["it does not teach ", "it doesn't teach "]
+            .iter()
+            .any(|prefix| b_text.starts_with(prefix))
+        && ["regulation", "self-control", "restraint", "repair"]
+            .iter()
+            .any(|term| b_text.contains(term))
 }
 
 fn looks_like_less_more_like_pair(
