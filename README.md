@@ -31,16 +31,18 @@ This tool is a policy engine. Some checks are widely useful. Some are house-styl
 
 ## Install
 
+From GitHub releases via `cargo-binstall`:
+
+```bash
+cargo binstall --git https://github.com/websmasher/prosesmasher prosesmasher
+```
+
+This path is precompiled-only. The root package metadata disables `cargo-binstall` fallback to source builds.
+
 From source via Cargo:
 
 ```bash
-cargo install prosesmasher
-```
-
-Fast binary install with `cargo-binstall`:
-
-```bash
-cargo binstall prosesmasher
+cargo install --git https://github.com/websmasher/prosesmasher prosesmasher
 ```
 
 ## Quickstart

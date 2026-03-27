@@ -1,0 +1,29 @@
+[package]
+name = "prosesmasher"
+version = "0.3.5"
+edition = "2024"
+rust-version = "1.85"
+license = "MIT"
+repository = "https://github.com/websmasher/prosesmasher"
+publish = false
+description = "Deterministic prose quality validator for markdown and short-form text"
+readme = "README.md"
+keywords = ["cli", "markdown", "validation", "writing", "lint"]
+categories = ["command-line-utilities", "text-processing"]
+
+[[bin]]
+name = "prosesmasher"
+path = "src/main.rs"
+
+[dependencies]
+prosesmasher-adapters-inbound-cli = { version = "0.3.5", path = "apps/prosesmasher/crates/adapters/inbound/cli" }
+
+[package.metadata.binstall]
+bin-dir = "{ name }-{ target }/{ bin }{ binary-ext }"
+disabled-strategies = ["quick-install", "compile"]
+
+[package.metadata.binstall.overrides.'cfg(windows)']
+pkg-fmt = "zip"
+
+[package.metadata.binstall.overrides.'cfg(not(windows))']
+pkg-fmt = "txz"

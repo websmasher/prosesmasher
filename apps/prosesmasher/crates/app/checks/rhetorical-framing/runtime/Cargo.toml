@@ -9,14 +9,14 @@ description = "Internal rhetorical-framing checks runtime crate for the prosesma
 readme = "../../../../../../README.md"
 
 [dependencies]
-prosesmasher-domain-types = { version = "0.3.4", path = "../../../../domain/types" }
-prosesmasher-app-checks-core-runtime = { version = "0.3.4", path = "../../core/runtime" }
+prosesmasher-domain-types = { version = "0.3.5", path = "../../../../domain/types" }
+prosesmasher-app-checks-core-runtime = { version = "0.3.5", path = "../../core/runtime" }
 low-expectations.workspace = true
 serde_json.workspace = true
 
 [dev-dependencies]
-prosesmasher-app-checks-rhetorical-framing-assertions = { version = "0.3.4", path = "../assertions" }
-prosesmasher-app-checks-test-support = { version = "0.3.4", path = "../../test-support" }
+prosesmasher-app-checks-rhetorical-framing-assertions = { version = "0.3.5", path = "../assertions" }
+prosesmasher-app-checks-test-support = { version = "0.3.5", path = "../../test-support" }
 
 [lints]
 workspace = true
