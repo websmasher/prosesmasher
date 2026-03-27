@@ -112,7 +112,7 @@ impl Default for HeuristicsConfig {
             fragment_stacking: EnabledCheck { enabled: true },
             triple_repeat: EnabledCheck { enabled: true },
             fake_timestamps: EnabledCheck { enabled: true },
-            colon_dramatic: EnabledCheck { enabled: true },
+            colon_dramatic: EnabledCheck { enabled: false },
             llm_openers: EnabledCheck { enabled: true },
             llm_disclaimer: EnabledCheck { enabled: true },
             response_wrapper: EnabledCheck { enabled: true },

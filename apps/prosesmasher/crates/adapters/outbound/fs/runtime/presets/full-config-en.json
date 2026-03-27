@@ -63,7 +63,7 @@
       "fragmentStacking": { "enabled": true },
       "tripleRepeat": { "enabled": true },
       "fakeTimestamps": { "enabled": true },
-      "colonDramatic": { "enabled": true },
+      "colonDramatic": { "enabled": false },
       "llmOpeners": { "enabled": true },
       "llmDisclaimer": { "enabled": true },
       "responseWrapper": { "enabled": true },
