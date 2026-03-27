@@ -206,6 +206,22 @@ fn useful_move_frame_fails() {
 }
 
 #[test]
+fn practical_move_frame_fails() {
+    let doc = make_doc(
+        "The practical move is simple: fix the sleep basics first.",
+        Locale::En,
+    );
+    let config = CheckConfig::default();
+    assertions::assert_signposting_failure(
+        &doc,
+        &config,
+        "question-frame",
+        "the practical move is",
+        "single practical-move frame should now fail",
+    );
+}
+
+#[test]
 fn short_answer_frame_fails() {
     let doc = make_doc(
         "The short answer is: it can, but not in the cartoon version of the story.",
@@ -218,6 +234,19 @@ fn short_answer_frame_fails() {
         "answer-frame",
         "the short answer is",
         "single short-answer frame should now fail",
+    );
+}
+
+#[test]
+fn practical_answer_frame_fails() {
+    let doc = make_doc("The practical answer is just as consistent.", Locale::En);
+    let config = CheckConfig::default();
+    assertions::assert_signposting_failure(
+        &doc,
+        &config,
+        "answer-frame",
+        "the practical answer is",
+        "single practical-answer frame should now fail",
     );
 }
 
@@ -238,6 +267,22 @@ fn short_version_frame_fails() {
 }
 
 #[test]
+fn practical_version_frame_fails() {
+    let doc = make_doc(
+        "The practical version is simpler than the literature sounds.",
+        Locale::En,
+    );
+    let config = CheckConfig::default();
+    assertions::assert_signposting_failure(
+        &doc,
+        &config,
+        "frame-signpost",
+        "the practical version is",
+        "single practical-version frame should now fail",
+    );
+}
+
+#[test]
 fn useful_frame_fails() {
     let doc = make_doc("That is the useful frame.", Locale::En);
     let config = CheckConfig::default();
@@ -247,6 +292,22 @@ fn useful_frame_fails() {
         "frame-signpost",
         "the useful frame",
         "single useful-frame line should now fail",
+    );
+}
+
+#[test]
+fn useful_conclusion_simple_fails() {
+    let doc = make_doc(
+        "The useful conclusion is simple. Stress can absolutely cause physical symptoms.",
+        Locale::En,
+    );
+    let config = CheckConfig::default();
+    assertions::assert_signposting_failure(
+        &doc,
+        &config,
+        "answer-frame",
+        "the useful conclusion is simple",
+        "single useful-conclusion frame should now fail",
     );
 }
 
@@ -263,6 +324,20 @@ fn point_plain_enough_fails() {
         "frame-signpost",
         "the point is plain enough",
         "plain-enough framing should now fail",
+    );
+}
+
+#[test]
+fn concrete_practical_move_phrase_passes() {
+    let doc = make_doc(
+        "Reducing temptation is another practical move when attention is thin.",
+        Locale::En,
+    );
+    let config = CheckConfig::default();
+    assertions::assert_passes(
+        &doc,
+        &config,
+        "ordinary concrete use of practical move should pass",
     );
 }
 

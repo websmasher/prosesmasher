@@ -9,14 +9,14 @@ description = "Internal flow checks runtime crate for the prosesmasher workspace
 readme = "../../../../../../README.md"
 
 [dependencies]
-prosesmasher-domain-types = { version = "0.3.2", path = "../../../../domain/types" }
-prosesmasher-app-checks-core-runtime = { version = "0.3.2", path = "../../core/runtime" }
+prosesmasher-domain-types = { version = "0.3.3", path = "../../../../domain/types" }
+prosesmasher-app-checks-core-runtime = { version = "0.3.3", path = "../../core/runtime" }
 low-expectations.workspace = true
 serde_json.workspace = true
 
 [dev-dependencies]
-prosesmasher-app-checks-flow-assertions = { version = "0.3.2", path = "../assertions" }
-prosesmasher-app-checks-test-support = { version = "0.3.2", path = "../../test-support" }
+prosesmasher-app-checks-flow-assertions = { version = "0.3.3", path = "../assertions" }
+prosesmasher-app-checks-test-support = { version = "0.3.3", path = "../../test-support" }
 
 [lints]
 workspace = true
