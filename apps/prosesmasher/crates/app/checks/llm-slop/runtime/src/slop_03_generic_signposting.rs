@@ -80,17 +80,21 @@ const NOTE_PATTERNS: &[&str] = &["please note that", "please note"];
 const QUESTION_PATTERNS: &[&str] = &[
     "the useful question is",
     "the useful move is",
+    "the practical move is",
     "the real question is",
     "the better question is",
 ];
 const ANSWER_PATTERNS: &[&str] = &[
     "the answer is simple",
     "the answer is straightforward",
+    "the practical answer is",
     "the short answer is",
     "the better conclusion is",
+    "the useful conclusion is simple",
 ];
 const FRAME_PATTERNS: &[&str] = &[
     "the short version",
+    "the practical version is",
     "the useful frame",
     "the useful version is",
     "the point is plain enough",

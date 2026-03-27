@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.3.3
+
+- Expanded `generic-signposting` with another narrow polished-article meta-framing batch:
+  - `the practical move is ...`
+  - `the practical answer is ...`
+  - `the practical version is ...`
+  - `the useful conclusion is simple`
+- Reviewed the additive hits against both the generated `gpt_5_4_mini` corpus and the explainer corpus, then refreshed only those approved baseline sidecars.
+- Kept the boundary narrow enough to leave ordinary concrete uses like `Reducing temptation is another practical move ...` out of scope.
+
 ## 0.3.2
 
 - Added `authority-padding` for vague research/evidence prestige framing such as `The research is not mysterious here.`, `Researchers keep finding ...`, and `The broader research backs ...` while explicitly leaving concrete sourced statements like `The 2023 review found ...` out of scope.
