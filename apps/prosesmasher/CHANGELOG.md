@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.5
+
+- Added a binary-only GitHub release path for `cargo-binstall` installs via the repository root shim package.
+- Switched release automation to tag-driven `cargo-dist` publishing on GitHub releases instead of `release-plz`-driven crates.io publishing.
+- Documented the supported install paths as:
+  - `cargo binstall --git https://github.com/websmasher/prosesmasher prosesmasher`
+  - `cargo install --git https://github.com/websmasher/prosesmasher prosesmasher`
+
 ## 0.3.4
 
 - Added `lesson-framing` for empty short-form coaching wrappers such as `The biggest lesson was simple.`, `The practical lesson for me was simple:`, and vague evaluative `The fix is boring/plain/not heroic.` lines while leaving concrete technical fixes like `The fix is to initialize the parser...` out of scope.
