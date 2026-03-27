@@ -47,6 +47,20 @@ fn diagnosis_limitation_detected() {
 }
 
 #[test]
+fn medical_expertise_limitation_detected() {
+    let sentence = "I do not have medical expertise in pediatric neurology.";
+    let doc = make_doc(sentence, Locale::En);
+    let config = CheckConfig::default();
+    assertions::assert_response_wrapper_failure(
+        &doc,
+        &config,
+        "advice-limitation",
+        sentence,
+        "medical-expertise limitation should fail",
+    );
+}
+
+#[test]
 fn blockquote_wrapper_detected() {
     let sentence = "I cannot provide specific medical advice about your child's medication.";
     let doc = make_doc_in_blockquote(sentence, Locale::En);
@@ -68,6 +82,20 @@ fn third_person_explanation_passes() {
     );
     let config = CheckConfig::default();
     assertions::assert_passes(&doc, &config, "third-person educational prose should pass");
+}
+
+#[test]
+fn first_person_non_wrapper_capability_passes() {
+    let doc = make_doc(
+        "I can explain how the parser reads headings from the markdown stream.",
+        Locale::En,
+    );
+    let config = CheckConfig::default();
+    assertions::assert_passes(
+        &doc,
+        &config,
+        "first-person concrete capability without wrapper object should pass",
+    );
 }
 
 #[test]

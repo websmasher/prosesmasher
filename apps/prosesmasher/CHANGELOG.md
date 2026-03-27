@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.9
+
+- Refactored `response-wrapper` and `authority-padding` into construction-plus-parts matchers built from constrained subject, auxiliary, action, and predicate families instead of phrase-bag conditionals.
+- Added synthetic guardrails for `medical expertise` response wrappers and `researchers keep finding ...` authority-padding frames while preserving the existing real-corpus baselines.
+
 ## 0.3.8
 
 - Refactored `contrastive-aphorism` toward construction-plus-parts helpers instead of handwritten token-shape branches.
