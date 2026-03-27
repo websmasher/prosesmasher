@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.6
+
+- Fixed the GitHub release packaging path for `cargo-dist` by disabling LTO in the dist profile, avoiding the Apple cross-link LLVM bitcode failure that broke the `v0.3.5` binary release.
+- Kept the new public install surface unchanged:
+  - `cargo binstall --git https://github.com/websmasher/prosesmasher prosesmasher`
+  - `cargo install --git https://github.com/websmasher/prosesmasher prosesmasher`
+
 ## 0.3.5
 
 - Added a binary-only GitHub release path for `cargo-binstall` installs via the repository root shim package.

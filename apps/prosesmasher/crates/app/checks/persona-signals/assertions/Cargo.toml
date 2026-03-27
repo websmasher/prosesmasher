@@ -10,10 +10,10 @@ description = "Internal reusable persona-signals-check assertions for the proses
 readme = "../../../../../../README.md"
 
 [dependencies]
-prosesmasher-domain-types = { version = "0.3.5", path = "../../../../domain/types" }
-prosesmasher-app-checks-core-runtime = { version = "0.3.5", path = "../../core/runtime" }
-prosesmasher-app-checks-persona-signals-runtime = { version = "0.3.5", path = "../runtime" }
-prosesmasher-app-checks-test-support = { version = "0.3.5", path = "../../test-support" }
+prosesmasher-domain-types = { version = "0.3.6", path = "../../../../domain/types" }
+prosesmasher-app-checks-core-runtime = { version = "0.3.6", path = "../../core/runtime" }
+prosesmasher-app-checks-persona-signals-runtime = { version = "0.3.6", path = "../runtime" }
+prosesmasher-app-checks-test-support = { version = "0.3.6", path = "../../test-support" }
 low-expectations.workspace = true
 
 [lints]

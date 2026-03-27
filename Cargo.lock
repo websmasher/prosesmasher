@@ -576,21 +576,21 @@ dependencies = [
 
 [[package]]
 name = "prosesmasher"
-version = "0.3.5"
+version = "0.3.6"
 dependencies = [
  "prosesmasher-adapters-inbound-cli",
 ]
 
 [[package]]
 name = "prosesmasher-adapters-inbound-cli"
-version = "0.3.5"
+version = "0.3.6"
 dependencies = [
  "prosesmasher-adapters-inbound-cli-runtime",
 ]
 
 [[package]]
 name = "prosesmasher-adapters-inbound-cli-runtime"
-version = "0.3.5"
+version = "0.3.6"
 dependencies = [
  "clap",
  "low-expectations",
@@ -607,14 +607,14 @@ dependencies = [
 
 [[package]]
 name = "prosesmasher-adapters-outbound-fs"
-version = "0.3.5"
+version = "0.3.6"
 dependencies = [
  "prosesmasher-adapters-outbound-fs-runtime",
 ]
 
 [[package]]
 name = "prosesmasher-adapters-outbound-fs-runtime"
-version = "0.3.5"
+version = "0.3.6"
 dependencies = [
  "garde",
  "prosesmasher-domain-types-runtime",
@@ -625,14 +625,14 @@ dependencies = [
 
 [[package]]
 name = "prosesmasher-adapters-outbound-parser"
-version = "0.3.5"
+version = "0.3.6"
 dependencies = [
  "prosesmasher-adapters-outbound-parser-runtime",
 ]
 
 [[package]]
 name = "prosesmasher-adapters-outbound-parser-runtime"
-version = "0.3.5"
+version = "0.3.6"
 dependencies = [
  "hyphenation",
  "icu_segmenter",
@@ -644,7 +644,7 @@ dependencies = [
 
 [[package]]
 name = "prosesmasher-app-checks-cadence-patterns-runtime"
-version = "0.3.5"
+version = "0.3.6"
 dependencies = [
  "low-expectations",
  "prosesmasher-app-checks-core-runtime",
@@ -654,7 +654,7 @@ dependencies = [
 
 [[package]]
 name = "prosesmasher-app-checks-catalog-runtime"
-version = "0.3.5"
+version = "0.3.6"
 dependencies = [
  "prosesmasher-app-checks-cadence-patterns-runtime",
  "prosesmasher-app-checks-core-runtime",
@@ -672,7 +672,7 @@ dependencies = [
 
 [[package]]
 name = "prosesmasher-app-checks-core-runtime"
-version = "0.3.5"
+version = "0.3.6"
 dependencies = [
  "low-expectations",
  "prosesmasher-domain-types",
@@ -680,7 +680,7 @@ dependencies = [
 
 [[package]]
 name = "prosesmasher-app-checks-document-policy-runtime"
-version = "0.3.5"
+version = "0.3.6"
 dependencies = [
  "low-expectations",
  "prosesmasher-app-checks-core-runtime",
@@ -690,7 +690,7 @@ dependencies = [
 
 [[package]]
 name = "prosesmasher-app-checks-flow-runtime"
-version = "0.3.5"
+version = "0.3.6"
 dependencies = [
  "low-expectations",
  "prosesmasher-app-checks-core-runtime",
@@ -700,7 +700,7 @@ dependencies = [
 
 [[package]]
 name = "prosesmasher-app-checks-lexical-runtime"
-version = "0.3.5"
+version = "0.3.6"
 dependencies = [
  "low-expectations",
  "prosesmasher-app-checks-core-runtime",
@@ -710,7 +710,7 @@ dependencies = [
 
 [[package]]
 name = "prosesmasher-app-checks-llm-slop-runtime"
-version = "0.3.5"
+version = "0.3.6"
 dependencies = [
  "low-expectations",
  "prosesmasher-app-checks-core-runtime",
@@ -720,7 +720,7 @@ dependencies = [
 
 [[package]]
 name = "prosesmasher-app-checks-persona-signals-runtime"
-version = "0.3.5"
+version = "0.3.6"
 dependencies = [
  "low-expectations",
  "prosesmasher-app-checks-core-runtime",
@@ -730,7 +730,7 @@ dependencies = [
 
 [[package]]
 name = "prosesmasher-app-checks-readability-runtime"
-version = "0.3.5"
+version = "0.3.6"
 dependencies = [
  "low-expectations",
  "prosesmasher-app-checks-core-runtime",
@@ -740,7 +740,7 @@ dependencies = [
 
 [[package]]
 name = "prosesmasher-app-checks-rhetorical-framing-runtime"
-version = "0.3.5"
+version = "0.3.6"
 dependencies = [
  "low-expectations",
  "prosesmasher-app-checks-core-runtime",
@@ -750,7 +750,7 @@ dependencies = [
 
 [[package]]
 name = "prosesmasher-app-checks-style-signals-runtime"
-version = "0.3.5"
+version = "0.3.6"
 dependencies = [
  "low-expectations",
  "prosesmasher-app-checks-core-runtime",
@@ -760,18 +760,18 @@ dependencies = [
 
 [[package]]
 name = "prosesmasher-domain-types"
-version = "0.3.5"
+version = "0.3.6"
 dependencies = [
  "prosesmasher-domain-types-runtime",
 ]
 
 [[package]]
 name = "prosesmasher-domain-types-runtime"
-version = "0.3.5"
+version = "0.3.6"
 
 [[package]]
 name = "prosesmasher-ports-outbound-traits"
-version = "0.3.5"
+version = "0.3.6"
 dependencies = [
  "prosesmasher-domain-types",
 ]
