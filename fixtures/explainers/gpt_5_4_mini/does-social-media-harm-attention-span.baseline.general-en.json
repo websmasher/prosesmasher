@@ -19,7 +19,7 @@
     },
     {
       "rule": "negation-reframe",
-      "count": 3
+      "count": 4
     },
     {
       "rule": "triple-repeat",

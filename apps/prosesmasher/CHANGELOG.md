@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.7
+
+- expand negation-reframe coverage for repeated corrective coaching frames and same-subject copular/action contrasts
+- add a construction-unification plan for refactoring rhetorical matchers into constrained part families
+
 ## 0.3.6
 
 - Fixed the GitHub release packaging path for `cargo-dist` by disabling LTO in the dist profile, avoiding the Apple cross-link LLVM bitcode failure that broke the `v0.3.5` binary release.
