@@ -51,7 +51,11 @@ impl Check for ContrastiveAphorismCheck {
 const LEADING_PREFIXES: &[&str] = &["and ", "but ", "so ", "because "];
 const ENOUGH_FOR_SUFFIXES: &[&str] = &[" is enough for this", " is enough for that"];
 const ABSTRACT_CONTRAST_NOUNS: &[&str] = &["revelations", "vibe", "virtues"];
+const ADVISORY_NEGATIVE_NOUNS: &[&str] = &["buffet", "elegance"];
 const HUMAN_PLURAL_SUBJECTS: &[&str] = &["kids", "children", "people"];
+const IMPERATIVE_CONTRAST_VERBS: &[&str] = &["bring"];
+const ADVISORY_MODAL_SUBJECTS: &[&str] = &["i"];
+const ADVISORY_MODAL_VERBS: &[&str] = &["give", "expect"];
 
 fn collect_contrastive_aphorism_evidence(doc: &Document) -> Vec<serde_json::Value> {
     let mut evidence = collect_sentence_evidence(
@@ -104,6 +108,9 @@ fn match_single_sentence(sentence: &str) -> Option<&'static str> {
     }
     if matches_imperative_contrast_aphorism(&stripped) {
         return Some("imperative-contrast-aphorism");
+    }
+    if matches_modal_advisory_contrast_aphorism(&stripped) {
+        return Some("modal-advisory-contrast-aphorism");
     }
     if matches_reps_not_revelations_shape(&stripped) {
         return Some("reps-not-revelations");
@@ -173,22 +180,29 @@ fn matches_it_changes_everything(text: &str) -> bool {
 
 fn matches_imperative_contrast_aphorism(text: &str) -> bool {
     let tokens = tokens(text);
-    matches!(
-        tokens.as_slice(),
-        ["bring", article_a, _, "not", article_b, contrast]
-            if is_article(article_a)
-                && is_article(article_b)
-                && ABSTRACT_CONTRAST_NOUNS.contains(contrast)
+    matches_article_noun_contrast(
+        &tokens,
+        IMPERATIVE_CONTRAST_VERBS,
+        ABSTRACT_CONTRAST_NOUNS,
+    )
+}
+
+fn matches_modal_advisory_contrast_aphorism(text: &str) -> bool {
+    let tokens = tokens(text);
+    matches_modal_article_noun_contrast(
+        &tokens,
+        ADVISORY_MODAL_SUBJECTS,
+        ADVISORY_MODAL_VERBS,
+        ADVISORY_NEGATIVE_NOUNS,
     )
 }
 
 fn matches_reps_not_revelations_shape(text: &str) -> bool {
     let tokens = tokens(text);
-    matches!(
-        tokens.as_slice(),
-        [subject, "get", _, "in", _, "not", contrast]
-            if HUMAN_PLURAL_SUBJECTS.contains(subject)
-                && ABSTRACT_CONTRAST_NOUNS.contains(contrast)
+    matches_subject_get_in_contrast(
+        &tokens,
+        HUMAN_PLURAL_SUBJECTS,
+        ABSTRACT_CONTRAST_NOUNS,
     )
 }
 
@@ -203,24 +217,137 @@ fn matches_treating_like_not_virtues_shape(text: &str) -> bool {
 
 fn matches_watch_for_x_not_y(text: &str) -> bool {
     let tokens = tokens(text);
-    matches!(
-        tokens.as_slice(),
-        ["watch", "for", article, "pattern", "not", "one", "bad", _]
-            if is_article(article)
+    matches_pattern(
+        &tokens,
+        &[
+            TokenPart::Exact("watch"),
+            TokenPart::Exact("for"),
+            TokenPart::Article,
+            TokenPart::Exact("pattern"),
+            TokenPart::Exact("not"),
+            TokenPart::Exact("one"),
+            TokenPart::Exact("bad"),
+            TokenPart::Any,
+        ],
     )
 }
 
 fn matches_like_a_problem_not_a_problem(text: &str) -> bool {
     let tokens = tokens(text);
-    matches!(
-        tokens.as_slice(),
-        [_, _, _, "like", article_a, _, "problem", "not", article_b, _, "problem"]
-            if is_article(article_a) && is_article(article_b)
+    matches_pattern(
+        &tokens,
+        &[
+            TokenPart::Any,
+            TokenPart::Any,
+            TokenPart::Any,
+            TokenPart::Exact("like"),
+            TokenPart::Article,
+            TokenPart::Any,
+            TokenPart::Exact("problem"),
+            TokenPart::Exact("not"),
+            TokenPart::Article,
+            TokenPart::Any,
+            TokenPart::Exact("problem"),
+        ],
     )
+}
+
+fn matches_article_noun_contrast(
+    tokens: &[&str],
+    leading_verbs: &[&str],
+    contrast_nouns: &[&str],
+) -> bool {
+    matches_pattern(
+        tokens,
+        &[
+            TokenPart::OneOf(leading_verbs),
+            TokenPart::Article,
+            TokenPart::Any,
+            TokenPart::Exact("not"),
+            TokenPart::Article,
+            TokenPart::OneOf(contrast_nouns),
+        ],
+    )
+}
+
+fn matches_modal_article_noun_contrast(
+    tokens: &[&str],
+    subjects: &[&str],
+    verbs: &[&str],
+    contrast_nouns: &[&str],
+) -> bool {
+    matches_pattern(
+        tokens,
+        &[
+            TokenPart::OneOf(subjects),
+            TokenPart::Exact("would"),
+            TokenPart::OneOf(verbs),
+            TokenPart::Any,
+            TokenPart::Any,
+            TokenPart::Exact("not"),
+            TokenPart::Article,
+            TokenPart::OneOf(contrast_nouns),
+        ],
+    ) || matches_pattern(
+        tokens,
+        &[
+            TokenPart::OneOf(subjects),
+            TokenPart::Exact("would"),
+            TokenPart::OneOf(verbs),
+            TokenPart::Any,
+            TokenPart::Exact("not"),
+            TokenPart::OneOf(contrast_nouns),
+        ],
+    )
+}
+
+fn matches_subject_get_in_contrast(
+    tokens: &[&str],
+    subjects: &[&str],
+    contrast_nouns: &[&str],
+) -> bool {
+    matches_pattern(
+        tokens,
+        &[
+            TokenPart::OneOf(subjects),
+            TokenPart::Exact("get"),
+            TokenPart::Any,
+            TokenPart::Exact("in"),
+            TokenPart::Any,
+            TokenPart::Exact("not"),
+            TokenPart::OneOf(contrast_nouns),
+        ],
+    )
+}
+
+fn matches_pattern(tokens: &[&str], pattern: &[TokenPart<'_>]) -> bool {
+    tokens.len() == pattern.len()
+        && tokens
+            .iter()
+            .zip(pattern.iter())
+            .all(|(token, part)| part.matches(token))
 }
 
 fn is_article(token: &str) -> bool {
     matches!(token, "a" | "an" | "the")
+}
+
+enum TokenPart<'a> {
+    Exact(&'a str),
+    OneOf(&'a [&'a str]),
+    Article,
+    Any,
+}
+
+impl TokenPart<'_> {
+    fn matches(&self, token: &str) -> bool {
+        match self {
+            Self::Exact(expected) => token == *expected,
+            Self::OneOf(options) => options.contains(&token),
+            Self::Article => is_article(token),
+            Self::Any => true,
+        }
+    }
 }
 
 fn tokens(text: &str) -> Vec<&str> {
