@@ -125,6 +125,25 @@ fn what_the_research_does_show_counts() {
 }
 
 #[test]
+fn researchers_keep_finding_counts() {
+    let doc = make_multi_sentence_doc(
+        &[
+            "Researchers keep finding the same pattern in burnout studies.",
+            "The broader research backs the same idea from different angles.",
+        ],
+        Locale::En,
+    );
+    let config = CheckConfig::default();
+    assertions::assert_authority_failure(
+        &doc,
+        &config,
+        "research-frame",
+        "the research",
+        "researchers-keep-finding should count as authority padding",
+    );
+}
+
+#[test]
 fn repeated_authority_padding_inside_blockquote_fails() {
     let doc = make_multi_sentence_blockquote_doc(
         &[
@@ -179,6 +198,20 @@ fn concrete_health_agency_fact_passes() {
         &doc,
         &config,
         "plain agency attribution should pass without vague authority scaffolding",
+    );
+}
+
+#[test]
+fn concrete_domain_research_statement_passes() {
+    let doc = make_doc(
+        "The research points vector changes into the correct segment after the first parse pass.",
+        Locale::En,
+    );
+    let config = CheckConfig::default();
+    assertions::assert_passes(
+        &doc,
+        &config,
+        "technical domain-specific research wording should pass",
     );
 }
 

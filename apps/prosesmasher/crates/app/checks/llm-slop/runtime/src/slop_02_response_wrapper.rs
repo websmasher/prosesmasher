@@ -6,8 +6,7 @@ use serde_json::{Value, json};
 
 use crate::check::Check;
 use crate::support::{
-    collect_sentence_evidence, contains_any, normalize, strip_leading_prefixes,
-    strip_quoted_segments,
+    collect_sentence_evidence, normalize, strip_leading_prefixes, strip_quoted_segments,
 };
 
 #[derive(Debug)]
@@ -51,37 +50,21 @@ impl Check for ResponseWrapperCheck {
 }
 
 const LEADING_PREFIXES: &[&str] = &["however, ", "but ", "that being said, ", "as such, "];
-
-const GENERAL_INFO_CAPABILITY_PATTERNS: &[&str] =
-    &["i can provide", "i can offer", "i can share", "i can give"];
-
-const GENERAL_INFO_OBJECTS: &[&str] = &[
+const FIRST_PERSON_SUBJECTS: &[&str] = &["i"];
+const CAPABILITY_AUXILIARIES: &[&str] = &["can"];
+const LIMITATION_AUXILIARIES: &[&str] = &["cannot", "can't", "do not", "don't"];
+const ABILITY_LIMITATION_PREFIXES: &[&str] =
+    &["do not have the ability to", "don't have the ability to"];
+const CAPABILITY_ACTIONS: &[&str] = &["provide", "offer", "share", "give"];
+const INFORMATION_OBJECTS: &[&str] = &[
     "general information",
     "general guidance",
     "general suggestions",
     "some general suggestions",
     "general advice",
 ];
-
-const LIMITATION_PATTERNS: &[&str] = &[
-    "i cannot provide",
-    "i can't provide",
-    "i do not provide",
-    "i don't provide",
-    "i cannot give",
-    "i can't give",
-    "i do not give",
-    "i don't give",
-    "i cannot offer",
-    "i can't offer",
-    "i am not able to provide",
-    "i'm not able to provide",
-    "i cannot diagnose",
-    "i can't diagnose",
-    "i do not diagnose",
-    "i don't diagnose",
-];
-
+const LIMITATION_ACTIONS: &[&str] = &["provide", "give", "offer"];
+const DIAGNOSIS_ACTIONS: &[&str] = &["diagnose"];
 const INFORMATION_LIMITATION_OBJECTS: &[&str] = &[
     "information",
     "up-to-date information",
@@ -95,20 +78,15 @@ const ADVICE_LIMITATION_OBJECTS: &[&str] = &[
     "specific medical advice",
     "specific advice",
     "personalized advice",
+];
+const MEDICAL_EXPERTISE_OBJECTS: &[&str] = &[
     "medical expertise",
 ];
-
 const DIAGNOSIS_LIMITATION_OBJECTS: &[&str] = &[
     "provide a diagnosis",
     "diagnosis",
     "diagnose",
     "treatment plan",
-];
-
-const ABILITY_LIMITATION_PATTERNS: &[&str] = &[
-    "i do not have the ability to provide",
-    "i don't have the ability to provide",
-    "ability to provide a diagnosis",
 ];
 
 fn collect_response_wrapper_evidence(doc: &Document) -> Vec<Value> {
@@ -144,51 +122,135 @@ fn match_response_wrapper(sentence: &str) -> Option<(&'static str, &'static str)
 }
 
 fn match_information_wrapper(normalized: &str) -> Option<&'static str> {
-    if let Some(capability) = contains_any(normalized, GENERAL_INFO_CAPABILITY_PATTERNS) {
-        if contains_any(normalized, GENERAL_INFO_OBJECTS).is_some() {
-            return Some(capability);
-        }
+    if matches_subject_aux_action_objects(
+        normalized,
+        FIRST_PERSON_SUBJECTS,
+        CAPABILITY_AUXILIARIES,
+        CAPABILITY_ACTIONS,
+        INFORMATION_OBJECTS,
+    ) {
+        return Some("capability+info-object");
     }
 
-    if let Some(limitation) = contains_any(normalized, LIMITATION_PATTERNS) {
-        if contains_any(normalized, INFORMATION_LIMITATION_OBJECTS).is_some() {
-            return Some(limitation);
-        }
+    if matches_subject_aux_action_objects(
+        normalized,
+        FIRST_PERSON_SUBJECTS,
+        LIMITATION_AUXILIARIES,
+        LIMITATION_ACTIONS,
+        INFORMATION_LIMITATION_OBJECTS,
+    ) {
+        return Some("limitation+info-object");
     }
 
     None
 }
 
 fn match_advice_limitation(normalized: &str) -> Option<&'static str> {
-    if normalized.contains("i do not have medical expertise")
-        || normalized.contains("i don't have medical expertise")
-    {
-        return Some("medical expertise");
+    if matches_subject_aux_objects(
+        normalized,
+        FIRST_PERSON_SUBJECTS,
+        LIMITATION_AUXILIARIES,
+        MEDICAL_EXPERTISE_OBJECTS,
+    ) {
+        return Some("limitation+expertise-object");
     }
 
-    if let Some(limitation) = contains_any(normalized, LIMITATION_PATTERNS) {
-        if contains_any(normalized, ADVICE_LIMITATION_OBJECTS).is_some() {
-            return Some(limitation);
-        }
+    if matches_subject_aux_action_objects(
+        normalized,
+        FIRST_PERSON_SUBJECTS,
+        LIMITATION_AUXILIARIES,
+        LIMITATION_ACTIONS,
+        ADVICE_LIMITATION_OBJECTS,
+    ) {
+        return Some("limitation+advice-object");
     }
 
     None
 }
 
 fn match_diagnosis_limitation(normalized: &str) -> Option<&'static str> {
-    if let Some(ability) = contains_any(normalized, ABILITY_LIMITATION_PATTERNS) {
-        if contains_any(normalized, DIAGNOSIS_LIMITATION_OBJECTS).is_some() {
-            return Some(ability);
-        }
+    if matches_subject_prefix_action_objects(
+        normalized,
+        FIRST_PERSON_SUBJECTS,
+        ABILITY_LIMITATION_PREFIXES,
+        &["provide"],
+        DIAGNOSIS_LIMITATION_OBJECTS,
+    ) {
+        return Some("ability-limitation+diagnosis-object");
     }
 
-    if let Some(limitation) = contains_any(normalized, LIMITATION_PATTERNS) {
-        if contains_any(normalized, DIAGNOSIS_LIMITATION_OBJECTS).is_some() {
-            return Some(limitation);
-        }
+    if matches_subject_aux_action_objects(
+        normalized,
+        FIRST_PERSON_SUBJECTS,
+        LIMITATION_AUXILIARIES,
+        LIMITATION_ACTIONS,
+        DIAGNOSIS_LIMITATION_OBJECTS,
+    ) || matches_subject_aux_action_objects(
+        normalized,
+        FIRST_PERSON_SUBJECTS,
+        LIMITATION_AUXILIARIES,
+        DIAGNOSIS_ACTIONS,
+        DIAGNOSIS_LIMITATION_OBJECTS,
+    ) {
+        return Some("limitation+diagnosis-object");
     }
 
     None
+}
+
+fn matches_subject_aux_action_objects(
+    text: &str,
+    subjects: &[&str],
+    auxiliaries: &[&str],
+    actions: &[&str],
+    objects: &[&str],
+) -> bool {
+    subjects.iter().any(|subject| {
+        auxiliaries.iter().any(|auxiliary| {
+            actions.iter().any(|action| {
+                let prefix = format!("{subject} {auxiliary} {action} ");
+                text.starts_with(&prefix)
+                    && objects
+                        .iter()
+                        .any(|object| text.contains(object))
+            })
+        })
+    })
+}
+
+fn matches_subject_aux_objects(
+    text: &str,
+    subjects: &[&str],
+    auxiliaries: &[&str],
+    objects: &[&str],
+) -> bool {
+    subjects.iter().any(|subject| {
+        auxiliaries.iter().any(|auxiliary| {
+            let prefix = format!("{subject} {auxiliary} ");
+            text.starts_with(&prefix)
+                && objects.iter().any(|object| text.contains(object))
+        })
+    })
+}
+
+fn matches_subject_prefix_action_objects(
+    text: &str,
+    subjects: &[&str],
+    prefixes: &[&str],
+    actions: &[&str],
+    objects: &[&str],
+) -> bool {
+    subjects.iter().any(|subject| {
+        prefixes.iter().any(|prefix| {
+            actions.iter().any(|action| {
+                let full_prefix = format!("{subject} {prefix} {action} ");
+                text.starts_with(&full_prefix)
+                    && objects
+                        .iter()
+                        .any(|object| text.contains(object))
+            })
+        })
+    })
 }
 
 #[cfg(test)]
