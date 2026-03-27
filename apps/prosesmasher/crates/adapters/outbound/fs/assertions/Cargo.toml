@@ -10,9 +10,9 @@ description = "Reusable assertions and temp-fixture helpers for the filesystem a
 readme = "../../../../../README.md"
 
 [dependencies]
-prosesmasher-adapters-outbound-fs-runtime = { version = "0.3.11", path = "../runtime" }
-prosesmasher-domain-types-runtime = { version = "0.3.11", path = "../../../../domain/types/runtime" }
-prosesmasher-ports-outbound-traits = { version = "0.3.11", path = "../../../../ports/outbound/traits" }
+prosesmasher-adapters-outbound-fs-runtime = { version = "0.3.12", path = "../runtime" }
+prosesmasher-domain-types-runtime = { version = "0.3.12", path = "../../../../domain/types/runtime" }
+prosesmasher-ports-outbound-traits = { version = "0.3.12", path = "../../../../ports/outbound/traits" }
 
 [lints]
 workspace = true

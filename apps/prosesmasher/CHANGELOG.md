@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.12
+
+- Disabled `colon-dramatic` by default in the canonical heuristics config and the shipped full English preset because the current matcher is still too noisy on normal article/link-intro prose.
+- Kept the rule in the catalog for explicit opt-in use, but changed the public default surface so `dump-config --full-config` now emits `"colonDramatic": { "enabled": false }`.
+
 ## 0.3.11
 
 - Expanded `generic-signposting` with construction-based abstract evaluation frames such as `The point is to ...`, `What matters is ...`, `What helps is ...`, `The bigger win is ...`, and `The result worth caring about ...`, while leaving concrete procedural prose like `The point is to parse the file ...` and concrete advice like `What helps is reducing caffeine ...` out of scope.
