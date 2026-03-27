@@ -1,0 +1,21 @@
+{
+  "preset": "general-en",
+  "failures": [
+    {
+      "rule": "fragment-stacking",
+      "count": 2
+    },
+    {
+      "rule": "paragraph-length",
+      "count": 1
+    },
+    {
+      "rule": "smart-quotes",
+      "count": 5
+    },
+    {
+      "rule": "triple-repeat",
+      "count": 1
+    }
+  ]
+}

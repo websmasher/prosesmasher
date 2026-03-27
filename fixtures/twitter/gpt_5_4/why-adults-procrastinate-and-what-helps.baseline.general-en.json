@@ -1,0 +1,13 @@
+{
+  "preset": "general-en",
+  "failures": [
+    {
+      "rule": "fragment-stacking",
+      "count": 1
+    },
+    {
+      "rule": "smart-quotes",
+      "count": 2
+    }
+  ]
+}

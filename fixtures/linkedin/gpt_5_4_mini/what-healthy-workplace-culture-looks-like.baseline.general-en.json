@@ -1,0 +1,17 @@
+{
+  "preset": "general-en",
+  "failures": [
+    {
+      "rule": "negation-reframe",
+      "count": 1
+    },
+    {
+      "rule": "observer-guidance",
+      "count": 1
+    },
+    {
+      "rule": "triple-repeat",
+      "count": 3
+    }
+  ]
+}

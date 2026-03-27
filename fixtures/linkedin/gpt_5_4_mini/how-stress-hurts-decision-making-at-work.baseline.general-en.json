@@ -1,0 +1,21 @@
+{
+  "preset": "general-en",
+  "failures": [
+    {
+      "rule": "boilerplate-conclusion",
+      "count": 1
+    },
+    {
+      "rule": "lesson-framing",
+      "count": 1
+    },
+    {
+      "rule": "negation-reframe",
+      "count": 1
+    },
+    {
+      "rule": "observer-guidance",
+      "count": 1
+    }
+  ]
+}

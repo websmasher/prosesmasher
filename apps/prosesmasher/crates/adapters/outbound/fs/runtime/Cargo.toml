@@ -11,14 +11,14 @@ keywords = ["markdown", "validation", "writing", "lint"]
 categories = ["text-processing", "development-tools"]
 
 [dependencies]
-prosesmasher-domain-types-runtime = { version = "0.3.3", path = "../../../../domain/types/runtime" }
-prosesmasher-ports-outbound-traits = { version = "0.3.3", path = "../../../../ports/outbound/traits" }
+prosesmasher-domain-types-runtime = { version = "0.3.4", path = "../../../../domain/types/runtime" }
+prosesmasher-ports-outbound-traits = { version = "0.3.4", path = "../../../../ports/outbound/traits" }
 serde = { workspace = true }
 serde_json = { workspace = true }
 garde = { workspace = true }
 
 [dev-dependencies]
-prosesmasher-adapters-outbound-fs-assertions = { version = "0.3.3", path = "../assertions" }
+prosesmasher-adapters-outbound-fs-assertions = { version = "0.3.4", path = "../assertions" }
 
 [lints]
 workspace = true

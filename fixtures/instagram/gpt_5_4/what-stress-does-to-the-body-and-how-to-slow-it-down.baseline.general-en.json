@@ -1,0 +1,13 @@
+{
+  "preset": "general-en",
+  "failures": [
+    {
+      "rule": "smart-quotes",
+      "count": 1
+    },
+    {
+      "rule": "triple-repeat",
+      "count": 1
+    }
+  ]
+}

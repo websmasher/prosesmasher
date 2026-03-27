@@ -1,0 +1,9 @@
+{
+  "preset": "general-en",
+  "failures": [
+    {
+      "rule": "observer-guidance",
+      "count": 1
+    }
+  ]
+}

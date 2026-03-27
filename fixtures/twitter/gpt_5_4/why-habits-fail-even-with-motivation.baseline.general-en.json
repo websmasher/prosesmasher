@@ -1,0 +1,9 @@
+{
+  "preset": "general-en",
+  "failures": [
+    {
+      "rule": "negation-reframe",
+      "count": 3
+    }
+  ]
+}

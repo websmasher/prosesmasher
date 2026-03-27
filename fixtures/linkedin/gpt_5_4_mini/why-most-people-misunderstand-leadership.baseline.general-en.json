@@ -1,0 +1,21 @@
+{
+  "preset": "general-en",
+  "failures": [
+    {
+      "rule": "negation-reframe",
+      "count": 1
+    },
+    {
+      "rule": "observer-guidance",
+      "count": 2
+    },
+    {
+      "rule": "triple-repeat",
+      "count": 3
+    },
+    {
+      "rule": "word-repetition",
+      "count": 1
+    }
+  ]
+}

@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.4
+
+- Added `lesson-framing` for empty short-form coaching wrappers such as `The biggest lesson was simple.`, `The practical lesson for me was simple:`, and vague evaluative `The fix is boring/plain/not heroic.` lines while leaving concrete technical fixes like `The fix is to initialize the parser...` out of scope.
+- Added `observer-guidance` for short reader-observation scaffolds such as `You see it everywhere:`, `You can watch it happen in real time.`, `If this hits home, ...`, and the reviewed `That is where ...` abstract bridge lines from the LinkedIn/Instagram corpora.
+- Added `scripts/social_fixture_failures.py` plus checked-in LinkedIn/Twitter/Instagram baseline sidecars so short-form corpora now follow the same snapshot/compare workflow as the generated article and explainer fixture sets.
+- Reviewed the additive hits against all three corpus gates and kept the generated-article and explainer baselines unchanged while snapshotting only the approved social additions.
+
 ## 0.3.3
 
 - Expanded `generic-signposting` with another narrow polished-article meta-framing batch:

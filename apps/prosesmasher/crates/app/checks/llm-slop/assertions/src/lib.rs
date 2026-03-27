@@ -50,10 +50,14 @@ pub mod contrastive_aphorism;
 pub mod empty_emphasis;
 #[path = "slop_03_generic_signposting.rs"]
 pub mod generic_signposting;
+#[path = "slop_13_lesson_framing.rs"]
+pub mod lesson_framing;
 #[path = "slop_01_llm_disclaimer.rs"]
 pub mod llm_disclaimer;
 #[path = "slop_05_llm_vocabulary.rs"]
 pub mod llm_vocabulary;
+#[path = "slop_14_observer_guidance.rs"]
+pub mod observer_guidance;
 #[path = "slop_02_response_wrapper.rs"]
 pub mod response_wrapper;
 #[path = "slop_06_softening_language.rs"]

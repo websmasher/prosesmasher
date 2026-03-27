@@ -1,0 +1,9 @@
+{
+  "preset": "general-en",
+  "failures": [
+    {
+      "rule": "lesson-framing",
+      "count": 1
+    }
+  ]
+}
