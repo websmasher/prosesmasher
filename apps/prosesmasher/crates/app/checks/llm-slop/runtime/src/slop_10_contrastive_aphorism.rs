@@ -180,11 +180,7 @@ fn matches_it_changes_everything(text: &str) -> bool {
 
 fn matches_imperative_contrast_aphorism(text: &str) -> bool {
     let tokens = tokens(text);
-    matches_article_noun_contrast(
-        &tokens,
-        IMPERATIVE_CONTRAST_VERBS,
-        ABSTRACT_CONTRAST_NOUNS,
-    )
+    matches_article_noun_contrast(&tokens, IMPERATIVE_CONTRAST_VERBS, ABSTRACT_CONTRAST_NOUNS)
 }
 
 fn matches_modal_advisory_contrast_aphorism(text: &str) -> bool {
@@ -199,11 +195,7 @@ fn matches_modal_advisory_contrast_aphorism(text: &str) -> bool {
 
 fn matches_reps_not_revelations_shape(text: &str) -> bool {
     let tokens = tokens(text);
-    matches_subject_get_in_contrast(
-        &tokens,
-        HUMAN_PLURAL_SUBJECTS,
-        ABSTRACT_CONTRAST_NOUNS,
-    )
+    matches_subject_get_in_contrast(&tokens, HUMAN_PLURAL_SUBJECTS, ABSTRACT_CONTRAST_NOUNS)
 }
 
 fn matches_treating_like_not_virtues_shape(text: &str) -> bool {

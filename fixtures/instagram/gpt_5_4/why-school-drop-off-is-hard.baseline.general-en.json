@@ -6,6 +6,10 @@
       "count": 1
     },
     {
+      "rule": "generic-signposting",
+      "count": 1
+    },
+    {
       "rule": "triple-repeat",
       "count": 2
     }

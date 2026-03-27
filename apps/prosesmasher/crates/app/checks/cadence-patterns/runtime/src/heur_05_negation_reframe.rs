@@ -153,8 +153,8 @@ const HUMAN_PLURAL_NOUNS: &[&str] = &[
     "women", "men",
 ];
 const HUMAN_SINGULAR_NOUNS: &[&str] = &[
-    "adult", "baby", "child", "dad", "kid", "man", "mom", "parent", "person", "student",
-    "teacher", "woman",
+    "adult", "baby", "child", "dad", "kid", "man", "mom", "parent", "person", "student", "teacher",
+    "woman",
 ];
 const HUMAN_CORRECTIVE_PRONOUN_FOLLOWUPS: &[&str] = &[
     "they keep ",
@@ -164,8 +164,7 @@ const HUMAN_CORRECTIVE_PRONOUN_FOLLOWUPS: &[&str] = &[
     "they're telling ",
 ];
 const CORRECTIVE_PLURAL_SUBJECTS: &[&str] = &["they", "we", "you"];
-const PRESENT_COPULAR_NEGATION_FORMS: &[(&str, &str)] =
-    &[("are not", "are"), ("aren't", "are")];
+const PRESENT_COPULAR_NEGATION_FORMS: &[(&str, &str)] = &[("are not", "are"), ("aren't", "are")];
 const WANT_NEGATION_STARTS: &[&str] = &["you do not want to ", "you don't want to "];
 const WANT_TRANSFORM_AFFIRMATIVE_STARTS: &[&str] = &["you want to turn "];
 
@@ -442,8 +441,12 @@ fn non_copular_corrective_evidence(
         }));
     }
 
-    if looks_like_make_okay_explain_contrast_sentence(a_text, b_text, a.word_count(), b.word_count())
-    {
+    if looks_like_make_okay_explain_contrast_sentence(
+        a_text,
+        b_text,
+        a.word_count(),
+        b.word_count(),
+    ) {
         return Some(json!({
             "matched_text": "does not make x okay -> it does explain y",
             "sentence": a.text,
@@ -821,9 +824,13 @@ fn looks_like_make_okay_explain_contrast_sentence(
     .iter()
     .any(|prefix| a_text.starts_with(prefix))
         && a_text.ends_with(" okay")
-        && ["it does explain ", "this does explain ", "that does explain "]
-            .iter()
-            .any(|prefix| b_text.starts_with(prefix))
+        && [
+            "it does explain ",
+            "this does explain ",
+            "that does explain ",
+        ]
+        .iter()
+        .any(|prefix| b_text.starts_with(prefix))
 }
 
 fn looks_like_teaches_not_teach_regulation(
@@ -880,7 +887,7 @@ fn repeated_abstract_frame_corrective(
             (a_text.starts_with(prefix)
                 || a_text.starts_with(&usually_prefix)
                 || a_text.starts_with(&usually_contracted_prefix))
-                .then_some(*subject)
+            .then_some(*subject)
         })?;
 
     if ABSTRACT_FRAME_AFFIRMATIVES
@@ -894,7 +901,7 @@ fn repeated_abstract_frame_corrective(
         || b_text.starts_with("it's ")
         || b_text.starts_with("they are ")
         || b_text.starts_with("they're "))
-        .then_some("goal is not x -> it is y")
+    .then_some("goal is not x -> it is y")
 }
 
 fn repeated_need_corrective(
@@ -1041,8 +1048,7 @@ fn repeated_human_subject_corrective(
         }
 
         if repeated_human_subject_verb_corrective(a_text, b_text, negation_phrase)
-            || b_text.contains(" because ")
-                && b_text.starts_with("they ")
+            || b_text.contains(" because ") && b_text.starts_with("they ")
             || HUMAN_CORRECTIVE_PRONOUN_FOLLOWUPS
                 .iter()
                 .any(|prefix| b_text.starts_with(prefix))

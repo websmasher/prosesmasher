@@ -6,6 +6,10 @@
       "count": 2
     },
     {
+      "rule": "generic-signposting",
+      "count": 1
+    },
+    {
       "rule": "negation-reframe",
       "count": 4
     },

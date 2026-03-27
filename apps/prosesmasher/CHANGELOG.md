@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.11
+
+- Expanded `generic-signposting` with construction-based abstract evaluation frames such as `The point is to ...`, `What matters is ...`, `What helps is ...`, `The bigger win is ...`, and `The result worth caring about ...`, while leaving concrete procedural prose like `The point is to parse the file ...` and concrete advice like `What helps is reducing caffeine ...` out of scope.
+- Expanded `universalizing-claims` with a strong group-behavior opener family like `Most parents keep reaching ...` when it is used as a broad human-generalization frame rather than a concrete statement.
+- Expanded `empty-emphasis` with a narrow empty moral relabel branch for deictic virtue lines like `That is discipline.` and `This is discipline.`
+- Refreshed only the reviewed explainer, Instagram, and generated `gpt_5_4_mini` baselines for the additive `generic-signposting` hits from this pass while keeping the broader corpus compares clean.
+
 ## 0.3.10
 
 - Expanded `negation-reframe` with additional narrow corrective families:

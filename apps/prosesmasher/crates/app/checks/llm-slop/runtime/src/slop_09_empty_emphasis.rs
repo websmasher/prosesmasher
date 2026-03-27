@@ -52,6 +52,7 @@ const LEADING_PREFIXES: &[&str] = &["and ", "but ", "so ", "because "];
 const EMPHASIS_REFERENTS: &[&str] = &["part", "bit"];
 const EMPHASIS_QUALIFIERS: &[&str] = &["last", "first", "main"];
 const WEAKENING_REFERENTS: &[&str] = &["pattern", "cycle", "loop"];
+const EMPTY_VIRTUE_LABELS: &[&str] = &["discipline"];
 
 fn collect_empty_emphasis_evidence(doc: &Document) -> Vec<serde_json::Value> {
     collect_sentence_evidence(
@@ -136,9 +137,20 @@ fn match_empty_emphasis(sentence: &str) -> Option<&'static str> {
             Some("deictic-pattern-weakens")
         }
         [what, helps, is, not, brilliant]
-            if what == "what" && helps == "helps" && is == "is" && not == "not" && brilliant == "brilliant" =>
+            if what == "what"
+                && helps == "helps"
+                && is == "is"
+                && not == "not"
+                && brilliant == "brilliant" =>
         {
             Some("what-helps-not-brilliant")
+        }
+        [deictic, is, label]
+            if is_deictic(deictic.as_str())
+                && is == "is"
+                && EMPTY_VIRTUE_LABELS.contains(&label.as_str()) =>
+        {
+            Some("deictic-empty-virtue-label")
         }
         _ => None,
     }
