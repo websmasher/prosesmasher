@@ -10,6 +10,10 @@
       "count": 1
     },
     {
+      "rule": "negation-reframe",
+      "count": 1
+    },
+    {
       "rule": "smart-quotes",
       "count": 5
     }

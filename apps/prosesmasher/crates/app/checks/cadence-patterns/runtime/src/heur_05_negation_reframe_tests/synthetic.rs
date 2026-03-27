@@ -262,6 +262,183 @@ fn repeated_goal_frame_detected() {
 }
 
 #[test]
+fn repeated_job_frame_detected() {
+    let doc = make_doc_with_sentences(
+        &[
+            "Your job is not to outsmart the chemistry.",
+            "Your job is to make the ten or fifteen minutes less terrifying.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    assertions::assert_negation_reframe_failure(
+        &doc,
+        &config,
+        "goal is not x -> goal is y",
+        "repeated job frame corrective should fail",
+    );
+}
+
+#[test]
+fn repeated_best_result_frame_detected() {
+    let doc = make_doc_with_sentences(
+        &[
+            "The best result is usually not instant obedience.",
+            "It is a child who melts down less violently over time.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    assertions::assert_negation_reframe_failure(
+        &doc,
+        &config,
+        "goal is not x -> it is y",
+        "best result frame corrective should fail",
+    );
+}
+
+#[test]
+fn useful_alternatives_frame_detected() {
+    let doc = make_doc_with_sentences(
+        &[
+            "The useful alternatives are not softer punishments.",
+            "They are different moves.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    assertions::assert_negation_reframe_failure(
+        &doc,
+        &config,
+        "goal is not x -> it is y",
+        "useful alternatives corrective should fail",
+    );
+}
+
+#[test]
+fn pronoun_looking_for_pair_detected() {
+    let doc = make_doc_with_sentences(
+        &[
+            "They are not looking for a TED talk in that moment.",
+            "They are looking for proof that an adult is calm enough to stay.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    assertions::assert_negation_reframe_failure(
+        &doc,
+        &config,
+        "they are not looking for x -> they are looking for y",
+        "pronoun looking-for corrective should fail",
+    );
+}
+
+#[test]
+fn human_plural_need_then_they_need_detected() {
+    let doc = make_doc_with_sentences(
+        &[
+            "Volatile kids do not need speeches about self-control.",
+            "They need repetition, modeling, and a family language for what to do when the heat rises.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    assertions::assert_negation_reframe_failure(
+        &doc,
+        &config,
+        "x does not need y -> they need z",
+        "human plural subject need corrective should fail",
+    );
+}
+
+#[test]
+fn human_plural_contrastive_followup_detected() {
+    let doc = make_doc_with_sentences(
+        &[
+            "Adults do not procrastinate because they love pain.",
+            "They procrastinate because the task feels worse right now than the consequences do later.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    assertions::assert_negation_reframe_failure(
+        &doc,
+        &config,
+        "x do not y -> they z",
+        "human plural corrective followup should fail",
+    );
+}
+
+#[test]
+fn singular_human_copular_followup_detected() {
+    let doc = make_doc_with_sentences(
+        &[
+            "A child who keeps misbehaving after punishment is not giving you a review of your authority.",
+            "They are telling you the tool missed the problem.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    assertions::assert_negation_reframe_failure(
+        &doc,
+        &config,
+        "x is not y -> they are z",
+        "singular human corrective followup should fail",
+    );
+}
+
+#[test]
+fn technical_entity_not_problem_does_not_trigger_human_followup() {
+    let doc = make_doc_with_sentences(
+        &[
+            "The parser does not need a network connection.",
+            "It needs a file path and a locale.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    assertions::assert_passes(
+        &doc,
+        &config,
+        "non-human technical entity need corrective should pass",
+    );
+}
+
+#[test]
+fn legitimate_human_analysis_without_they_followup_does_not_trigger() {
+    let doc = make_doc_with_sentences(
+        &[
+            "Adults do not respond well to noise at midnight.",
+            "Sleep fragmentation raises stress the next day.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    assertions::assert_passes(
+        &doc,
+        &config,
+        "human subject without corrective they followup should pass",
+    );
+}
+
+#[test]
+fn methodological_caveat_does_not_trigger_looking_for_rule() {
+    let doc = make_doc_with_sentences(
+        &[
+            "They are not looking for a miracle here.",
+            "They are tracking remission rates across twelve months of follow-up.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    assertions::assert_passes(
+        &doc,
+        &config,
+        "non looking-for followup should pass",
+    );
+}
+
+#[test]
 fn repeated_point_frame_detected() {
     let doc = make_doc_with_sentences(
         &[

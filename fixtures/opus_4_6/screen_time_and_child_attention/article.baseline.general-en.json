@@ -6,6 +6,10 @@
       "count": 1
     },
     {
+      "rule": "negation-reframe",
+      "count": 1
+    },
+    {
       "rule": "prohibited-terms",
       "count": 1
     },

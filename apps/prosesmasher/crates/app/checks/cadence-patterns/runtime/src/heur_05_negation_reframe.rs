@@ -95,12 +95,27 @@ const ABSTRACT_FRAME_NEGATIONS: &[(&str, &str)] = &[
     ("aim", "the aim isn't "),
     ("biggest sign", "the biggest sign is not "),
     ("biggest sign", "the biggest sign isn't "),
+    ("best result", "the best result is not "),
+    ("best result", "the best result isn't "),
+    ("replacement", "the replacement is not "),
+    ("replacement", "the replacement isn't "),
+    ("your job", "your job is not "),
+    ("your job", "your job isn't "),
+    ("useful alternative", "the useful alternative is not "),
+    ("useful alternative", "the useful alternative isn't "),
+    ("useful alternatives", "the useful alternatives are not "),
+    ("useful alternatives", "the useful alternatives aren't "),
 ];
 const ABSTRACT_FRAME_AFFIRMATIVES: &[(&str, &str)] = &[
     ("goal", "the goal is "),
     ("point", "the point is "),
     ("aim", "the aim is "),
     ("biggest sign", "the biggest sign is "),
+    ("best result", "the best result is "),
+    ("replacement", "the replacement is "),
+    ("your job", "your job is "),
+    ("useful alternative", "the useful alternative is "),
+    ("useful alternatives", "the useful alternatives are "),
 ];
 const NEED_NEGATION_STARTS: &[(&str, &str)] = &[
     ("i", "i do not need to "),
@@ -134,6 +149,20 @@ const HUMAN_PLURAL_NOUNS: &[&str] = &[
     "adults", "children", "families", "kids", "moms", "parents", "people", "students", "teachers",
     "women", "men",
 ];
+const HUMAN_SINGULAR_NOUNS: &[&str] = &[
+    "adult", "baby", "child", "dad", "kid", "man", "mom", "parent", "person", "student",
+    "teacher", "woman",
+];
+const HUMAN_CORRECTIVE_PRONOUN_FOLLOWUPS: &[&str] = &[
+    "they keep ",
+    "they shorten ",
+    "they tell ",
+    "they are telling ",
+    "they're telling ",
+];
+const CORRECTIVE_PLURAL_SUBJECTS: &[&str] = &["they", "we", "you"];
+const PRESENT_COPULAR_NEGATION_FORMS: &[(&str, &str)] =
+    &[("are not", "are"), ("aren't", "are")];
 const WANT_NEGATION_STARTS: &[&str] = &["you do not want to ", "you don't want to "];
 const WANT_TRANSFORM_AFFIRMATIVE_STARTS: &[&str] = &["you want to turn "];
 
@@ -304,6 +333,36 @@ fn adjacent_corrective_evidence(
     let a_text = normalize_text(&a.text);
     let b_text = normalize_text(&b.text);
 
+    if let Some(matched_text) =
+        repeated_pronoun_looking_corrective(&a_text, &b_text, a.word_count(), b.word_count())
+    {
+        return Some(json!({
+            "matched_text": matched_text,
+            "sentence": a.text,
+            "next_sentence": b.text,
+        }));
+    }
+
+    if let Some(matched_text) =
+        repeated_need_corrective(&a_text, &b_text, a.word_count(), b.word_count())
+    {
+        return Some(json!({
+            "matched_text": matched_text,
+            "sentence": a.text,
+            "next_sentence": b.text,
+        }));
+    }
+
+    if let Some(matched_text) =
+        repeated_human_subject_corrective(&a_text, &b_text, a.word_count(), b.word_count())
+    {
+        return Some(json!({
+            "matched_text": matched_text,
+            "sentence": a.text,
+            "next_sentence": b.text,
+        }));
+    }
+
     if !looks_like_negated_label_sentence(&a_text, a.word_count()) {
         return non_copular_corrective_evidence(a, b, &a_text, &b_text);
     }
@@ -445,6 +504,39 @@ fn interrupted_corrective_evidence(
 
     let a_text = normalize_text(&a.text);
     let c_text = normalize_text(&c.text);
+
+    if let Some(matched_text) =
+        repeated_pronoun_looking_corrective(&a_text, &c_text, a.word_count(), c.word_count())
+    {
+        return Some(json!({
+            "matched_text": matched_text,
+            "sentence": a.text,
+            "interrupting_sentence": b.text,
+            "next_sentence": c.text,
+        }));
+    }
+
+    if let Some(matched_text) =
+        repeated_need_corrective(&a_text, &c_text, a.word_count(), c.word_count())
+    {
+        return Some(json!({
+            "matched_text": matched_text,
+            "sentence": a.text,
+            "interrupting_sentence": b.text,
+            "next_sentence": c.text,
+        }));
+    }
+
+    if let Some(matched_text) =
+        repeated_human_subject_corrective(&a_text, &c_text, a.word_count(), c.word_count())
+    {
+        return Some(json!({
+            "matched_text": matched_text,
+            "sentence": a.text,
+            "interrupting_sentence": b.text,
+            "next_sentence": c.text,
+        }));
+    }
 
     if let Some(matched_text) =
         repeated_abstract_frame_corrective(&a_text, &c_text, a.word_count(), c.word_count())
@@ -710,13 +802,21 @@ fn repeated_abstract_frame_corrective(
     a_word_count: usize,
     b_word_count: usize,
 ) -> Option<&'static str> {
-    if a_word_count > 20 || b_word_count > 20 {
+    if a_word_count > 24 || b_word_count > 20 {
         return None;
     }
 
+    let a_text = a_text.strip_prefix("so ").unwrap_or(a_text);
     let subject = ABSTRACT_FRAME_NEGATIONS
         .iter()
-        .find_map(|(subject, prefix)| a_text.starts_with(prefix).then_some(*subject))?;
+        .find_map(|(subject, prefix)| {
+            let usually_prefix = prefix.replace(" is not ", " is usually not ");
+            let usually_contracted_prefix = prefix.replace(" isn't ", " usually isn't ");
+            (a_text.starts_with(prefix)
+                || a_text.starts_with(&usually_prefix)
+                || a_text.starts_with(&usually_contracted_prefix))
+                .then_some(*subject)
+        })?;
 
     if ABSTRACT_FRAME_AFFIRMATIVES
         .iter()
@@ -725,7 +825,10 @@ fn repeated_abstract_frame_corrective(
         return Some("goal is not x -> goal is y");
     }
 
-    (b_text.starts_with("it is ") || b_text.starts_with("it's "))
+    (b_text.starts_with("it is ")
+        || b_text.starts_with("it's ")
+        || b_text.starts_with("they are ")
+        || b_text.starts_with("they're "))
         .then_some("goal is not x -> it is y")
 }
 
@@ -774,7 +877,7 @@ fn repeated_noun_need_corrective(a_text: &str, b_text: &str) -> Option<&'static 
             }
         }
 
-        if looks_like_quantified_human_plural_subject(subject)
+        if looks_like_human_plural_subject(subject)
             && NEED_PRONOUN_AFFIRMATIVE_PHRASES
                 .iter()
                 .any(|phrase| b_text.starts_with(phrase))
@@ -833,6 +936,104 @@ fn problem_reframe_corrective(
     None
 }
 
+fn repeated_pronoun_looking_corrective(
+    a_text: &str,
+    b_text: &str,
+    a_word_count: usize,
+    b_word_count: usize,
+) -> Option<&'static str> {
+    if a_word_count > 22 || b_word_count > 22 {
+        return None;
+    }
+
+    same_subject_copular_corrective(
+        a_text,
+        b_text,
+        CORRECTIVE_PLURAL_SUBJECTS,
+        PRESENT_COPULAR_NEGATION_FORMS,
+        "looking for ",
+        "looking for ",
+    )
+    .then_some("they are not looking for x -> they are looking for y")
+}
+
+fn repeated_human_subject_corrective(
+    a_text: &str,
+    b_text: &str,
+    a_word_count: usize,
+    b_word_count: usize,
+) -> Option<&'static str> {
+    if a_word_count > 20 || b_word_count > 18 {
+        return None;
+    }
+
+    for negation_phrase in [" do not ", " don't "] {
+        let Some((subject, _)) = a_text.split_once(negation_phrase) else {
+            continue;
+        };
+        if !looks_like_human_subject(subject) {
+            continue;
+        }
+
+        if repeated_human_subject_verb_corrective(a_text, b_text, negation_phrase)
+            || b_text.contains(" because ")
+                && b_text.starts_with("they ")
+            || HUMAN_CORRECTIVE_PRONOUN_FOLLOWUPS
+                .iter()
+                .any(|prefix| b_text.starts_with(prefix))
+        {
+            return Some("x do not y -> they z");
+        }
+    }
+
+    for negation_phrase in [" is not ", " isn't ", " are not ", " aren't "] {
+        let Some((subject, _)) = a_text.split_once(negation_phrase) else {
+            continue;
+        };
+        if !looks_like_human_subject(subject) {
+            continue;
+        }
+
+        if b_text.starts_with("they are ") || b_text.starts_with("they're ") {
+            return Some("x is not y -> they are z");
+        }
+    }
+
+    None
+}
+
+fn repeated_human_subject_verb_corrective(
+    a_text: &str,
+    b_text: &str,
+    negation_phrase: &str,
+) -> bool {
+    let Some((_, remainder)) = a_text.split_once(negation_phrase) else {
+        return false;
+    };
+    let Some(verb) = remainder.split_whitespace().next() else {
+        return false;
+    };
+    let expected = format!("they {verb} ");
+    b_text.starts_with(&expected)
+}
+
+fn same_subject_copular_corrective(
+    a_text: &str,
+    b_text: &str,
+    subjects: &[&str],
+    copular_forms: &[(&str, &str)],
+    negated_tail: &str,
+    affirmative_tail: &str,
+) -> bool {
+    subjects.iter().any(|subject| {
+        copular_forms.iter().any(|(negative_aux, affirmative_aux)| {
+            let negated_prefix = format!("{subject} {negative_aux} {negated_tail}");
+            let affirmative_prefix = format!("{subject} {affirmative_aux} {affirmative_tail}");
+            a_text.starts_with(&negated_prefix) && b_text.starts_with(&affirmative_prefix)
+        })
+    })
+}
+
 fn looks_like_quantified_human_plural_subject(subject: &str) -> bool {
     let tokens: Vec<&str> = subject.split_whitespace().collect();
     let Some(first) = tokens.first() else {
@@ -845,6 +1046,49 @@ fn looks_like_quantified_human_plural_subject(subject: &str) -> bool {
         return false;
     };
     HUMAN_PLURAL_NOUNS.contains(last)
+}
+
+fn looks_like_human_plural_subject(subject: &str) -> bool {
+    let tokens: Vec<&str> = subject.split_whitespace().collect();
+    if !(1..=4).contains(&tokens.len()) {
+        return false;
+    }
+    let Some(last) = tokens.last() else {
+        return false;
+    };
+    HUMAN_PLURAL_NOUNS.contains(last)
+}
+
+fn looks_like_human_subject(subject: &str) -> bool {
+    let tokens: Vec<&str> = subject.split_whitespace().collect();
+    if !(1..=8).contains(&tokens.len()) {
+        return false;
+    }
+
+    let Some(last) = tokens.last() else {
+        return false;
+    };
+    HUMAN_PLURAL_NOUNS.contains(last)
+        || HUMAN_SINGULAR_NOUNS.contains(last)
+        || looks_like_quantified_human_plural_subject(subject)
+        || starts_with_human_relative_subject(subject)
+}
+
+fn starts_with_human_relative_subject(subject: &str) -> bool {
+    [
+        "a child ",
+        "the child ",
+        "this child ",
+        "that child ",
+        "a parent ",
+        "the parent ",
+        "this parent ",
+        "that parent ",
+        "a kid ",
+        "the kid ",
+    ]
+    .iter()
+    .any(|prefix| subject.starts_with(prefix))
 }
 
 fn looks_like_short_interrupt_sentence(text: &str, word_count: usize) -> bool {

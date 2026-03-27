@@ -11,7 +11,7 @@ keywords = ["markdown", "validation", "writing", "lint"]
 categories = ["command-line-utilities", "text-processing"]
 
 [dependencies]
-prosesmasher-adapters-inbound-cli-runtime = { version = "0.3.6", path = "./runtime" }
+prosesmasher-adapters-inbound-cli-runtime = { version = "0.3.7", path = "./runtime" }
 
 [lints]
 workspace = true

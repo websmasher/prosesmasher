@@ -10,10 +10,10 @@ description = "Internal reusable readability-check assertions for the prosesmash
 readme = "../../../../../../README.md"
 
 [dependencies]
-prosesmasher-domain-types = { version = "0.3.6", path = "../../../../domain/types" }
-prosesmasher-app-checks-core-runtime = { version = "0.3.6", path = "../../core/runtime" }
-prosesmasher-app-checks-readability-runtime = { version = "0.3.6", path = "../runtime" }
-prosesmasher-app-checks-test-support = { version = "0.3.6", path = "../../test-support" }
+prosesmasher-domain-types = { version = "0.3.7", path = "../../../../domain/types" }
+prosesmasher-app-checks-core-runtime = { version = "0.3.7", path = "../../core/runtime" }
+prosesmasher-app-checks-readability-runtime = { version = "0.3.7", path = "../runtime" }
+prosesmasher-app-checks-test-support = { version = "0.3.7", path = "../../test-support" }
 low-expectations.workspace = true
 
 [lints]
