@@ -158,6 +158,13 @@ pub(crate) fn contains_any<'a>(text: &str, patterns: &'a [&str]) -> Option<&'a s
         .copied()
 }
 
+pub(crate) fn starts_with_any<'a>(text: &str, patterns: &'a [&str]) -> Option<&'a str> {
+    patterns
+        .iter()
+        .find(|pattern| text.starts_with(**pattern))
+        .copied()
+}
+
 pub(crate) fn strip_quoted_segments(text: &str) -> String {
     let mut unquoted = String::new();
     let mut in_quotes = false;

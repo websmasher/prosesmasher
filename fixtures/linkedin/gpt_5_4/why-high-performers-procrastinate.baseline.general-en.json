@@ -1,0 +1,9 @@
+{
+  "preset": "general-en",
+  "failures": [
+    {
+      "rule": "triple-repeat",
+      "count": 1
+    }
+  ]
+}

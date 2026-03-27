@@ -186,6 +186,14 @@ pub fn assert_shared_quality_defaults(config: &CheckConfig, context: &str) {
         "{context}: response wrapper enabled by default"
     );
     assert!(
+        config.quality.heuristics.lesson_framing.enabled,
+        "{context}: lesson framing enabled by default"
+    );
+    assert!(
+        config.quality.heuristics.observer_guidance.enabled,
+        "{context}: observer guidance enabled by default"
+    );
+    assert!(
         config.quality.heuristics.generic_signposting.enabled,
         "{context}: generic signposting enabled by default"
     );

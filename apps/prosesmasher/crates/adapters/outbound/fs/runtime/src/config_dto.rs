@@ -130,6 +130,12 @@ pub struct HeuristicsDto {
     pub contrastive_aphorism: Option<EnabledDto>,
     #[garde(skip)]
     #[serde(default)]
+    pub lesson_framing: Option<EnabledDto>,
+    #[garde(skip)]
+    #[serde(default)]
+    pub observer_guidance: Option<EnabledDto>,
+    #[garde(skip)]
+    #[serde(default)]
     pub llm_vocabulary: Option<AccumulativeDto>,
     #[garde(skip)]
     #[serde(default)]
@@ -498,6 +504,12 @@ const fn apply_toggle_heuristics(
     }
     if let Some(enabled) = dto.contrastive_aphorism {
         heuristics.contrastive_aphorism.enabled = enabled.enabled;
+    }
+    if let Some(enabled) = dto.lesson_framing {
+        heuristics.lesson_framing.enabled = enabled.enabled;
+    }
+    if let Some(enabled) = dto.observer_guidance {
+        heuristics.observer_guidance.enabled = enabled.enabled;
     }
     if let Some(accumulative) = dto.llm_vocabulary.as_ref() {
         heuristics.llm_vocabulary.enabled = accumulative.enabled;

@@ -1,0 +1,9 @@
+{
+  "preset": "general-en",
+  "failures": [
+    {
+      "rule": "smart-quotes",
+      "count": 1
+    }
+  ]
+}

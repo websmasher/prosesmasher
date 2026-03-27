@@ -82,6 +82,8 @@ pub struct HeuristicsConfig {
     pub authority_padding: AccumulativeCheck,
     pub empty_emphasis: EnabledCheck,
     pub contrastive_aphorism: EnabledCheck,
+    pub lesson_framing: EnabledCheck,
+    pub observer_guidance: EnabledCheck,
     pub llm_vocabulary: AccumulativeCheck,
     pub softening_language: AccumulativeCheck,
     pub universalizing_claims: AccumulativeCheck,
@@ -130,6 +132,8 @@ impl Default for HeuristicsConfig {
             },
             empty_emphasis: EnabledCheck { enabled: true },
             contrastive_aphorism: EnabledCheck { enabled: true },
+            lesson_framing: EnabledCheck { enabled: true },
+            observer_guidance: EnabledCheck { enabled: true },
             llm_vocabulary: AccumulativeCheck {
                 enabled: true,
                 max_per_document: 1,

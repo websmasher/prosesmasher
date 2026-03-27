@@ -3,16 +3,16 @@ use std::collections::BTreeSet;
 
 #[test]
 #[allow(clippy::panic)] // test assertion
-fn collect_all_returns_32() {
+fn collect_all_returns_45() {
     let checks = collect_checks(None).unwrap_or_else(|e| panic!("collect failed: {e}"));
-    assert_eq!(checks.len(), 43, "total check count");
+    assert_eq!(checks.len(), 45, "total check count");
 }
 
 #[test]
 #[allow(clippy::panic)] // test assertion
-fn collect_quality_returns_27() {
+fn collect_quality_returns_40() {
     let checks = collect_checks(Some("quality")).unwrap_or_else(|e| panic!("collect failed: {e}"));
-    assert_eq!(checks.len(), 38, "quality check count");
+    assert_eq!(checks.len(), 40, "quality check count");
 }
 
 #[test]
@@ -24,10 +24,10 @@ fn collect_lexical_returns_5() {
 
 #[test]
 #[allow(clippy::panic)] // test assertion
-fn collect_heuristics_returns_16() {
+fn collect_heuristics_returns_29() {
     let checks =
         collect_checks(Some("heuristics")).unwrap_or_else(|e| panic!("collect failed: {e}"));
-    assert_eq!(checks.len(), 27, "heuristics check count");
+    assert_eq!(checks.len(), 29, "heuristics check count");
 }
 
 #[test]

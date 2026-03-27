@@ -1,0 +1,17 @@
+{
+  "preset": "general-en",
+  "failures": [
+    {
+      "rule": "colon-dramatic",
+      "count": 1
+    },
+    {
+      "rule": "negation-reframe",
+      "count": 2
+    },
+    {
+      "rule": "triple-repeat",
+      "count": 3
+    }
+  ]
+}

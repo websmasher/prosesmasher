@@ -1,0 +1,13 @@
+{
+  "preset": "general-en",
+  "failures": [
+    {
+      "rule": "triple-repeat",
+      "count": 3
+    },
+    {
+      "rule": "word-repetition",
+      "count": 1
+    }
+  ]
+}

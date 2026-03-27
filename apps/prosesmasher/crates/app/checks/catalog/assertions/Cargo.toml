@@ -10,7 +10,7 @@ description = "Internal reusable check-catalog assertions for the prosesmasher w
 readme = "../../../../../../README.md"
 
 [dependencies]
-prosesmasher-app-checks-catalog-runtime = { version = "0.3.3", path = "../runtime" }
+prosesmasher-app-checks-catalog-runtime = { version = "0.3.4", path = "../runtime" }
 
 [lints]
 workspace = true

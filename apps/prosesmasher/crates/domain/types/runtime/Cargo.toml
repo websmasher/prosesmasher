@@ -11,7 +11,7 @@ keywords = ["markdown", "validation", "writing", "lint"]
 categories = ["text-processing", "development-tools"]
 
 [dev-dependencies]
-prosesmasher-domain-types-assertions = { version = "0.3.3", path = "../assertions" }
+prosesmasher-domain-types-assertions = { version = "0.3.4", path = "../assertions" }
 
 [lints]
 workspace = true
