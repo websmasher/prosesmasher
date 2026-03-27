@@ -42,10 +42,15 @@ impl Check for UniversalizingClaimsCheck {
         let max_i64 = i64::try_from(max).unwrap_or(i64::MAX);
         let evidence = collect_universalizing_evidence(doc);
         let observed = i64::try_from(evidence.len()).unwrap_or(i64::MAX);
+        let has_strong_behavior_generalization = evidence.iter().any(|item| {
+            item.get("pattern_kind")
+                .and_then(Value::as_str)
+                .is_some_and(|pattern| pattern == "group-behavior")
+        });
         let _result = suite
             .record_custom_values(
                 "universalizing-claims",
-                observed <= max_i64,
+                !has_strong_behavior_generalization && observed <= max_i64,
                 json!({ "max": max_i64 }),
                 json!(observed),
                 &evidence,
@@ -81,6 +86,11 @@ const DESIRE_VERBS: &[&str] = &[
 ];
 
 const CERTAINTY_VERBS: &[&str] = &["know", "knows"];
+const HUMAN_GROUP_SUBJECTS: &[&str] = &[
+    "adults", "children", "couples", "dads", "families", "kids", "moms", "parents", "people",
+    "students", "teachers",
+];
+const GROUP_BEHAVIOR_GERUNDS: &[&str] = &["reaching", "trying", "waiting", "hoping"];
 
 fn collect_universalizing_evidence(doc: &Document) -> Vec<Value> {
     collect_sentence_evidence(
@@ -106,6 +116,9 @@ fn match_universalizing_sentence(sentence: &str) -> Option<(&'static str, String
     let normalized = normalize(sentence);
     let stripped = strip_quoted_segments(strip_leading_prefixes(&normalized, LEADING_PREFIXES));
     let tokens = token_words(&stripped);
+    if let Some(matched) = match_group_behavior_generalization(&tokens) {
+        return Some(("group-behavior", matched));
+    }
     let (subject_index, subject) = match_subject(&tokens)?;
     if subject_index != 0 {
         return None;
@@ -152,6 +165,18 @@ fn token_words(text: &str) -> Vec<&str> {
         .map(|token| token.trim_matches(|ch: char| !ch.is_ascii_alphanumeric() && ch != '\''))
         .filter(|token| !token.is_empty())
         .collect()
+}
+
+fn match_group_behavior_generalization(tokens: &[&str]) -> Option<String> {
+    match tokens {
+        ["most", subject, "keep", gerund, ..]
+            if HUMAN_GROUP_SUBJECTS.contains(subject)
+                && GROUP_BEHAVIOR_GERUNDS.contains(gerund) =>
+        {
+            Some(format!("most {subject} keep {gerund}"))
+        }
+        _ => None,
+    }
 }
 
 #[cfg(test)]

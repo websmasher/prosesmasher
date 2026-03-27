@@ -2,6 +2,10 @@
   "preset": "general-en",
   "failures": [
     {
+      "rule": "generic-signposting",
+      "count": 1
+    },
+    {
       "rule": "negation-reframe",
       "count": 2
     }

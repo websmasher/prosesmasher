@@ -79,9 +79,7 @@ const ADVICE_LIMITATION_OBJECTS: &[&str] = &[
     "specific advice",
     "personalized advice",
 ];
-const MEDICAL_EXPERTISE_OBJECTS: &[&str] = &[
-    "medical expertise",
-];
+const MEDICAL_EXPERTISE_OBJECTS: &[&str] = &["medical expertise"];
 const DIAGNOSIS_LIMITATION_OBJECTS: &[&str] = &[
     "provide a diagnosis",
     "diagnosis",
@@ -209,10 +207,7 @@ fn matches_subject_aux_action_objects(
         auxiliaries.iter().any(|auxiliary| {
             actions.iter().any(|action| {
                 let prefix = format!("{subject} {auxiliary} {action} ");
-                text.starts_with(&prefix)
-                    && objects
-                        .iter()
-                        .any(|object| text.contains(object))
+                text.starts_with(&prefix) && objects.iter().any(|object| text.contains(object))
             })
         })
     })
@@ -227,8 +222,7 @@ fn matches_subject_aux_objects(
     subjects.iter().any(|subject| {
         auxiliaries.iter().any(|auxiliary| {
             let prefix = format!("{subject} {auxiliary} ");
-            text.starts_with(&prefix)
-                && objects.iter().any(|object| text.contains(object))
+            text.starts_with(&prefix) && objects.iter().any(|object| text.contains(object))
         })
     })
 }
@@ -244,10 +238,7 @@ fn matches_subject_prefix_action_objects(
         prefixes.iter().any(|prefix| {
             actions.iter().any(|action| {
                 let full_prefix = format!("{subject} {prefix} {action} ");
-                text.starts_with(&full_prefix)
-                    && objects
-                        .iter()
-                        .any(|object| text.contains(object))
+                text.starts_with(&full_prefix) && objects.iter().any(|object| text.contains(object))
             })
         })
     })

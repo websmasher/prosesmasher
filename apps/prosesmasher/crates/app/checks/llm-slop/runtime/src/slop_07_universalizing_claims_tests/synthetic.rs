@@ -136,6 +136,38 @@ fn one_claim_passes_under_default_threshold() {
 }
 
 #[test]
+fn most_parents_keep_reaching_fails() {
+    let doc = make_doc(
+        "Most parents keep reaching for a bigger consequence when the old one stops working.",
+        Locale::En,
+    );
+    let config = CheckConfig::default();
+    assertions::assert_universalizing_failure(
+        &doc,
+        &config,
+        "group-behavior",
+        "most parents keep reaching",
+        "strong group-behavior generalization should fail on its own",
+    );
+}
+
+#[test]
+fn most_people_keep_trying_fails() {
+    let doc = make_doc(
+        "Most people keep trying to fix a systems problem with a burst of motivation.",
+        Locale::En,
+    );
+    let config = CheckConfig::default();
+    assertions::assert_universalizing_failure(
+        &doc,
+        &config,
+        "group-behavior",
+        "most people keep trying",
+        "reviewed keep-gerund generalization should fail on its own",
+    );
+}
+
+#[test]
 fn narrative_everyone_usage_passes() {
     let doc = make_doc(
         "The blast left everyone shaking. Later, when everyone's nervous system reset, the room finally went quiet.",
@@ -146,6 +178,20 @@ fn narrative_everyone_usage_passes() {
         &doc,
         &config,
         "literal narrative everyone-usage should not count as a universalizing claim",
+    );
+}
+
+#[test]
+fn concrete_most_parents_keep_statement_passes() {
+    let doc = make_doc(
+        "Most parents keep a flashlight by the door for early-morning emergencies.",
+        Locale::En,
+    );
+    let config = CheckConfig::default();
+    assertions::assert_passes(
+        &doc,
+        &config,
+        "concrete most-parents keep statement should pass",
     );
 }
 

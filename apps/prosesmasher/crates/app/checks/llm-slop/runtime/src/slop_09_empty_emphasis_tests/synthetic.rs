@@ -99,6 +99,30 @@ fn what_helps_is_not_brilliant_fails() {
 }
 
 #[test]
+fn that_is_discipline_fails() {
+    let doc = make_doc("That is discipline.", Locale::En);
+    let config = CheckConfig::default();
+    assertions::assert_emphasis_failure(
+        &doc,
+        &config,
+        "deictic-empty-virtue-label",
+        "empty deictic virtue relabel should fail",
+    );
+}
+
+#[test]
+fn this_is_discipline_fails() {
+    let doc = make_doc("This is discipline.", Locale::En);
+    let config = CheckConfig::default();
+    assertions::assert_emphasis_failure(
+        &doc,
+        &config,
+        "deictic-empty-virtue-label",
+        "this-is-discipline relabel should fail",
+    );
+}
+
+#[test]
 fn longer_explanatory_sentence_passes() {
     let doc = make_doc(
         "That last part matters because the contract changes the failure mode completely.",
@@ -168,6 +192,20 @@ fn explanatory_what_helps_passes() {
         &doc,
         &config,
         "longer explanatory what-helps sentence should pass",
+    );
+}
+
+#[test]
+fn concrete_discipline_definition_passes() {
+    let doc = make_doc(
+        "That is discipline in the behavioral psychology sense: repeated response under stable cues.",
+        Locale::En,
+    );
+    let config = CheckConfig::default();
+    assertions::assert_passes(
+        &doc,
+        &config,
+        "longer explanatory discipline definition should pass",
     );
 }
 

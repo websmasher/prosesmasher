@@ -55,19 +55,13 @@ const LEADING_PREFIXES: &[&str] = &["however, ", "but ", "and ", "so "];
 const EVIDENCE_SUBJECTS: &[&str] = &["the evidence"];
 const RESEARCH_SUBJECTS: &[&str] = &["the research", "what the research"];
 const RESEARCHER_SUBJECTS: &[&str] = &["researchers"];
-const EVIDENCE_PREDICATES: &[&str] = &[
-    "is strongest",
-    "is not subtle",
-    "points",
-];
-const RESEARCH_PREDICATES: &[&str] = &[
-    "is not mysterious",
-    "points",
-    "backs",
-    "does show is",
-];
+const EVIDENCE_PREDICATES: &[&str] = &["is strongest", "is not subtle", "points"];
+const RESEARCH_PREDICATES: &[&str] = &["is not mysterious", "points", "backs", "does show is"];
 const RESEARCHER_PREDICATES: &[&str] = &["keep finding"];
-const PRESTIGE_SUFFIXES: &[&str] = &["'s work is famous for a reason", "’s work is famous for a reason"];
+const PRESTIGE_SUFFIXES: &[&str] = &[
+    "'s work is famous for a reason",
+    "’s work is famous for a reason",
+];
 
 fn collect_authority_padding_evidence(doc: &Document) -> Vec<Value> {
     collect_sentence_evidence(
@@ -105,11 +99,7 @@ fn match_authority_padding(sentence: &str) -> Option<(&'static str, &'static str
 
     if matches_subject_predicate_family(&stripped, RESEARCH_SUBJECTS, RESEARCH_PREDICATES)
         || stripped.starts_with("the broader research backs")
-        || matches_subject_predicate_family(
-            &stripped,
-            RESEARCHER_SUBJECTS,
-            RESEARCHER_PREDICATES,
-        )
+        || matches_subject_predicate_family(&stripped, RESEARCHER_SUBJECTS, RESEARCHER_PREDICATES)
     {
         return Some(("research-frame", "the research"));
     }

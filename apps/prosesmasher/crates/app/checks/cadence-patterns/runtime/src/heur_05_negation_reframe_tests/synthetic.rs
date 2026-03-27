@@ -485,7 +485,11 @@ fn technical_make_explain_pair_passes() {
         Locale::En,
     );
     let config = config_with_signals();
-    assertions::assert_passes(&doc, &config, "technical make-then-explain pair should pass");
+    assertions::assert_passes(
+        &doc,
+        &config,
+        "technical make-then-explain pair should pass",
+    );
 }
 
 #[test]
@@ -515,11 +519,7 @@ fn methodological_caveat_does_not_trigger_looking_for_rule() {
         Locale::En,
     );
     let config = config_with_signals();
-    assertions::assert_passes(
-        &doc,
-        &config,
-        "non looking-for followup should pass",
-    );
+    assertions::assert_passes(&doc, &config, "non looking-for followup should pass");
 }
 
 #[test]

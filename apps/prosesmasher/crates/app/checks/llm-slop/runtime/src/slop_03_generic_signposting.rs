@@ -104,6 +104,34 @@ const SEQUENCE_PATTERNS: &[&str] = &[
     "a simple pattern works well",
     "a simple rule works well",
 ];
+const ABSTRACT_FRAME_CONSTRUCTIONS: &[(&str, &str, &str, &str)] = &[
+    ("better", "move", "is", "the-better-move-is"),
+    ("bigger", "win", "is", "the-bigger-win-is"),
+    ("useful", "move", "is", "the-useful-move-is"),
+    ("useful", "alternative", "is", "the-useful-alternative-is"),
+    (
+        "useful",
+        "alternatives",
+        "are",
+        "the-useful-alternatives-are",
+    ),
+];
+const POINT_ABSTRACT_VERBS: &[&str] = &[
+    "become",
+    "build",
+    "interrupt",
+    "keep",
+    "make",
+    "remember",
+    "respect",
+    "stop",
+    "understand",
+];
+const WHAT_FRAME_VERBS: &[(&str, &'static str)] =
+    &[("helps", "what-helps-is"), ("matters", "what-matters-is")];
+const WHAT_FRAME_TAIL_STARTERS: &[&str] = &[
+    "boring", "less", "making", "more", "never", "not", "rarely", "small", "smaller", "usually",
+];
 
 fn collect_generic_signposting_evidence(doc: &Document) -> Vec<Value> {
     collect_sentence_evidence(
@@ -131,13 +159,20 @@ fn is_strong_meta_evidence(evidence: &Value) -> bool {
     };
     matches!(
         pattern_kind,
-        "question-frame" | "answer-frame" | "sequence-frame" | "frame-signpost"
+        "question-frame"
+            | "answer-frame"
+            | "sequence-frame"
+            | "frame-signpost"
+            | "abstract-evaluation-frame"
     )
 }
 
 fn match_signposting(sentence: &str) -> Option<(&'static str, &'static str)> {
     let normalized = normalize(sentence);
     let stripped = strip_quoted_segments(strip_leading_prefixes(&normalized, LEADING_PREFIXES));
+    if let Some(matched) = match_abstract_evaluation_frame(&stripped) {
+        return Some(("abstract-evaluation-frame", matched));
+    }
 
     if let Some(matched) = contains_any(&stripped, IMPORTANT_TO_PATTERNS) {
         return Some(("important-to", matched));
@@ -161,6 +196,62 @@ fn match_signposting(sentence: &str) -> Option<(&'static str, &'static str)> {
         return Some(("frame-signpost", matched));
     }
     contains_any(&stripped, SEQUENCE_PATTERNS).map(|matched| ("sequence-frame", matched))
+}
+
+fn match_abstract_evaluation_frame(text: &str) -> Option<&'static str> {
+    let tokens = token_words(text);
+    if let Some(matched) = matches_modified_abstract_frame(&tokens) {
+        return Some(matched);
+    }
+    if let Some(matched) = matches_point_is_to_frame(&tokens) {
+        return Some(matched);
+    }
+    matches_what_frame(&tokens)
+}
+
+fn matches_modified_abstract_frame(tokens: &[&str]) -> Option<&'static str> {
+    match tokens {
+        ["the", "result", "worth", "caring", "about", ..] => Some("the-result-worth-caring-about"),
+        ["the", modifier, noun, linker, ..] => ABSTRACT_FRAME_CONSTRUCTIONS.iter().find_map(
+            |(expected_modifier, expected_noun, expected_linker, matched_text)| {
+                (*modifier == *expected_modifier
+                    && *noun == *expected_noun
+                    && *linker == *expected_linker)
+                    .then_some(*matched_text)
+            },
+        ),
+        _ => None,
+    }
+}
+
+fn matches_point_is_to_frame(tokens: &[&str]) -> Option<&'static str> {
+    match tokens {
+        ["the", "point", "is", "to", verb, ..] if POINT_ABSTRACT_VERBS.contains(verb) => {
+            Some("the-point-is-to")
+        }
+        _ => None,
+    }
+}
+
+fn matches_what_frame(tokens: &[&str]) -> Option<&'static str> {
+    match tokens {
+        ["what", verb, "most", "is", tail, ..] if *verb == "matters" => WHAT_FRAME_TAIL_STARTERS
+            .contains(tail)
+            .then_some("what-matters-most-is"),
+        ["what", verb, "is", tail, ..] => {
+            WHAT_FRAME_VERBS.iter().find_map(|(candidate, matched)| {
+                (*verb == *candidate && WHAT_FRAME_TAIL_STARTERS.contains(tail)).then_some(*matched)
+            })
+        }
+        _ => None,
+    }
+}
+
+fn token_words(text: &str) -> Vec<&str> {
+    text.split_whitespace()
+        .map(|token| token.trim_matches(|ch: char| !ch.is_ascii_alphanumeric() && ch != '\''))
+        .filter(|token| !token.is_empty())
+        .collect()
 }
 
 #[cfg(test)]

@@ -199,9 +199,80 @@ fn useful_move_frame_fails() {
     assertions::assert_signposting_failure(
         &doc,
         &config,
-        "question-frame",
-        "the useful move is",
+        "abstract-evaluation-frame",
+        "the-useful-move-is",
         "single useful-move frame should now fail",
+    );
+}
+
+#[test]
+fn bigger_win_frame_fails() {
+    let doc = make_doc(
+        "The bigger win is a child who comes back faster after the drop-off.",
+        Locale::En,
+    );
+    let config = CheckConfig::default();
+    assertions::assert_signposting_failure(
+        &doc,
+        &config,
+        "abstract-evaluation-frame",
+        "the-bigger-win-is",
+        "single bigger-win frame should now fail",
+    );
+}
+
+#[test]
+fn result_worth_caring_about_fails() {
+    let doc = make_doc(
+        "The result worth caring about is a morning that stops feeling like an ambush.",
+        Locale::En,
+    );
+    let config = CheckConfig::default();
+    assertions::assert_signposting_failure(
+        &doc,
+        &config,
+        "abstract-evaluation-frame",
+        "the-result-worth-caring-about",
+        "result-worth-caring-about frame should fail",
+    );
+}
+
+#[test]
+fn point_is_to_abstract_tail_fails() {
+    let doc = make_doc("The point is to make starting less dramatic.", Locale::En);
+    let config = CheckConfig::default();
+    assertions::assert_signposting_failure(
+        &doc,
+        &config,
+        "abstract-evaluation-frame",
+        "the-point-is-to",
+        "abstract point-is-to frame should now fail",
+    );
+}
+
+#[test]
+fn what_matters_frame_fails() {
+    let doc = make_doc("What matters is never missing twice.", Locale::En);
+    let config = CheckConfig::default();
+    assertions::assert_signposting_failure(
+        &doc,
+        &config,
+        "abstract-evaluation-frame",
+        "what-matters-is",
+        "what-matters frame should now fail",
+    );
+}
+
+#[test]
+fn what_helps_frame_fails() {
+    let doc = make_doc("What helps is boring, repeatable structure.", Locale::En);
+    let config = CheckConfig::default();
+    assertions::assert_signposting_failure(
+        &doc,
+        &config,
+        "abstract-evaluation-frame",
+        "what-helps-is",
+        "what-helps frame should now fail",
     );
 }
 
@@ -219,6 +290,26 @@ fn practical_move_frame_fails() {
         "the practical move is",
         "single practical-move frame should now fail",
     );
+}
+
+#[test]
+fn procedural_point_is_to_passes() {
+    let doc = make_doc(
+        "The point is to parse the file before validating it.",
+        Locale::En,
+    );
+    let config = CheckConfig::default();
+    assertions::assert_passes(&doc, &config, "procedural point-is-to sentence should pass");
+}
+
+#[test]
+fn concrete_what_helps_passes() {
+    let doc = make_doc(
+        "What helps is reducing caffeine after noon and keeping the room darker.",
+        Locale::En,
+    );
+    let config = CheckConfig::default();
+    assertions::assert_passes(&doc, &config, "concrete what-helps sentence should pass");
 }
 
 #[test]
