@@ -94,6 +94,9 @@ pub struct HeuristicsDto {
     pub triple_repeat: Option<EnabledDto>,
     #[garde(skip)]
     #[serde(default)]
+    pub demonstrative_emphasis: Option<AccumulativeDto>,
+    #[garde(skip)]
+    #[serde(default)]
     pub fake_timestamps: Option<EnabledDto>,
     #[garde(skip)]
     #[serde(default)]
@@ -459,6 +462,12 @@ const fn apply_toggle_heuristics(
     }
     if let Some(enabled) = dto.triple_repeat {
         heuristics.triple_repeat.enabled = enabled.enabled;
+    }
+    if let Some(accumulative) = dto.demonstrative_emphasis.as_ref() {
+        heuristics.demonstrative_emphasis.enabled = accumulative.enabled;
+        if let Some(max) = accumulative.max_per_document {
+            heuristics.demonstrative_emphasis.max_per_document = max;
+        }
     }
     if let Some(enabled) = dto.fake_timestamps {
         heuristics.fake_timestamps.enabled = enabled.enabled;

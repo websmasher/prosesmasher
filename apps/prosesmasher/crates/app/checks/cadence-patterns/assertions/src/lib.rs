@@ -36,6 +36,8 @@ macro_rules! define_rule_assertions {
 
 pub(crate) use define_rule_assertions;
 
+#[path = "heur_08_demonstrative_emphasis.rs"]
+pub mod demonstrative_emphasis;
 #[path = "heur_06_fragment_stacking.rs"]
 pub mod fragment_stacking;
 #[path = "heur_05_negation_reframe.rs"]

@@ -70,6 +70,7 @@ pub struct HeuristicsConfig {
     pub negation_reframe: EnabledCheck,
     pub fragment_stacking: EnabledCheck,
     pub triple_repeat: EnabledCheck,
+    pub demonstrative_emphasis: AccumulativeCheck,
     pub fake_timestamps: EnabledCheck,
     pub colon_dramatic: EnabledCheck,
     pub llm_openers: EnabledCheck,
@@ -111,6 +112,10 @@ impl Default for HeuristicsConfig {
             negation_reframe: EnabledCheck { enabled: true },
             fragment_stacking: EnabledCheck { enabled: true },
             triple_repeat: EnabledCheck { enabled: true },
+            demonstrative_emphasis: AccumulativeCheck {
+                enabled: true,
+                max_per_document: 2,
+            },
             fake_timestamps: EnabledCheck { enabled: true },
             colon_dramatic: EnabledCheck { enabled: false },
             llm_openers: EnabledCheck { enabled: true },
