@@ -15,10 +15,10 @@ name = "prosesmasher"
 path = "src/main.rs"
 
 [dependencies]
-prosesmasher-adapters-inbound-cli = { version = "0.3.13", path = "../../crates/adapters/inbound/cli" }
+prosesmasher-adapters-inbound-cli = { version = "0.3.14", path = "../../crates/adapters/inbound/cli" }
 
 [dev-dependencies]
-prosesmasher-assertions = { version = "0.3.13", path = "./assertions" }
+prosesmasher-assertions = { version = "0.3.14", path = "./assertions" }
 
 [lints]
 workspace = true

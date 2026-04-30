@@ -10,8 +10,8 @@ description = "Internal shared check-test builders and result helpers for the pr
 readme = "../../../../../README.md"
 
 [dependencies]
-prosesmasher-domain-types = { version = "0.3.13", path = "../../../domain/types" }
-prosesmasher-app-checks-core-runtime = { version = "0.3.13", path = "../core/runtime" }
+prosesmasher-domain-types = { version = "0.3.14", path = "../../../domain/types" }
+prosesmasher-app-checks-core-runtime = { version = "0.3.14", path = "../core/runtime" }
 low-expectations.workspace = true
 serde_json.workspace = true
 
