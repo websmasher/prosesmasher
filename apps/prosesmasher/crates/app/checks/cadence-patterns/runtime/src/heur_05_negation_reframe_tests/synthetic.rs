@@ -819,6 +819,164 @@ fn check_id_and_label() {
 }
 
 #[test]
+fn subject_mirror_copular_corrective_detected() {
+    let doc = make_doc_with_sentences(
+        &[
+            "The decision is not which keyword goes in which row.",
+            "The decision is which URL gets the job.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    assertions::assert_negation_reframe_failure(
+        &doc,
+        &config,
+        "the x is not y -> the x is z",
+        "subject-mirror copular corrective detected",
+    );
+}
+
+#[test]
+fn subject_mirror_problem_corrective_detected() {
+    let doc = make_doc_with_sentences(
+        &[
+            "The problem is not that the site has too many pages.",
+            "The problem is that no page has clean ownership.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    assertions::assert_negation_reframe_failure(
+        &doc,
+        &config,
+        "the x is not y -> the x is z",
+        "subject-mirror problem corrective detected",
+    );
+}
+
+#[test]
+fn subject_mirror_with_pronoun_in_b_does_not_trigger() {
+    let doc = make_doc_with_sentences(
+        &[
+            "The error is not in the parser.",
+            "It is in the lexer fallback path.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    assertions::assert_passes(
+        &doc,
+        &config,
+        "pronoun reframe without literal subject mirror should pass",
+    );
+}
+
+#[test]
+fn np_modal_negation_pronoun_reframe_detected() {
+    let doc = make_doc_with_sentences(
+        &[
+            "The page should not be a sales pitch with a demo button.",
+            "It should help a startup evaluate when a CRM is needed.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    assertions::assert_negation_reframe_failure(
+        &doc,
+        &config,
+        "np modal not be x -> pronoun modal y",
+        "np modal copular reframe detected",
+    );
+}
+
+#[test]
+fn np_modal_legitimate_should_not_trigger() {
+    let doc = make_doc_with_sentences(
+        &[
+            "The deploy script should not be run on Fridays.",
+            "Run it after the weekly backup completes.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    assertions::assert_passes(
+        &doc,
+        &config,
+        "np modal negation followed by imperative should pass",
+    );
+}
+
+#[test]
+fn agentive_action_verb_corrective_detected() {
+    let doc = make_doc_with_sentences(
+        &[
+            "A searcher typing pipedrive vs hubspot does not want a general CRM page.",
+            "They want a decision.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    assertions::assert_negation_reframe_failure(
+        &doc,
+        &config,
+        "agentive np does not v x -> they v y",
+        "agentive action-verb corrective detected",
+    );
+}
+
+#[test]
+fn agentive_users_need_corrective_detected() {
+    let doc = make_doc_with_sentences(
+        &[
+            "Users do not need another dashboard widget.",
+            "They need fewer steps to the answer.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    assertions::assert_negation_reframe_failure(
+        &doc,
+        &config,
+        "agentive np does not v x -> they v y",
+        "agentive users-need corrective detected",
+    );
+}
+
+#[test]
+fn non_agentive_technical_entity_does_not_trigger() {
+    let doc = make_doc_with_sentences(
+        &[
+            "The parser does not need a network connection.",
+            "It needs a file path and a locale.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    assertions::assert_passes(
+        &doc,
+        &config,
+        "non-agentive subject with it-pronoun reframe should pass",
+    );
+}
+
+#[test]
+fn agentive_without_intent_verb_does_not_trigger() {
+    let doc = make_doc_with_sentences(
+        &[
+            "Users do not arrive on the homepage.",
+            "They click links from search results.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    assertions::assert_passes(
+        &doc,
+        &config,
+        "agentive subject with non-intent verb should pass",
+    );
+}
+
+#[test]
 fn negation_reframe_inside_blockquote_detected() {
     let sentences = make_sentences(&["This isn't defiance.", "It's developmental."]);
     let doc = Document {
