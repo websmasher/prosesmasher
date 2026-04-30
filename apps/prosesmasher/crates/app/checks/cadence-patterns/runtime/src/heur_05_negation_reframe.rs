@@ -510,6 +510,36 @@ fn non_copular_corrective_evidence(
         }));
     }
 
+    if let Some(matched_text) =
+        repeated_subject_copular_corrective(a_text, b_text, a.word_count(), b.word_count())
+    {
+        return Some(json!({
+            "matched_text": matched_text,
+            "sentence": a.text,
+            "next_sentence": b.text,
+        }));
+    }
+
+    if let Some(matched_text) =
+        np_modal_negation_to_pronoun_reframe(a_text, b_text, a.word_count(), b.word_count())
+    {
+        return Some(json!({
+            "matched_text": matched_text,
+            "sentence": a.text,
+            "next_sentence": b.text,
+        }));
+    }
+
+    if let Some(matched_text) =
+        agentive_action_verb_corrective(a_text, b_text, a.word_count(), b.word_count())
+    {
+        return Some(json!({
+            "matched_text": matched_text,
+            "sentence": a.text,
+            "next_sentence": b.text,
+        }));
+    }
+
     None
 }
 
@@ -1205,6 +1235,228 @@ fn is_short_nominal_label(text: &str, word_count: usize) -> bool {
         ]
         .iter()
         .any(|cue| text.contains(cue))
+}
+
+const SUBJECT_DETERMINERS: &[&str] = &[
+    "the ", "a ", "an ", "this ", "that ", "these ", "those ", "your ", "our ", "my ",
+];
+
+const COPULAR_AUXILIARIES: &[&str] = &["is", "are", "was", "were"];
+
+const SUBJECT_LEADING_PREFIXES: &[&str] = &["so ", "but ", "and ", "however, ", "however "];
+
+/// Pattern A: literal NP subject mirror with copular preserved.
+/// "The decision is not X. The decision is Y."
+/// "The problem is not X. The problem is Y."
+fn repeated_subject_copular_corrective(
+    a_text: &str,
+    b_text: &str,
+    a_word_count: usize,
+    b_word_count: usize,
+) -> Option<&'static str> {
+    if a_word_count > 28 || b_word_count > 28 {
+        return None;
+    }
+
+    let a_text = strip_subject_leading_prefix(a_text);
+    let b_text = strip_subject_leading_prefix(b_text);
+
+    for copula in COPULAR_AUXILIARIES {
+        let neg_pattern = format!(" {copula} not ");
+        let aff_pattern = format!(" {copula} ");
+
+        let Some((a_subject, _)) = a_text.split_once(&neg_pattern) else {
+            continue;
+        };
+
+        if !subject_starts_with_determiner(a_subject) {
+            continue;
+        }
+        let subject_word_count = a_subject.split_whitespace().count();
+        if !(2..=8).contains(&subject_word_count) {
+            continue;
+        }
+
+        let expected_b_prefix = format!("{a_subject}{aff_pattern}");
+        if b_text.starts_with(&expected_b_prefix) && !b_text.contains(&neg_pattern) {
+            return Some("the x is not y -> the x is z");
+        }
+    }
+
+    None
+}
+
+/// Pattern B: NP + modal copular negation followed by pronoun reframe with same modal.
+/// "The page should not be X. It should help Y."
+/// "The system must not be Y. It should produce Z."
+fn np_modal_negation_to_pronoun_reframe(
+    a_text: &str,
+    b_text: &str,
+    a_word_count: usize,
+    b_word_count: usize,
+) -> Option<&'static str> {
+    if a_word_count > 32 || b_word_count > 32 {
+        return None;
+    }
+
+    let a_text = strip_subject_leading_prefix(a_text);
+    let b_text = strip_subject_leading_prefix(b_text);
+
+    for modal in ["should", "could", "would", "must"] {
+        let neg_be = format!(" {modal} not be ");
+        let neg_bare = format!(" {modal} not ");
+
+        let Some((a_subject, _)) = a_text
+            .split_once(&neg_be)
+            .or_else(|| a_text.split_once(&neg_bare))
+        else {
+            continue;
+        };
+
+        if !subject_starts_with_determiner(a_subject) {
+            continue;
+        }
+        let subject_word_count = a_subject.split_whitespace().count();
+        if !(2..=8).contains(&subject_word_count) {
+            continue;
+        }
+
+        for pronoun in ["it", "they", "this", "that"] {
+            let prefix = format!("{pronoun} {modal} ");
+            if b_text.starts_with(&prefix) && !b_text.contains(&neg_bare) {
+                return Some("np modal not be x -> pronoun modal y");
+            }
+        }
+    }
+
+    None
+}
+
+/// Pattern C: agentive NP + action-verb negation, pronoun reframe with same verb.
+/// "A searcher does not want X. They want Y."
+/// "Users do not need X. They need Y."
+const AGENTIVE_NOUNS: &[&str] = &[
+    "user",
+    "users",
+    "customer",
+    "customers",
+    "visitor",
+    "visitors",
+    "buyer",
+    "buyers",
+    "reader",
+    "readers",
+    "viewer",
+    "viewers",
+    "consumer",
+    "consumers",
+    "client",
+    "clients",
+    "searcher",
+    "searchers",
+    "shopper",
+    "shoppers",
+    "subscriber",
+    "subscribers",
+    "founder",
+    "founders",
+    "leader",
+    "leaders",
+    "manager",
+    "managers",
+    "audience",
+    "prospect",
+    "prospects",
+    "candidate",
+    "candidates",
+];
+
+const AGENTIVE_INTENT_VERBS: &[&str] = &[
+    "want", "wants", "need", "needs", "expect", "expects", "prefer", "prefers", "deserve",
+    "deserves", "demand", "demands", "seek", "seeks",
+];
+
+fn agentive_action_verb_corrective(
+    a_text: &str,
+    b_text: &str,
+    a_word_count: usize,
+    b_word_count: usize,
+) -> Option<&'static str> {
+    if a_word_count > 24 || b_word_count > 20 {
+        return None;
+    }
+
+    let a_text = strip_subject_leading_prefix(a_text);
+    let b_text = strip_subject_leading_prefix(b_text);
+
+    for negation in [" does not ", " doesn't ", " do not ", " don't "] {
+        let Some((subject, remainder)) = a_text.split_once(negation) else {
+            continue;
+        };
+        if !subject_starts_with_determiner(subject)
+            && !subject.split_whitespace().count().eq(&1)
+        {
+            continue;
+        }
+        if !looks_like_agentive_subject(subject) {
+            continue;
+        }
+        let Some(verb) = remainder.split_whitespace().next() else {
+            continue;
+        };
+        if !AGENTIVE_INTENT_VERBS.contains(&verb) {
+            continue;
+        }
+
+        let mirrored_verb = mirror_intent_verb_for_pronoun(verb);
+        let expected_prefix = format!("they {mirrored_verb} ");
+        if b_text.starts_with(&expected_prefix) {
+            return Some("agentive np does not v x -> they v y");
+        }
+    }
+
+    None
+}
+
+fn mirror_intent_verb_for_pronoun(verb: &str) -> &str {
+    match verb {
+        "wants" => "want",
+        "needs" => "need",
+        "expects" => "expect",
+        "prefers" => "prefer",
+        "deserves" => "deserve",
+        "demands" => "demand",
+        "seeks" => "seek",
+        other => other,
+    }
+}
+
+fn looks_like_agentive_subject(subject: &str) -> bool {
+    let tokens: Vec<&str> = subject.split_whitespace().collect();
+    if tokens.is_empty() || tokens.len() > 8 {
+        return false;
+    }
+    let head_window = tokens.len().min(4);
+    tokens[..head_window].iter().any(|token| {
+        AGENTIVE_NOUNS.contains(token)
+            || HUMAN_PLURAL_NOUNS.contains(token)
+            || HUMAN_SINGULAR_NOUNS.contains(token)
+    })
+}
+
+fn subject_starts_with_determiner(subject: &str) -> bool {
+    SUBJECT_DETERMINERS
+        .iter()
+        .any(|prefix| subject.starts_with(prefix))
+}
+
+fn strip_subject_leading_prefix(text: &str) -> &str {
+    for prefix in SUBJECT_LEADING_PREFIXES {
+        if let Some(rest) = text.strip_prefix(prefix) {
+            return rest;
+        }
+    }
+    text
 }
 
 fn normalize_text(text: &str) -> String {
