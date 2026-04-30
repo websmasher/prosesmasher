@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.14
+
+- Restructured the repo-root `prosesmasher` package to be a publishable crates.io stub with no real dependencies, so `cargo binstall prosesmasher` works without the `--git` flag. The stub holds only the binstall metadata that points at the GitHub release artifacts; the real CLI continues to be built and shipped from `apps/prosesmasher/packages/prosesmasher` via cargo-dist.
+- The stub binary itself prints an explicit error and exits with status 1 if a user runs `cargo install prosesmasher` from crates.io and then tries to invoke the resulting binary, with instructions to use `cargo binstall prosesmasher` (precompiled) or `cargo install --git ...` (source).
+
 ## 0.3.13
 
 - Added new `demonstrative-emphasis` cadence check that flags clusters of short demonstrative-subject emphatic sentences such as `That is X.`, `This is where Y.`, `That difference matters.`, `The hard part is the judgment call.` Density-based via `max_per_document` (default 2) so single instances pass and clusters fail. Catches six classifier sub-shapes: demonstrative-copular, demonstrative-relative, demonstrative-perception, demonstrative-emphatic-verb, demonstrative-np-copular (with `-negation` and `-relative` sub-variants), and definite-np-copular.

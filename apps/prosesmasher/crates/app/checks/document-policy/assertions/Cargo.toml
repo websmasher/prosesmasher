@@ -10,10 +10,10 @@ description = "Internal reusable document-policy-check assertions for the proses
 readme = "../../../../../../README.md"
 
 [dependencies]
-prosesmasher-domain-types = { version = "0.3.13", path = "../../../../domain/types" }
-prosesmasher-app-checks-core-runtime = { version = "0.3.13", path = "../../core/runtime" }
-prosesmasher-app-checks-document-policy-runtime = { version = "0.3.13", path = "../runtime" }
-prosesmasher-app-checks-test-support = { version = "0.3.13", path = "../../test-support" }
+prosesmasher-domain-types = { version = "0.3.14", path = "../../../../domain/types" }
+prosesmasher-app-checks-core-runtime = { version = "0.3.14", path = "../../core/runtime" }
+prosesmasher-app-checks-document-policy-runtime = { version = "0.3.14", path = "../runtime" }
+prosesmasher-app-checks-test-support = { version = "0.3.14", path = "../../test-support" }
 low-expectations.workspace = true
 
 [lints]
