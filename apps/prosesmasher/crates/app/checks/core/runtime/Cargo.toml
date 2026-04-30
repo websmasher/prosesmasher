@@ -9,12 +9,12 @@ description = "Internal shared check contracts and runner crate for the prosesma
 readme = "../../../../../../README.md"
 
 [dependencies]
-prosesmasher-domain-types = { version = "0.3.12", path = "../../../../domain/types" }
+prosesmasher-domain-types = { version = "0.3.13", path = "../../../../domain/types" }
 low-expectations.workspace = true
 
 [dev-dependencies]
-prosesmasher-app-checks-core-assertions = { version = "0.3.12", path = "../assertions" }
-prosesmasher-app-checks-test-support = { version = "0.3.12", path = "../../test-support" }
+prosesmasher-app-checks-core-assertions = { version = "0.3.13", path = "../assertions" }
+prosesmasher-app-checks-test-support = { version = "0.3.13", path = "../../test-support" }
 
 [lints]
 workspace = true

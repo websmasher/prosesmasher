@@ -1,6 +1,6 @@
 [package]
 name = "prosesmasher"
-version = "0.3.12"
+version = "0.3.13"
 edition = "2024"
 rust-version = "1.85"
 license = "MIT"
@@ -16,7 +16,7 @@ name = "prosesmasher"
 path = "src/main.rs"
 
 [dependencies]
-prosesmasher-adapters-inbound-cli = { version = "0.3.12", path = "apps/prosesmasher/crates/adapters/inbound/cli" }
+prosesmasher-adapters-inbound-cli = { version = "0.3.13", path = "apps/prosesmasher/crates/adapters/inbound/cli" }
 
 [package.metadata.binstall]
 bin-dir = "{ name }-{ target }/{ bin }{ binary-ext }"
