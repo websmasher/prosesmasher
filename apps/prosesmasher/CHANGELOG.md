@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.13
+
+- Added new `demonstrative-emphasis` cadence check that flags clusters of short demonstrative-subject emphatic sentences such as `That is X.`, `This is where Y.`, `That difference matters.`, `The hard part is the judgment call.` Density-based via `max_per_document` (default 2) so single instances pass and clusters fail. Catches six classifier sub-shapes: demonstrative-copular, demonstrative-relative, demonstrative-perception, demonstrative-emphatic-verb, demonstrative-np-copular (with `-negation` and `-relative` sub-variants), and definite-np-copular.
+- Extended `negation-reframe` with three new matchers for NP-subject corrective patterns: literal NP subject mirror with copula preserved (`The decision is not X. The decision is Y.`); NP + modal copular negation followed by pronoun + same modal (`The page should not be X. It should help Y.`); and agentive NP + action-verb negation with pronoun reframe sharing the same verb (`A searcher does not want X. They want Y.`).
+- All new matchers placed after existing curated ones so prior labels still win when both could match.
+
 ## 0.3.12
 
 - Disabled `colon-dramatic` by default in the canonical heuristics config and the shipped full English preset because the current matcher is still too noisy on normal article/link-intro prose.
