@@ -540,6 +540,29 @@ fn non_copular_corrective_evidence(
         }));
     }
 
+    if let Some(matched_text) =
+        pronoun_verb_mirror_corrective(a_text, b_text, a.word_count(), b.word_count())
+    {
+        return Some(json!({
+            "matched_text": matched_text,
+            "sentence": a.text,
+            "next_sentence": b.text,
+        }));
+    }
+
+    if let Some(matched_text) = agentive_np_copular_negation_to_pronoun_reframe(
+        a_text,
+        b_text,
+        a.word_count(),
+        b.word_count(),
+    ) {
+        return Some(json!({
+            "matched_text": matched_text,
+            "sentence": a.text,
+            "next_sentence": b.text,
+        }));
+    }
+
     None
 }
 
@@ -1412,6 +1435,118 @@ fn agentive_action_verb_corrective(
         let expected_prefix = format!("they {mirrored_verb} ");
         if b_text.starts_with(&expected_prefix) {
             return Some("agentive np does not v x -> they v y");
+        }
+    }
+
+    None
+}
+
+/// Pattern: pronoun + verb-mirror corrective.
+/// "We do not start with X. We start with Y."
+/// "You do not need to X. You need to Y."  (already handled but we accept it too)
+/// "They do not see X. They see Y."
+const PRONOUN_VERB_MIRROR_SUBJECTS: &[&str] = &["we", "you", "they", "i"];
+
+fn pronoun_verb_mirror_corrective(
+    a_text: &str,
+    b_text: &str,
+    a_word_count: usize,
+    b_word_count: usize,
+) -> Option<&'static str> {
+    if a_word_count > 22 || b_word_count > 22 {
+        return None;
+    }
+
+    let a_text = strip_subject_leading_prefix(a_text);
+    let b_text = strip_subject_leading_prefix(b_text);
+
+    for subject in PRONOUN_VERB_MIRROR_SUBJECTS {
+        for negation in [" do not ", " don't ", " does not ", " doesn't "] {
+            let prefix = format!("{subject}{negation}");
+            let Some(rest) = a_text.strip_prefix(&prefix) else {
+                continue;
+            };
+            let mut tokens = rest.split_whitespace();
+            let Some(verb) = tokens.next() else {
+                continue;
+            };
+            if !is_plausible_action_verb(verb) {
+                continue;
+            }
+            // Skip "[V] to [INFINITIVE]" — that's instructional, not slop drumbeat.
+            if tokens.next() == Some("to") {
+                continue;
+            }
+            let mirrored_b_prefix = format!("{subject} {verb} ");
+            if b_text.starts_with(&mirrored_b_prefix) {
+                return Some("pronoun do not v x -> pronoun v y");
+            }
+        }
+    }
+
+    None
+}
+
+fn is_plausible_action_verb(token: &str) -> bool {
+    if token.is_empty() {
+        return false;
+    }
+    let first = token.chars().next().unwrap_or(' ');
+    if !first.is_ascii_lowercase() {
+        return false;
+    }
+    if matches!(
+        token,
+        "to" | "the" | "a" | "an" | "of" | "in" | "on" | "at" | "by" | "for" | "with" | "and"
+            | "or" | "but" | "is" | "are" | "was" | "were" | "be" | "being" | "been"
+    ) {
+        return false;
+    }
+    if token.len() < 2 {
+        return false;
+    }
+    true
+}
+
+/// Pattern: agentive NP + copular negation followed by pronoun reframe.
+/// "The buyers searching these terms are not at the comparison stage. They are figuring out X."
+/// "The user is not the customer. They are the one paying."
+fn agentive_np_copular_negation_to_pronoun_reframe(
+    a_text: &str,
+    b_text: &str,
+    a_word_count: usize,
+    b_word_count: usize,
+) -> Option<&'static str> {
+    if a_word_count > 28 || b_word_count > 28 {
+        return None;
+    }
+
+    let a_text = strip_subject_leading_prefix(a_text);
+    let b_text = strip_subject_leading_prefix(b_text);
+
+    for (copula, pronoun_form) in [
+        ("is", "it is "),
+        ("is", "it's "),
+        ("is", "they are "),
+        ("is", "they're "),
+        ("are", "they are "),
+        ("are", "they're "),
+        ("was", "it was "),
+        ("was", "they were "),
+        ("were", "they were "),
+    ] {
+        let neg_pattern = format!(" {copula} not ");
+        let Some((subject, _)) = a_text.split_once(&neg_pattern) else {
+            continue;
+        };
+        if !subject_starts_with_determiner(subject) {
+            continue;
+        }
+        if !looks_like_agentive_subject(subject) {
+            continue;
+        }
+        if b_text.starts_with(pronoun_form) && !b_text.contains(&neg_pattern) {
+            return Some("agentive np is not x -> pronoun is y");
         }
     }
 

@@ -819,6 +819,94 @@ fn check_id_and_label() {
 }
 
 #[test]
+fn pronoun_verb_mirror_we_detected() {
+    let doc = make_doc_with_sentences(
+        &[
+            "We do not start with a logo grid.",
+            "We start with the keywords the client wants to rank for.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    assertions::assert_negation_reframe_failure(
+        &doc,
+        &config,
+        "pronoun do not v x -> pronoun v y",
+        "pronoun verb-mirror corrective detected",
+    );
+}
+
+#[test]
+fn pronoun_verb_mirror_they_detected() {
+    let doc = make_doc_with_sentences(
+        &[
+            "They do not fail because people are careless.",
+            "They fail because the language gets fuzzy.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    assertions::assert_negation_reframe_failure(
+        &doc,
+        &config,
+        "pronoun do not v x -> pronoun v y",
+        "pronoun they verb-mirror corrective detected",
+    );
+}
+
+#[test]
+fn pronoun_verb_mirror_excludes_to_infinitive() {
+    let doc = make_doc_with_sentences(
+        &[
+            "You do not want to click twice.",
+            "You want to save the draft.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    assertions::assert_passes(
+        &doc,
+        &config,
+        "pronoun + want to + infinitive should not fire on verb-mirror",
+    );
+}
+
+#[test]
+fn agentive_np_copular_to_pronoun_reframe_detected() {
+    let doc = make_doc_with_sentences(
+        &[
+            "The buyers searching these terms are not at the comparison stage yet.",
+            "They are figuring out what BANT means.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    assertions::assert_negation_reframe_failure(
+        &doc,
+        &config,
+        "agentive np is not x -> pronoun is y",
+        "agentive NP copular -> pronoun reframe detected",
+    );
+}
+
+#[test]
+fn non_agentive_np_copular_to_pronoun_does_not_trigger() {
+    let doc = make_doc_with_sentences(
+        &[
+            "The function is not deprecated.",
+            "It is part of the public API.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    assertions::assert_passes(
+        &doc,
+        &config,
+        "non-agentive subject (function) with pronoun reframe should pass",
+    );
+}
+
+#[test]
 fn subject_mirror_copular_corrective_detected() {
     let doc = make_doc_with_sentences(
         &[
