@@ -11,7 +11,7 @@ keywords = ["markdown", "validation", "writing", "lint"]
 categories = ["text-processing", "development-tools"]
 
 [dependencies]
-prosesmasher-domain-types-runtime = { version = "0.3.14", path = "runtime" }
+prosesmasher-domain-types-runtime = { version = "0.3.15", path = "runtime" }
 
 [lints]
 workspace = true
