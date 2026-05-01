@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.16
+
+- Loosened the word-count cap on the `pronoun_verb_mirror_corrective` matcher from 22/22 to 24/36. The slop signal in this pattern is the verb mirror itself, not sentence length, and the previous cap was missing real-world cases like "We do not start with a logo grid. We start with the keywords the company wants to rank for, look at the visible competitor URLs from the SERP for each one, then build the competitor list from whoever shows up the most." Corpus audit showed no new false positives at the looser cap.
+
 ## 0.3.15
 
 - Extended `negation-reframe` with two more matchers: pronoun verb-mirror corrective ("We do not start with X. We start with Y.", "They do not fail because A. They fail because B.") with arbitrary action verbs, and agentive NP + copular negation followed by pronoun reframe ("The buyers searching these terms are not at the comparison stage. They are figuring out X.").
