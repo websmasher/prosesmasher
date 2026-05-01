@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.17
+
+- Added `np_action_verb_to_it_corrective` matcher in `negation-reframe` for the pattern "[Bare NP] does not [V] X. It [V]s Y." with subject-verb agreement conjugation, e.g. "Google does not rank the companies you compete against. It ranks whoever owns the questions." Restricted to subjects without determiners ("Google", "Communication", "Shame") so legitimate technical descriptions like "The function does not return null. It returns the first match." continue to pass.
+
 ## 0.3.16
 
 - Loosened the word-count cap on the `pronoun_verb_mirror_corrective` matcher from 22/22 to 24/36. The slop signal in this pattern is the verb mirror itself, not sentence length, and the previous cap was missing real-world cases like "We do not start with a logo grid. We start with the keywords the company wants to rank for, look at the visible competitor URLs from the SERP for each one, then build the competitor list from whoever shows up the most." Corpus audit showed no new false positives at the looser cap.

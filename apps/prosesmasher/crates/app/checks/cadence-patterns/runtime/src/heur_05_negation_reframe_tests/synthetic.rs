@@ -890,6 +890,59 @@ fn agentive_np_copular_to_pronoun_reframe_detected() {
 }
 
 #[test]
+fn np_action_verb_to_it_proper_noun_detected() {
+    let doc = make_doc_with_sentences(
+        &[
+            "Google does not always rank the companies you compete against on pricing pages.",
+            "It ranks whoever owns the questions buyers are asking before they look at a pricing page.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    assertions::assert_negation_reframe_failure(
+        &doc,
+        &config,
+        "np does not v x -> it vs y",
+        "proper-noun verb-mirror to it reframe detected",
+    );
+}
+
+#[test]
+fn np_action_verb_to_it_bare_abstract_noun_detected() {
+    let doc = make_doc_with_sentences(
+        &[
+            "Shame does not make you more consistent.",
+            "It makes the task feel heavier, which makes avoidance more tempting.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    assertions::assert_negation_reframe_failure(
+        &doc,
+        &config,
+        "np does not v x -> it vs y",
+        "bare abstract noun verb-mirror to it reframe detected",
+    );
+}
+
+#[test]
+fn np_action_verb_to_it_with_determiner_does_not_trigger() {
+    let doc = make_doc_with_sentences(
+        &[
+            "The function does not return null.",
+            "It returns the first match in the input stream.",
+        ],
+        Locale::En,
+    );
+    let config = config_with_signals();
+    assertions::assert_passes(
+        &doc,
+        &config,
+        "determiner-led subject (the function) should not trigger",
+    );
+}
+
+#[test]
 fn non_agentive_np_copular_to_pronoun_does_not_trigger() {
     let doc = make_doc_with_sentences(
         &[
