@@ -1453,7 +1453,7 @@ fn pronoun_verb_mirror_corrective(
     a_word_count: usize,
     b_word_count: usize,
 ) -> Option<&'static str> {
-    if a_word_count > 22 || b_word_count > 22 {
+    if a_word_count > 24 || b_word_count > 36 {
         return None;
     }
 

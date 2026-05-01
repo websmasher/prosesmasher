@@ -10,10 +10,10 @@ description = "Internal reusable cadence-pattern-check assertions for the proses
 readme = "../../../../../../README.md"
 
 [dependencies]
-prosesmasher-domain-types = { version = "0.3.15", path = "../../../../domain/types" }
-prosesmasher-app-checks-core-runtime = { version = "0.3.15", path = "../../core/runtime" }
-prosesmasher-app-checks-cadence-patterns-runtime = { version = "0.3.15", path = "../runtime" }
-prosesmasher-app-checks-test-support = { version = "0.3.15", path = "../../test-support" }
+prosesmasher-domain-types = { version = "0.3.16", path = "../../../../domain/types" }
+prosesmasher-app-checks-core-runtime = { version = "0.3.16", path = "../../core/runtime" }
+prosesmasher-app-checks-cadence-patterns-runtime = { version = "0.3.16", path = "../runtime" }
+prosesmasher-app-checks-test-support = { version = "0.3.16", path = "../../test-support" }
 low-expectations.workspace = true
 
 [lints]
