@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.15
+
+- Extended `negation-reframe` with two more matchers: pronoun verb-mirror corrective ("We do not start with X. We start with Y.", "They do not fail because A. They fail because B.") with arbitrary action verbs, and agentive NP + copular negation followed by pronoun reframe ("The buyers searching these terms are not at the comparison stage. They are figuring out X.").
+- Pronoun verb-mirror matcher excludes `[V] to [INFINITIVE]` to preserve the existing FP guard against bare `you do not want to X. you want to Y.` instructional patterns.
+
 ## 0.3.14
 
 - Restructured the repo-root `prosesmasher` package to be a publishable crates.io stub with no real dependencies, so `cargo binstall prosesmasher` works without the `--git` flag. The stub holds only the binstall metadata that points at the GitHub release artifacts; the real CLI continues to be built and shipped from `apps/prosesmasher/packages/prosesmasher` via cargo-dist.
