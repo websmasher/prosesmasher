@@ -11,7 +11,7 @@ keywords = ["markdown", "validation", "writing", "lint"]
 categories = ["text-processing", "parser-implementations"]
 
 [dependencies]
-prosesmasher-adapters-outbound-parser-runtime = { version = "0.3.16", path = "runtime" }
+prosesmasher-adapters-outbound-parser-runtime = { version = "0.3.17", path = "runtime" }
 
 [lints]
 workspace = true

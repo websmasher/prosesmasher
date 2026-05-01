@@ -563,6 +563,19 @@ fn non_copular_corrective_evidence(
         }));
     }
 
+    if let Some(matched_text) = np_action_verb_to_it_corrective(
+        a_text,
+        b_text,
+        a.word_count(),
+        b.word_count(),
+    ) {
+        return Some(json!({
+            "matched_text": matched_text,
+            "sentence": a.text,
+            "next_sentence": b.text,
+        }));
+    }
+
     None
 }
 
@@ -1485,6 +1498,89 @@ fn pronoun_verb_mirror_corrective(
     }
 
     None
+}
+
+/// Pattern: NP + "does not [V] X. It [V]s Y." with subject-verb agreement conjugation.
+/// "Google does not rank the companies you compete against. It ranks whoever owns the questions."
+/// "The map does not show every detail. It shows the relevant ones."
+fn np_action_verb_to_it_corrective(
+    a_text: &str,
+    b_text: &str,
+    a_word_count: usize,
+    b_word_count: usize,
+) -> Option<&'static str> {
+    if a_word_count > 28 || b_word_count > 36 {
+        return None;
+    }
+
+    let a_text = strip_subject_leading_prefix(a_text);
+    let b_text = strip_subject_leading_prefix(b_text);
+
+    let Some((subject, rest)) = a_text.split_once(" does not ") else {
+        return None;
+    };
+    let subject_word_count = subject.split_whitespace().count();
+    if !(1..=2).contains(&subject_word_count) {
+        return None;
+    }
+    if PRONOUN_VERB_MIRROR_SUBJECTS.iter().any(|p| subject == *p) {
+        return None;
+    }
+    // Skip determiner-led subjects ("the parser", "a request") — those collide
+    // with legitimate technical descriptions of behavior. Bare proper-noun-style
+    // subjects ("Google", "Slack") are the slop signal.
+    if subject_starts_with_determiner(subject) {
+        return None;
+    }
+    if subject.split_whitespace().any(|tok| tok == "the" || tok == "a" || tok == "an") {
+        return None;
+    }
+
+    let rest = strip_optional_adverb(rest);
+    let mut tokens = rest.split_whitespace();
+    let verb = tokens.next()?;
+    if !is_plausible_action_verb(verb) {
+        return None;
+    }
+    if tokens.next() == Some("to") {
+        return None;
+    }
+
+    let s2_after_it = b_text.strip_prefix("it ")?;
+    if s2_after_it.starts_with("does not ") || s2_after_it.starts_with("doesn't ") {
+        return None;
+    }
+    let s2_verb = s2_after_it.split_whitespace().next()?;
+    if !is_third_person_singular_of(s2_verb, verb) {
+        return None;
+    }
+
+    Some("np does not v x -> it vs y")
+}
+
+fn strip_optional_adverb(text: &str) -> &str {
+    for adv in ["always ", "necessarily ", "usually ", "really ", "actually ", "just "] {
+        if let Some(rest) = text.strip_prefix(adv) {
+            return rest;
+        }
+    }
+    text
+}
+
+fn is_third_person_singular_of(candidate: &str, base: &str) -> bool {
+    if candidate == base {
+        return true;
+    }
+    if candidate == &format!("{base}s") {
+        return true;
+    }
+    if candidate == &format!("{base}es") {
+        return true;
+    }
+    if base.ends_with('y') && candidate == &format!("{}ies", &base[..base.len() - 1]) {
+        return true;
+    }
+    false
 }
 
 fn is_plausible_action_verb(token: &str) -> bool {

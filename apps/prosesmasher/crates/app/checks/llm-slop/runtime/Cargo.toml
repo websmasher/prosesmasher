@@ -9,14 +9,14 @@ description = "Internal LLM-slop checks runtime crate for the prosesmasher works
 readme = "../../../../../../README.md"
 
 [dependencies]
-prosesmasher-domain-types = { version = "0.3.16", path = "../../../../domain/types" }
-prosesmasher-app-checks-core-runtime = { version = "0.3.16", path = "../../core/runtime" }
+prosesmasher-domain-types = { version = "0.3.17", path = "../../../../domain/types" }
+prosesmasher-app-checks-core-runtime = { version = "0.3.17", path = "../../core/runtime" }
 low-expectations.workspace = true
 serde_json.workspace = true
 
 [dev-dependencies]
-prosesmasher-app-checks-llm-slop-assertions = { version = "0.3.16", path = "../assertions" }
-prosesmasher-app-checks-test-support = { version = "0.3.16", path = "../../test-support" }
+prosesmasher-app-checks-llm-slop-assertions = { version = "0.3.17", path = "../assertions" }
+prosesmasher-app-checks-test-support = { version = "0.3.17", path = "../../test-support" }
 
 [lints]
 workspace = true
