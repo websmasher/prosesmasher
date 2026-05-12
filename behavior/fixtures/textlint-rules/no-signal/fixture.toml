@@ -1,0 +1,18 @@
+id = "no-signal-false-positive-family"
+tool = "textlint"
+family = "no-signal"
+
+valid_prerequisites = [
+  "textlint_package_built",
+  "markdown_fixture_present"
+]
+
+intentionally_valid = [
+  "passive factual definition is not a negation reframe",
+  "bare not just fragment is not enough evidence",
+  "inline markdown fragment is not enough evidence",
+  "contracted negated verb after subordinate clause is not contrast",
+  "negative second sentence is not a reframe",
+  "not too modifier is not contrast",
+  "not all quantifier is not contrast"
+]
