@@ -14,5 +14,8 @@ intentionally_invalid = [
 ]
 
 intentionally_valid = [
-  "subordinate clause before contracted negated verb"
+  "subordinate clause before contracted negated verb",
+  "negative second sentence is not a reframe",
+  "not too modifier is not a contrast reframe",
+  "not all quantifier is not a contrast reframe"
 ]

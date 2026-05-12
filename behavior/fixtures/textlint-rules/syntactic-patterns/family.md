@@ -8,4 +8,10 @@ I would give one anchor, not a buffet.
 
 The parasympathetic rest system, which normally acts as a brake on the stress response, can't do its job.
 
+Leadership is not status. It is not personal magnetism.
+
+Ensure you eat balanced meals, not too close to bedtime.
+
+Crucially, not all time counts equally.
+
 The control sentence says the test did not run because the command was missing.

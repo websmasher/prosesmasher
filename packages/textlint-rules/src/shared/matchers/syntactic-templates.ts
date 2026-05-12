@@ -1,6 +1,7 @@
 import {
   DO_NEGATIONS,
   EXPLICIT_DO_AUXILIARIES,
+  NEGATION_WORDS,
   PASSIVE_DEFINITION_VERBS,
   PRONOUN_REFRAME_STARTS,
   findCopularNegation,
@@ -22,6 +23,13 @@ export type NegationReframeMatch = {
   readonly text: string;
 };
 
+const INLINE_NON_CONTRAST_NEGATION_FOLLOWERS = new Set([
+  "all",
+  "any",
+  "every",
+  "too"
+]);
+
 function inlineNegationContrast(
   sentence: SplitSentence
 ): NegationReframeMatch | undefined {
@@ -36,6 +44,9 @@ function inlineNegationContrast(
 
   if (
     negation?.normalized !== "not" ||
+    INLINE_NON_CONTRAST_NEGATION_FOLLOWERS.has(
+      tokens[negationIndex + 1]?.normalized ?? ""
+    ) ||
     !hasCommaBeforeNegation(sentence.text, negation.start)
   ) {
     return undefined;
@@ -74,8 +85,24 @@ function pronounCopularReframe(
     negation !== undefined &&
     validSubject(negation.subject) &&
     !looksLikePassiveDefinition(aTokens, bTokens) &&
+    !startsWithNegatedPronounCopula(bTokens) &&
     startsWithAny(bTokens, PRONOUN_REFRAME_STARTS)
   );
+}
+
+function startsWithNegatedPronounCopula(tokens: readonly Token[]): boolean {
+  for (const start of PRONOUN_REFRAME_STARTS) {
+    if (!startsWithWords(tokens, start)) {
+      continue;
+    }
+
+    const tokenWords = words(tokens);
+    const predicateIndex = skipOptionalAdverbs(tokenWords, start.length);
+
+    return NEGATION_WORDS.has(tokenWords[predicateIndex] ?? "");
+  }
+
+  return false;
 }
 
 function progressiveVerbMirror(
