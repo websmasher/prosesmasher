@@ -182,6 +182,19 @@ rust_match_subset = "single-token"
 data_path = "packages/textlint-rules/src/families/words/data/prohibited-words.json"
 
 [[rule]]
+id = "hedge-stacking"
+family = "words"
+path = "packages/textlint-rules/src/families/words/hedge-stacking.ts"
+rust_rule = "hedge-stacking"
+
+[[rule]]
+id = "simplicity"
+family = "words"
+path = "packages/textlint-rules/src/families/words/simplicity.ts"
+rust_rule = "simplicity"
+data_path = "packages/textlint-rules/src/families/words/data/simplicity-pairs.json"
+
+[[rule]]
 id = "prohibited-phrases"
 family = "phrases"
 path = "packages/textlint-rules/src/families/phrases/prohibited-phrases.ts"
@@ -261,6 +274,7 @@ rules = [
   "fake-timestamps",
   "false-question",
   "fragment-stacking",
+  "hedge-stacking",
   "humble-bragger",
   "jargon-faker",
   "llm-openers",
@@ -268,6 +282,7 @@ rules = [
   "prohibited-phrases",
   "negation-reframe",
   "sentence-case",
+  "simplicity",
   "smart-quotes",
   "summative-closer",
   "triple-repeat",

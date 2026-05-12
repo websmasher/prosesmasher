@@ -8,6 +8,7 @@ export const everything = {
     "fake-timestamps": true,
     "false-question": true,
     "fragment-stacking": true,
+    "hedge-stacking": true,
     "humble-bragger": true,
     "jargon-faker": true,
     "llm-openers": true,
@@ -15,6 +16,7 @@ export const everything = {
     "prohibited-phrases": true,
     "prohibited-words": true,
     "sentence-case": true,
+    simplicity: true,
     "smart-quotes": true,
     "summative-closer": true,
     "triple-repeat": true

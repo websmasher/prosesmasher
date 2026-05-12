@@ -32,6 +32,8 @@
     "./families/syntactic-patterns/repetition/demonstrative-emphasis": "./dist/families/syntactic-patterns/repetition/demonstrative-emphasis.js",
     "./families/syntactic-patterns/repetition/fragment-stacking": "./dist/families/syntactic-patterns/repetition/fragment-stacking.js",
     "./families/syntactic-patterns/repetition/triple-repeat": "./dist/families/syntactic-patterns/repetition/triple-repeat.js",
+    "./families/words/hedge-stacking": "./dist/families/words/hedge-stacking.js",
+    "./families/words/simplicity": "./dist/families/words/simplicity.js",
     "./families/words/prohibited-words": "./dist/families/words/prohibited-words.js"
   },
   "dependencies": {

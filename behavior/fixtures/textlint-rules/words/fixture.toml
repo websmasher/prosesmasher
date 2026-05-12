@@ -10,5 +10,14 @@ valid_prerequisites = [
 intentionally_invalid = [
   "leverage",
   "robust",
-  "seamless"
+  "seamless",
+  "two hedges in one sentence",
+  "utilize",
+  "numerous",
+  "facilitate"
+]
+
+intentionally_valid = [
+  "one hedge per sentence",
+  "plain simple alternatives"
 ]
