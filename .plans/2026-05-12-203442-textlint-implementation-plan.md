@@ -258,6 +258,31 @@ Comparison scope:
 
 Initial rule ID mapping:
 
+## First Parity Findings
+
+Measured on 202 existing `.md` fixtures under `fixtures/` using only:
+
+- Rust: `prohibited-terms`, `em-dashes`, `negation-reframe`
+- Textlint: `prohibited-words`, `prohibited-phrases`, `em-dashes`, `negation-reframe`
+
+`fixtures/article1.mdx` is not covered by the current textlint run. MDX support is required before fixture parity can be claimed for the full corpus.
+
+Observed parity:
+
+- `em-dashes`: near parity. Rust found 134, textlint found 135. The textlint extra is a closed em dash inside Markdown link text. Decide whether orthography rules should scan link labels before changing code.
+- `prohibited-terms`: textlint found more than Rust. Rust found 62, textlint found 100. This is not automatically better. The good extras are smart-quote normalized phrase hits like `it’s important to note`. The questionable extras are mostly `actually` in headings such as `what actually works` and `leverage` inside `highest-leverage`. Decide whether word/phrase rules should scan headings and link/list text.
+- `negation-reframe`: no parity. Rust found 180, textlint found 548. The textlint rule is broader, not just more complete.
+
+Negation mismatch causes:
+
+- 201 findings from a generic second-sentence pronoun branch such as `... not ... It is ...`, including factual prose like `has not been managed well. It is marked by ...`.
+- 185 findings from broad inline comma-not matching such as `data, not failure`.
+- 101 findings from bare `not just`, which should not live inside `negation-reframe` as currently written.
+- 27 findings from same-prefix pairs such as `The goal is not X. The goal is Y.`, which is the closest intended parity shape.
+- 21 other sentence-pair findings and 13 malformed/split findings caused by textlint node boundaries or sentence extraction.
+
+Do not trust a comparator that treats the current textlint `negation-reframe` as equivalent to Rust. The rule needs a real port of Rust matcher shapes or a documented intentional behavior change.
+
 - Rust `prohibited-terms` single-token matches -> TypeScript `prohibited-words`
 - Rust `prohibited-terms` multi-token matches -> TypeScript `prohibited-phrases`
 - Rust `em-dashes` -> TypeScript `em-dashes`
