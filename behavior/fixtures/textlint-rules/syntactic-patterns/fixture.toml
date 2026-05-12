@@ -10,7 +10,10 @@ valid_prerequisites = [
 intentionally_invalid = [
   "the goal is not x then the goal is y",
   "you do not need x then you need y",
-  "comma not contrast"
+  "comma not contrast",
+  "fragment stack",
+  "triple repeat opener",
+  "demonstrative emphasis over document threshold"
 ]
 
 intentionally_valid = [

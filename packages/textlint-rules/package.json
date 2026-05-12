@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "rm -rf dist && tsc -p tsconfig.json",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "eslint --max-warnings 0 .",
@@ -23,6 +23,9 @@
     "./families/orthography/smart-quotes": "./dist/families/orthography/smart-quotes.js",
     "./families/phrases/prohibited-phrases": "./dist/families/phrases/prohibited-phrases.js",
     "./families/syntactic-patterns/contrast/negation-reframe": "./dist/families/syntactic-patterns/contrast/negation-reframe.js",
+    "./families/syntactic-patterns/repetition/demonstrative-emphasis": "./dist/families/syntactic-patterns/repetition/demonstrative-emphasis.js",
+    "./families/syntactic-patterns/repetition/fragment-stacking": "./dist/families/syntactic-patterns/repetition/fragment-stacking.js",
+    "./families/syntactic-patterns/repetition/triple-repeat": "./dist/families/syntactic-patterns/repetition/triple-repeat.js",
     "./families/words/prohibited-words": "./dist/families/words/prohibited-words.js"
   },
   "dependencies": {

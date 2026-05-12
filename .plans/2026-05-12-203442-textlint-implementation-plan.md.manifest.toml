@@ -90,6 +90,9 @@ path = "packages/textlint-rules/src/families/semantic-thinness"
 path = "packages/textlint-rules/src/presets"
 
 [[tree]]
+path = "packages/textlint-rules/src/registries"
+
+[[tree]]
 path = "packages/textlint-rules/src/shared/text"
 
 [[tree]]
@@ -189,19 +192,40 @@ family = "syntactic-patterns/contrast"
 path = "packages/textlint-rules/src/families/syntactic-patterns/contrast/negation-reframe.ts"
 rust_rule = "negation-reframe"
 
+[[rule]]
+id = "fragment-stacking"
+family = "syntactic-patterns/repetition"
+path = "packages/textlint-rules/src/families/syntactic-patterns/repetition/fragment-stacking.ts"
+rust_rule = "fragment-stacking"
+
+[[rule]]
+id = "triple-repeat"
+family = "syntactic-patterns/repetition"
+path = "packages/textlint-rules/src/families/syntactic-patterns/repetition/triple-repeat.ts"
+rust_rule = "triple-repeat"
+
+[[rule]]
+id = "demonstrative-emphasis"
+family = "syntactic-patterns/repetition"
+path = "packages/textlint-rules/src/families/syntactic-patterns/repetition/demonstrative-emphasis.ts"
+rust_rule = "demonstrative-emphasis"
+
 [[preset]]
 id = "everything"
 path = "packages/textlint-rules/src/presets/everything.ts"
 rules = [
   "colon-dramatic",
+  "demonstrative-emphasis",
   "em-dashes",
   "exclamation-density",
   "fake-timestamps",
+  "fragment-stacking",
   "prohibited-words",
   "prohibited-phrases",
   "negation-reframe",
   "sentence-case",
   "smart-quotes",
+  "triple-repeat",
 ]
 
 [[regex_guardrail]]
