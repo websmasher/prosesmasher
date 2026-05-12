@@ -1,6 +1,6 @@
 # Summary
 
-Migrated Rust persona-signals checks into the textlint phrase family. Added `humble-bragger` and `jargon-faker`, phrase fixture coverage, manifest rows, and corpus comparison reports.
+Migrated checks from the Rust `persona-signals` source crate into the TypeScript `phrases` family. Added `humble-bragger` and `jargon-faker`, phrase fixture coverage, manifest rows, and corpus comparison reports.
 
 # Decisions Made
 
@@ -10,9 +10,9 @@ Migrated Rust persona-signals checks into the textlint phrase family. Added `hum
 
 # Key Files
 
-- `.plans/2026-05-13-002825-migrate-persona-signals-textlint.md`
-- `.plans/2026-05-13-003341-persona-signals-rust-good-catches.md`
-- `.plans/2026-05-13-003341-persona-signals-textlint-diff.md`
+- `.plans/2026-05-13-002825-migrate-rust-persona-signals-into-phrases.md`
+- `.plans/2026-05-13-003341-phrases-rust-persona-source-good-catches.md`
+- `.plans/2026-05-13-003341-phrases-rust-persona-source-textlint-diff.md`
 - `packages/textlint-rules/src/families/phrases/humble-bragger.ts`
 - `packages/textlint-rules/src/families/phrases/jargon-faker.ts`
 - `behavior/fixtures/textlint-rules/phrases/family.md`

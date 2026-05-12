@@ -1,6 +1,6 @@
 # Goal
 
-Migrate the Rust persona-signals checks into the TypeScript textlint package.
+Migrate checks from the Rust `persona-signals` source crate into the TypeScript `phrases` family.
 
 # Scope
 
@@ -42,8 +42,8 @@ Textlint target files:
 - `behavior/fixtures/textlint-rules/phrases/family.md`
 - `behavior/fixtures/textlint-rules/phrases/fixture.toml`
 - `behavior/baselines/textlint-rules/phrases.json`
-- `.plans/*persona-signals*good-catches.md`
-- `.plans/*persona-signals*diff.md`
+- `.plans/*phrases-rust-persona-source*good-catches.md`
+- `.plans/*phrases-rust-persona-source*diff.md`
 
 # Verification Result
 

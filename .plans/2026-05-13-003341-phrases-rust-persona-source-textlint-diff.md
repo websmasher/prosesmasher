@@ -1,4 +1,4 @@
-# Persona Signals Textlint Diff
+# Phrases: Rust Persona Source Textlint Diff
 
 ## Counts
 
