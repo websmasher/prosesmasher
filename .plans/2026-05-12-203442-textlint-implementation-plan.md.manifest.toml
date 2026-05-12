@@ -190,6 +190,18 @@ rust_match_subset = "multi-token"
 data_path = "packages/textlint-rules/src/families/phrases/data/prohibited-phrases.json"
 
 [[rule]]
+id = "humble-bragger"
+family = "phrases"
+path = "packages/textlint-rules/src/families/phrases/humble-bragger.ts"
+rust_rule = "humble-bragger"
+
+[[rule]]
+id = "jargon-faker"
+family = "phrases"
+path = "packages/textlint-rules/src/families/phrases/jargon-faker.ts"
+rust_rule = "jargon-faker"
+
+[[rule]]
 id = "negation-reframe"
 family = "syntactic-patterns/contrast"
 path = "packages/textlint-rules/src/families/syntactic-patterns/contrast/negation-reframe.ts"
@@ -249,6 +261,8 @@ rules = [
   "fake-timestamps",
   "false-question",
   "fragment-stacking",
+  "humble-bragger",
+  "jargon-faker",
   "llm-openers",
   "prohibited-words",
   "prohibited-phrases",

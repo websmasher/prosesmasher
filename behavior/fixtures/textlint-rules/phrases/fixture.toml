@@ -9,5 +9,14 @@ valid_prerequisites = [
 
 intentionally_invalid = [
   "in today's fast-paced world",
-  "let's dive in"
+  "let's dive in",
+  "in my experience",
+  "as someone who has",
+  "optimizing for as borrowed persona jargon",
+  "debug your as borrowed persona jargon"
+]
+
+intentionally_valid = [
+  "debug your build script as literal technical prose",
+  "optimizing for latency as literal technical prose"
 ]
