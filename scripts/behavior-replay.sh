@@ -20,7 +20,9 @@ fi
   --rulesdir "$ROOT/packages/textlint-rules/dist/families/orthography" \
   --rulesdir "$ROOT/packages/textlint-rules/dist/families/words" \
   --rulesdir "$ROOT/packages/textlint-rules/dist/families/phrases" \
+  --rulesdir "$ROOT/packages/textlint-rules/dist/families/syntactic-patterns/closers" \
   --rulesdir "$ROOT/packages/textlint-rules/dist/families/syntactic-patterns/contrast" \
+  --rulesdir "$ROOT/packages/textlint-rules/dist/families/syntactic-patterns/lead-ins" \
   --rulesdir "$ROOT/packages/textlint-rules/dist/families/syntactic-patterns/repetition" \
   --format json \
   "${FILES[@]}"

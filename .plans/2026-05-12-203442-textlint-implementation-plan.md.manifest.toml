@@ -123,6 +123,9 @@ path = "packages/textlint-rules/src/shared/text/tokens.ts"
 path = "packages/textlint-rules/src/shared/text/sentences.ts"
 
 [[shared_file]]
+path = "packages/textlint-rules/src/shared/text/sections.ts"
+
+[[shared_file]]
 path = "packages/textlint-rules/src/shared/text/traverse.ts"
 
 [[shared_file]]
@@ -210,21 +213,49 @@ family = "syntactic-patterns/repetition"
 path = "packages/textlint-rules/src/families/syntactic-patterns/repetition/demonstrative-emphasis.ts"
 rust_rule = "demonstrative-emphasis"
 
+[[rule]]
+id = "llm-openers"
+family = "syntactic-patterns/lead-ins"
+path = "packages/textlint-rules/src/families/syntactic-patterns/lead-ins/llm-openers.ts"
+rust_rule = "llm-openers"
+
+[[rule]]
+id = "affirmation-closers"
+family = "syntactic-patterns/closers"
+path = "packages/textlint-rules/src/families/syntactic-patterns/closers/affirmation-closers.ts"
+rust_rule = "affirmation-closers"
+
+[[rule]]
+id = "summative-closer"
+family = "syntactic-patterns/closers"
+path = "packages/textlint-rules/src/families/syntactic-patterns/closers/summative-closer.ts"
+rust_rule = "summative-closer"
+
+[[rule]]
+id = "false-question"
+family = "syntactic-patterns/closers"
+path = "packages/textlint-rules/src/families/syntactic-patterns/closers/false-question.ts"
+rust_rule = "false-question"
+
 [[preset]]
 id = "everything"
 path = "packages/textlint-rules/src/presets/everything.ts"
 rules = [
+  "affirmation-closers",
   "colon-dramatic",
   "demonstrative-emphasis",
   "em-dashes",
   "exclamation-density",
   "fake-timestamps",
+  "false-question",
   "fragment-stacking",
+  "llm-openers",
   "prohibited-words",
   "prohibited-phrases",
   "negation-reframe",
   "sentence-case",
   "smart-quotes",
+  "summative-closer",
   "triple-repeat",
 ]
 

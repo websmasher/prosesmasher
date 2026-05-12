@@ -21,3 +21,33 @@ Ensure you eat balanced meals, not too close to bedtime.
 Crucially, not all time counts equally.
 
 The control sentence says the test did not run because the command was missing.
+
+## Lead ins
+
+The interesting part is that nobody noticed.
+
+## Affirmation closer
+
+We worked hard and that's the key.
+
+## Formula closer
+
+Sixty seconds. That's the whole repair.
+
+## Summative closer
+
+And that's what makes this approach so powerful.
+
+## False question
+
+And isn't that what we all want?
+
+## Rhetorical framing controls
+
+Nobody noticed the change at first.
+
+The data supports this conclusion.
+
+So who's going to build the alternative?
+
+That's the neighborhood school we use every day.
