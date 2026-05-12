@@ -1,6 +1,6 @@
 id = "orthography-family"
 tool = "textlint"
-command = ["textlint", "--rulesdir", "../../../packages/textlint-rules/dist/families/orthography", "--rule", "em-dashes", "family.md"]
+command = ["textlint", "--rulesdir", "../../../packages/textlint-rules/dist/families/orthography", "family.md"]
 family = "orthography"
 
 valid_prerequisites = [
@@ -9,5 +9,10 @@ valid_prerequisites = [
 ]
 
 intentionally_invalid = [
-  "closed_em_dash"
+  "closed_em_dash",
+  "title_case_heading",
+  "smart_quotes",
+  "exclamation_density",
+  "fake_timestamp",
+  "dramatic_colon"
 ]

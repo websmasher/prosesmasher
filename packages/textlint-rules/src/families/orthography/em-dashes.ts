@@ -1,10 +1,10 @@
+import type { TxtParentNode } from "@textlint/ast-node-types";
 import type { TextlintRuleModule } from "@textlint/types";
+import { RuleHelper } from "textlint-rule-helper";
+import { sourceText } from "../../shared/text/traverse.js";
+import { isWhitespace } from "../../shared/text/whitespace.js";
 
 const CLOSED_EM_DASH = "\u2014";
-
-function isWhitespace(value: string | undefined): boolean {
-  return value === undefined || value.trim() === "";
-}
 
 function isClosedEmDash(text: string, index: number): boolean {
   if (text[index] !== CLOSED_EM_DASH) {
@@ -15,14 +15,25 @@ function isClosedEmDash(text: string, index: number): boolean {
 }
 
 const rule: TextlintRuleModule = (context) => {
-  const { Syntax, RuleError, getSource, locator, report } = context;
+  const { Syntax, RuleError, locator, report } = context;
+  const helper = new RuleHelper(context);
+  const ignoredParents = [
+    Syntax.List,
+    Syntax.ListItem,
+    Syntax.Table,
+    Syntax.TableCell
+  ];
 
   return {
-    [Syntax.Str](node): void {
-      const text = getSource(node);
+    [Syntax.Paragraph](node: TxtParentNode): void {
+      if (helper.isChildNode(node, ignoredParents)) {
+        return;
+      }
 
-      for (let index = 0; index < text.length; index += 1) {
-        if (!isClosedEmDash(text, index)) {
+      const source = sourceText(node);
+
+      for (let index = 0; index < source.text.length; index += 1) {
+        if (!isClosedEmDash(source.text, index)) {
           continue;
         }
 
@@ -31,7 +42,10 @@ const rule: TextlintRuleModule = (context) => {
           new RuleError(
             "Closed em dash found. Replace it with a comma, colon, parenthesis, or spaced dash.",
             {
-              padding: locator.range([index, index + CLOSED_EM_DASH.length])
+              padding: locator.range([
+                source.originalStartFor(index),
+                source.originalEndFor(index + CLOSED_EM_DASH.length)
+              ])
             }
           )
         );

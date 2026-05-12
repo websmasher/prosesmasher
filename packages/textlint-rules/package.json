@@ -15,7 +15,12 @@
   },
   "exports": {
     ".": "./dist/index.js",
+    "./families/orthography/colon-dramatic": "./dist/families/orthography/colon-dramatic.js",
     "./families/orthography/em-dashes": "./dist/families/orthography/em-dashes.js",
+    "./families/orthography/exclamation-density": "./dist/families/orthography/exclamation-density.js",
+    "./families/orthography/fake-timestamps": "./dist/families/orthography/fake-timestamps.js",
+    "./families/orthography/sentence-case": "./dist/families/orthography/sentence-case.js",
+    "./families/orthography/smart-quotes": "./dist/families/orthography/smart-quotes.js",
     "./families/phrases/prohibited-phrases": "./dist/families/phrases/prohibited-phrases.js",
     "./families/syntactic-patterns/contrast/negation-reframe": "./dist/families/syntactic-patterns/contrast/negation-reframe.js",
     "./families/words/prohibited-words": "./dist/families/words/prohibited-words.js"

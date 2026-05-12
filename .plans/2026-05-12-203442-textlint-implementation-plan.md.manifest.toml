@@ -123,6 +123,9 @@ path = "packages/textlint-rules/src/shared/text/sentences.ts"
 path = "packages/textlint-rules/src/shared/text/traverse.ts"
 
 [[shared_file]]
+path = "packages/textlint-rules/src/shared/text/whitespace.ts"
+
+[[shared_file]]
 path = "packages/textlint-rules/src/shared/matchers/phrases.ts"
 
 [[shared_file]]
@@ -133,6 +136,36 @@ id = "em-dashes"
 family = "orthography"
 path = "packages/textlint-rules/src/families/orthography/em-dashes.ts"
 rust_rule = "em-dashes"
+
+[[rule]]
+id = "smart-quotes"
+family = "orthography"
+path = "packages/textlint-rules/src/families/orthography/smart-quotes.ts"
+rust_rule = "smart-quotes"
+
+[[rule]]
+id = "sentence-case"
+family = "orthography"
+path = "packages/textlint-rules/src/families/orthography/sentence-case.ts"
+rust_rule = "sentence-case"
+
+[[rule]]
+id = "exclamation-density"
+family = "orthography"
+path = "packages/textlint-rules/src/families/orthography/exclamation-density.ts"
+rust_rule = "exclamation-density"
+
+[[rule]]
+id = "fake-timestamps"
+family = "orthography"
+path = "packages/textlint-rules/src/families/orthography/fake-timestamps.ts"
+rust_rule = "fake-timestamps"
+
+[[rule]]
+id = "colon-dramatic"
+family = "orthography"
+path = "packages/textlint-rules/src/families/orthography/colon-dramatic.ts"
+rust_rule = "colon-dramatic"
 
 [[rule]]
 id = "prohibited-words"
@@ -160,10 +193,15 @@ rust_rule = "negation-reframe"
 id = "everything"
 path = "packages/textlint-rules/src/presets/everything.ts"
 rules = [
+  "colon-dramatic",
   "em-dashes",
+  "exclamation-density",
+  "fake-timestamps",
   "prohibited-words",
   "prohibited-phrases",
   "negation-reframe",
+  "sentence-case",
+  "smart-quotes",
 ]
 
 [[regex_guardrail]]

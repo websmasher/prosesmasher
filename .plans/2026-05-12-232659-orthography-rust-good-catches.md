@@ -1,0 +1,669 @@
+# Orthography Rust good catches
+
+These are the Rust orthography findings from `fixtures/` for the migrated rule set. They are the migration reference set.
+
+- colon-dramatic: 69
+- em-dashes: 92
+- exclamation-density: 1
+- sentence-case: 139
+- smart-quotes: 343
+
+## colon-dramatic
+
+- `fixtures/explainers/gpt_5_4_mini/burnout-at-work.md`: the person and the job.
+- `fixtures/explainers/gpt_5_4_mini/why-children-have-tantrums.md`: common tantrums are common.
+- `fixtures/explainers/gpt_5_4_mini/why-modern-friendships-fade-over-time.md`: life gets crowded.
+- `fixtures/explainers/gpt_5_4_mini/why-people-struggle-to-build-habits.md`: 10 a.m.
+- `fixtures/gpt_5_2_chat/stress_and_physical_symptoms/article.md`: it boosts alertness and energy.
+- `fixtures/gpt_5_2_chat/why_couples_stop_communicating/article.md`: they avoid it.
+- `fixtures/gpt_5_2_chat/why_couples_stop_communicating/article.md`: Who initiates?
+- `fixtures/gpt_5_2_chat/why_couples_stop_communicating/article.md`: talking leads to pain.
+- `fixtures/gpt_5_2_chat/why_couples_stop_communicating/article.md`: Mind reading motives.
+- `fixtures/gpt_5_2_chat/why_couples_stop_communicating/article.md`: Talking when emotionally flooded.
+- `fixtures/gpt_5_2_chat/why_couples_stop_communicating/article.md`: Bad timing and ambush conversations.
+- `fixtures/gpt_5_2_chat/why_couples_stop_communicating/article.md`: "You never help."
+- `fixtures/gpt_5_2_chat/why_couples_stop_communicating/article.md`: "I’m overwhelmed.
+- `fixtures/gpt_5_2_chat/why_couples_stop_communicating/article.md`: "You’re not romantic anymore."
+- `fixtures/gpt_5_2_chat/why_couples_stop_communicating/article.md`: "I miss feeling pursued.
+- `fixtures/gpt_5_2_chat/why_couples_stop_communicating/article.md`: "I’m too heated.
+- `fixtures/gpt_5_2_chat/why_couples_stop_communicating/article.md`: 30."
+- `fixtures/gpt_5_2_chat/why_couples_stop_communicating/article.md`: No phones during meals.
+- `fixtures/gpt_5_2_chat/why_couples_stop_communicating/article.md`: ____."
+- `fixtures/gpt_5_2_chat/why_couples_stop_communicating/article.md`: ____."
+- `fixtures/gpt_5_2_chat/why_friendships_fade/article.md`: “Did I do something wrong?”
+- `fixtures/gpt_5_2_chat/why_people_lose_motivation_after_big_goals/article.md`: "This is the post-achievement dip."
+- `fixtures/gpt_5_2_chat/why_people_struggle_to_build_habits/article.md`: Goals that are too vague.
+- `fixtures/gpt_5_2_chat/why_people_struggle_to_build_habits/article.md`: Hidden friction in the environment.
+- `fixtures/gpt_5_2_chat/why_people_struggle_to_build_habits/article.md`: All-or-nothing thinking.
+- `fixtures/gpt_5_2_chat/why_people_wake_up_tired/article.md`: sleep apnea.
+- `fixtures/gpt_5_4/adult_procrastination_causes_and_fixes/article.md`: "I avoided this yesterday.
+- `fixtures/gpt_5_4/adult_procrastination_causes_and_fixes/article.md`: 00 p.m.
+- `fixtures/gpt_5_4/social_anxiety_in_daily_life/article.md`: How do I look?
+- `fixtures/gpt_5_4/why_people_lose_motivation_after_big_goals/article.md`: exhaustion.
+- `fixtures/gpt_5_4/why_people_struggle_to_build_habits/article.md`: What broke the routine?
+- `fixtures/gpt_5_4_mini/adult_procrastination_causes_and_fixes/article.md`: a scoping review).
+- `fixtures/gpt_5_4_mini/screen_time_and_child_attention/article.md`: “What is this screen replacing?”
+- `fixtures/gpt_5_4_mini/social_anxiety_in_daily_life/article.md`: escape equals relief.
+- `fixtures/gpt_5_4_mini/why_couples_stop_communicating/article.md`: people change.
+- `fixtures/gpt_5_4_mini/why_people_lose_motivation_after_big_goals/article.md`: not all motivation is equal.
+- `fixtures/haiku/how_burnout_develops_at_work/article.md`: what experts call "quiet burnout."
+- `fixtures/haiku/screen_time_and_child_attention/article.md`: correlation does not equal causation.
+- `fixtures/haiku/why_couples_stop_communicating/article.md`: "It sounds like you're feeling..."
+- `fixtures/haiku/why_people_lose_motivation_after_big_goals/article.md`: motivation drops before competence rises.
+- `fixtures/haiku/why_people_lose_motivation_after_big_goals/article.md`: discipline doesn't require motivation.
+- `fixtures/haiku/why_people_wake_up_tired/article.md`: Don't change everything at once.
+- `fixtures/instagram/gpt_5_4/why-habits-fail-when-you-rely-on-willpower.md`: 40 p.m.
+- `fixtures/instagram/gpt_5_4/why-people-lose-motivation-after-big-goals.md`: 12 on a tired Wednesday.
+- `fixtures/instagram/gpt_5_4_mini/why-overloaded-children-seem-rude.md`: "I hear you.
+- `fixtures/linkedin/gpt_5_4/what-healthy-workplace-culture-looks-like.md`: 17 p.m.
+- `fixtures/linkedin/gpt_5_4/why-modern-work-makes-people-feel-constantly-behind.md`: 30 p.m.
+- `fixtures/opus_4_6/why_couples_stop_communicating/article.md`: it almost always is.
+- `fixtures/opus_4_6/why_friendships_fade/article.md`: the friendship recession.
+- `fixtures/opus_4_6/why_friendships_fade/article.md`: loneliness is self-reinforcing.
+- `fixtures/opus_4_6/why_friendships_fade/article.md`: Does anyone else miss this?
+- `fixtures/opus_4_6/why_people_wake_up_tired/article.md`: sleep inertia.
+- `fixtures/sonnet_4_6/adult_procrastination_causes_and_fixes/article.md`: social structures help.
+- `fixtures/sonnet_4_6/how_burnout_develops_at_work/article.md`: it begins in enthusiasm.
+- `fixtures/sonnet_4_6/how_burnout_develops_at_work/article.md`: taking the signs seriously.
+- `fixtures/sonnet_4_6/screen_time_and_child_attention/article.md`: Concentration on homework deteriorates noticeably.
+- `fixtures/sonnet_4_6/why_friendships_fade/article.md`: the friendship recession.
+- `fixtures/sonnet_4_6/why_people_lose_motivation_after_big_goals/article.md`: Uninformed Optimism.
+- `fixtures/sonnet_4_6/why_people_lose_motivation_after_big_goals/article.md`: Informed Pessimism.
+- `fixtures/sonnet_4_6/why_people_lose_motivation_after_big_goals/article.md`: The Valley of Despair.
+- `fixtures/sonnet_4_6/why_people_lose_motivation_after_big_goals/article.md`: Informed Optimism.
+- `fixtures/sonnet_4_6/why_people_lose_motivation_after_big_goals/article.md`: Fulfillment.
+- `fixtures/sonnet_4_6/why_people_lose_motivation_after_big_goals/article.md`: Is this goal achievable?
+- `fixtures/sonnet_4_6/why_people_lose_motivation_after_big_goals/article.md`: the fantasy feels like progress.
+- `fixtures/sonnet_4_6/why_people_struggle_to_build_habits/article.md`: this behavior is worth repeating.
+- `fixtures/sonnet_4_6/why_people_wake_up_tired/article.md`: See your doctor.
+- `fixtures/twitter/gpt_5_4/why-children-have-tantrums.md`: escalation works.
+- `fixtures/twitter/gpt_5_4_mini/why-adults-procrastinate-and-what-helps.md`: “I delayed it.
+- `fixtures/twitter/gpt_5_4_mini/why-children-have-tantrums.md`: this works.
+
+## em-dashes
+
+- `fixtures/haiku/adult_procrastination_causes_and_fixes/article.md`: —
+- `fixtures/haiku/adult_procrastination_causes_and_fixes/article.md`: —
+- `fixtures/haiku/adult_procrastination_causes_and_fixes/article.md`: —
+- `fixtures/haiku/adult_procrastination_causes_and_fixes/article.md`: —
+- `fixtures/haiku/adult_procrastination_causes_and_fixes/article.md`: —
+- `fixtures/haiku/adult_procrastination_causes_and_fixes/article.md`: —
+- `fixtures/haiku/adult_procrastination_causes_and_fixes/article.md`: —
+- `fixtures/haiku/adult_procrastination_causes_and_fixes/article.md`: —
+- `fixtures/haiku/adult_procrastination_causes_and_fixes/article.md`: —
+- `fixtures/haiku/adult_procrastination_causes_and_fixes/article.md`: —
+- `fixtures/haiku/adult_procrastination_causes_and_fixes/article.md`: —
+- `fixtures/haiku/adult_procrastination_causes_and_fixes/article.md`: —
+- `fixtures/haiku/how_burnout_develops_at_work/article.md`: —
+- `fixtures/haiku/how_burnout_develops_at_work/article.md`: —
+- `fixtures/haiku/how_burnout_develops_at_work/article.md`: —
+- `fixtures/haiku/how_burnout_develops_at_work/article.md`: —
+- `fixtures/haiku/how_burnout_develops_at_work/article.md`: —
+- `fixtures/haiku/how_burnout_develops_at_work/article.md`: —
+- `fixtures/haiku/how_burnout_develops_at_work/article.md`: —
+- `fixtures/haiku/screen_time_and_child_attention/article.md`: —
+- `fixtures/haiku/screen_time_and_child_attention/article.md`: —
+- `fixtures/haiku/screen_time_and_child_attention/article.md`: —
+- `fixtures/haiku/screen_time_and_child_attention/article.md`: —
+- `fixtures/haiku/screen_time_and_child_attention/article.md`: —
+- `fixtures/haiku/screen_time_and_child_attention/article.md`: —
+- `fixtures/haiku/social_anxiety_in_daily_life/article.md`: —
+- `fixtures/haiku/social_anxiety_in_daily_life/article.md`: —
+- `fixtures/haiku/social_anxiety_in_daily_life/article.md`: —
+- `fixtures/haiku/social_anxiety_in_daily_life/article.md`: —
+- `fixtures/haiku/social_anxiety_in_daily_life/article.md`: —
+- `fixtures/haiku/social_anxiety_in_daily_life/article.md`: —
+- `fixtures/haiku/social_anxiety_in_daily_life/article.md`: —
+- `fixtures/haiku/stress_and_physical_symptoms/article.md`: —
+- `fixtures/haiku/stress_and_physical_symptoms/article.md`: —
+- `fixtures/haiku/stress_and_physical_symptoms/article.md`: —
+- `fixtures/haiku/stress_and_physical_symptoms/article.md`: —
+- `fixtures/haiku/stress_and_physical_symptoms/article.md`: —
+- `fixtures/haiku/stress_and_physical_symptoms/article.md`: —
+- `fixtures/haiku/stress_and_physical_symptoms/article.md`: —
+- `fixtures/haiku/why_couples_stop_communicating/article.md`: —
+- `fixtures/haiku/why_couples_stop_communicating/article.md`: —
+- `fixtures/haiku/why_couples_stop_communicating/article.md`: —
+- `fixtures/haiku/why_couples_stop_communicating/article.md`: —
+- `fixtures/haiku/why_couples_stop_communicating/article.md`: —
+- `fixtures/haiku/why_couples_stop_communicating/article.md`: —
+- `fixtures/haiku/why_couples_stop_communicating/article.md`: —
+- `fixtures/haiku/why_couples_stop_communicating/article.md`: —
+- `fixtures/haiku/why_couples_stop_communicating/article.md`: —
+- `fixtures/haiku/why_couples_stop_communicating/article.md`: —
+- `fixtures/haiku/why_couples_stop_communicating/article.md`: —
+- `fixtures/haiku/why_couples_stop_communicating/article.md`: —
+- `fixtures/haiku/why_friendships_fade/article.md`: —
+- `fixtures/haiku/why_friendships_fade/article.md`: —
+- `fixtures/haiku/why_friendships_fade/article.md`: —
+- `fixtures/haiku/why_friendships_fade/article.md`: —
+- `fixtures/haiku/why_friendships_fade/article.md`: —
+- `fixtures/haiku/why_friendships_fade/article.md`: —
+- `fixtures/haiku/why_friendships_fade/article.md`: —
+- `fixtures/haiku/why_friendships_fade/article.md`: —
+- `fixtures/haiku/why_friendships_fade/article.md`: —
+- `fixtures/haiku/why_friendships_fade/article.md`: —
+- `fixtures/haiku/why_friendships_fade/article.md`: —
+- `fixtures/haiku/why_friendships_fade/article.md`: —
+- `fixtures/haiku/why_friendships_fade/article.md`: —
+- `fixtures/haiku/why_people_lose_motivation_after_big_goals/article.md`: —
+- `fixtures/haiku/why_people_lose_motivation_after_big_goals/article.md`: —
+- `fixtures/haiku/why_people_lose_motivation_after_big_goals/article.md`: —
+- `fixtures/haiku/why_people_lose_motivation_after_big_goals/article.md`: —
+- `fixtures/haiku/why_people_lose_motivation_after_big_goals/article.md`: —
+- `fixtures/haiku/why_people_lose_motivation_after_big_goals/article.md`: —
+- `fixtures/haiku/why_people_lose_motivation_after_big_goals/article.md`: —
+- `fixtures/haiku/why_people_lose_motivation_after_big_goals/article.md`: —
+- `fixtures/haiku/why_people_lose_motivation_after_big_goals/article.md`: —
+- `fixtures/haiku/why_people_lose_motivation_after_big_goals/article.md`: —
+- `fixtures/haiku/why_people_lose_motivation_after_big_goals/article.md`: —
+- `fixtures/haiku/why_people_lose_motivation_after_big_goals/article.md`: —
+- `fixtures/haiku/why_people_struggle_to_build_habits/article.md`: —
+- `fixtures/haiku/why_people_struggle_to_build_habits/article.md`: —
+- `fixtures/haiku/why_people_struggle_to_build_habits/article.md`: —
+- `fixtures/haiku/why_people_struggle_to_build_habits/article.md`: —
+- `fixtures/haiku/why_people_struggle_to_build_habits/article.md`: —
+- `fixtures/haiku/why_people_struggle_to_build_habits/article.md`: —
+- `fixtures/haiku/why_people_struggle_to_build_habits/article.md`: —
+- `fixtures/haiku/why_people_struggle_to_build_habits/article.md`: —
+- `fixtures/haiku/why_people_struggle_to_build_habits/article.md`: —
+- `fixtures/haiku/why_people_struggle_to_build_habits/article.md`: —
+- `fixtures/haiku/why_people_struggle_to_build_habits/article.md`: —
+- `fixtures/haiku/why_people_wake_up_tired/article.md`: —
+- `fixtures/haiku/why_people_wake_up_tired/article.md`: —
+- `fixtures/haiku/why_people_wake_up_tired/article.md`: —
+- `fixtures/haiku/why_people_wake_up_tired/article.md`: —
+- `fixtures/haiku/why_people_wake_up_tired/article.md`: —
+
+## exclamation-density
+
+- `fixtures/instagram/gpt_5_4_mini/why-overloaded-children-seem-rude.md`: The sharp tone, eye roll, "No!" or "Leave me alone!" is often a child hitting the edge of their capacity. They may be tired, hungry, overstimulated, rushed, embarrassed, or unable to find better words fast enough.
+
+## sentence-case
+
+- `fixtures/gpt_5_2_chat/social_anxiety_in_daily_life/article.md`: Why Some People Feel Anxious in Social Situations, and How to Manage It
+- `fixtures/gpt_5_4_mini/how_burnout_develops_at_work/article.md`: How Burnout Develops at Work: Warning Signs, Long-Term Effects, and Recovery Strategies
+- `fixtures/gpt_5_4_mini/why_couples_stop_communicating/article.md`: Common Mistakes Couples Make
+- `fixtures/gpt_5_4_mini/why_couples_stop_communicating/article.md`: What Helps Couples Communicate Better
+- `fixtures/gpt_5_4_mini/why_couples_stop_communicating/article.md`: Why Communication Breaks Down
+- `fixtures/gpt_5_4_mini/why_couples_stop_communicating/article.md`: Why Couples Stop Communicating Well Over Time
+- `fixtures/haiku/adult_procrastination_causes_and_fixes/article.md`: How Procrastination Affects Daily Life
+- `fixtures/haiku/adult_procrastination_causes_and_fixes/article.md`: Practical Strategies to Overcome Procrastination
+- `fixtures/haiku/adult_procrastination_causes_and_fixes/article.md`: The Procrastination Problem: Why Adults Delay and How to Take Control
+- `fixtures/haiku/adult_procrastination_causes_and_fixes/article.md`: The Root Causes of Adult Procrastination
+- `fixtures/haiku/how_burnout_develops_at_work/article.md`: The Long-Term Health Consequences
+- `fixtures/haiku/how_burnout_develops_at_work/article.md`: Understanding Workplace Burnout: Warning Signs, Long-Term Effects, and Recovery Strategies
+- `fixtures/haiku/screen_time_and_child_attention/article.md`: Content Matters More Than You Think
+- `fixtures/haiku/screen_time_and_child_attention/article.md`: Does Screen Time Harm Children's Attention Spans? What the Research Shows
+- `fixtures/haiku/screen_time_and_child_attention/article.md`: The Evidence: What Research Shows
+- `fixtures/haiku/screen_time_and_child_attention/article.md`: Warning Signs That Screen Time May Be Affecting Your Child
+- `fixtures/haiku/social_anxiety_in_daily_life/article.md`: How Social Anxiety Shows Up: Recognition and Manifestation
+- `fixtures/haiku/social_anxiety_in_daily_life/article.md`: Managing Social Anxiety: Practical and Evidence-Based Strategies
+- `fixtures/haiku/social_anxiety_in_daily_life/article.md`: The Roots of Social Anxiety: Understanding the Causes
+- `fixtures/haiku/social_anxiety_in_daily_life/article.md`: Understanding Social Anxiety: Causes, Manifestations, and Management Strategies
+- `fixtures/haiku/stress_and_physical_symptoms/article.md`: Common Physical Symptoms of Stress
+- `fixtures/haiku/stress_and_physical_symptoms/article.md`: Strategies to Reduce Stress and Its Physical Impact
+- `fixtures/haiku/stress_and_physical_symptoms/article.md`: The Biological Mechanism: How Stress Affects the Body
+- `fixtures/haiku/stress_and_physical_symptoms/article.md`: The Body-Mind Connection: How Stress Causes Physical Symptoms
+- `fixtures/haiku/stress_and_physical_symptoms/article.md`: The Systemic Impact of Chronic Stress
+- `fixtures/haiku/why_couples_stop_communicating/article.md`: Common Mistakes Couples Make
+- `fixtures/haiku/why_couples_stop_communicating/article.md`: Practical Advice for Reconnecting Through Communication
+- `fixtures/haiku/why_couples_stop_communicating/article.md`: The Silent Drift: Why Couples Stop Communicating Well Over Time
+- `fixtures/haiku/why_couples_stop_communicating/article.md`: Why Communication Deteriorates: The Root Causes
+- `fixtures/haiku/why_friendships_fade/article.md`: Rebuilding Connection: Practical Pathways Forward
+- `fixtures/haiku/why_friendships_fade/article.md`: The Emotional Toll of Fading Friendships
+- `fixtures/haiku/why_friendships_fade/article.md`: The Fading Friendships Crisis: Why Modern Connections Wither and How to Rebuild Them
+- `fixtures/haiku/why_friendships_fade/article.md`: The Modern Friendship Paradox
+- `fixtures/haiku/why_friendships_fade/article.md`: Why Friendships Fade in the Modern Era
+- `fixtures/haiku/why_people_lose_motivation_after_big_goals/article.md`: Conclusion: The Long Game
+- `fixtures/haiku/why_people_lose_motivation_after_big_goals/article.md`: Practical Strategies for Staying Consistent
+- `fixtures/haiku/why_people_lose_motivation_after_big_goals/article.md`: The Emotional Cycle of Change: Understanding Your Journey
+- `fixtures/haiku/why_people_lose_motivation_after_big_goals/article.md`: The Root Causes: Why Big Goals Lead to Motivation Loss
+- `fixtures/haiku/why_people_lose_motivation_after_big_goals/article.md`: Why We Lose Motivation After Setting Big Goals: Understanding the Cycle and Building Lasting Change
+- `fixtures/haiku/why_people_struggle_to_build_habits/article.md`: Common Obstacles to Habit Success
+- `fixtures/haiku/why_people_struggle_to_build_habits/article.md`: Practical Strategies That Actually Work
+- `fixtures/haiku/why_people_struggle_to_build_habits/article.md`: The Psychology Behind Habit Formation Struggles
+- `fixtures/haiku/why_people_struggle_to_build_habits/article.md`: Why Building Good Habits Is So Hard: The Psychology, Obstacles, and Strategies That Actually Work
+- `fixtures/haiku/why_people_wake_up_tired/article.md`: How to Identify What's Causing Your Morning Fatigue
+- `fixtures/haiku/why_people_wake_up_tired/article.md`: The Problem: Sleep Quantity Doesn't Equal Sleep Quality
+- `fixtures/haiku/why_people_wake_up_tired/article.md`: What to Do About It
+- `fixtures/haiku/why_people_wake_up_tired/article.md`: Why You Wake Up Tired Even After a Full Night of Sleep: Causes, Identification, and Solutions
+- `fixtures/opus_4_6/adult_procrastination_causes_and_fixes/article.md`: How Procrastination Affects Daily Life
+- `fixtures/opus_4_6/adult_procrastination_causes_and_fixes/article.md`: Practical Strategies to Overcome Procrastination
+- `fixtures/opus_4_6/adult_procrastination_causes_and_fixes/article.md`: The Real Causes of Procrastination
+- `fixtures/opus_4_6/adult_procrastination_causes_and_fixes/article.md`: Why Adults Procrastinate — and How to Finally Stop
+- `fixtures/opus_4_6/how_burnout_develops_at_work/article.md`: Finding Your Way Back: Evidence-Based Recovery Strategies
+- `fixtures/opus_4_6/how_burnout_develops_at_work/article.md`: How Burnout Takes Root
+- `fixtures/opus_4_6/how_burnout_develops_at_work/article.md`: The Long Shadow: What Burnout Does Over Time
+- `fixtures/opus_4_6/how_burnout_develops_at_work/article.md`: The Slow Burn: How Workplace Burnout Develops, What It Does to You, and How to Recover
+- `fixtures/opus_4_6/how_burnout_develops_at_work/article.md`: The Warning Signs Most People Miss
+- `fixtures/opus_4_6/screen_time_and_child_attention/article.md`: Does Screen Time Harm Children's Attention Spans? What the Evidence Says and What Parents Can Do
+- `fixtures/opus_4_6/screen_time_and_child_attention/article.md`: Warning Signs That Screen Time May Be Affecting Your Child
+- `fixtures/opus_4_6/screen_time_and_child_attention/article.md`: What Happens Inside the Developing Brain
+- `fixtures/opus_4_6/screen_time_and_child_attention/article.md`: What Parents Can Do
+- `fixtures/opus_4_6/social_anxiety_in_daily_life/article.md`: How Social Anxiety Shows Up
+- `fixtures/opus_4_6/social_anxiety_in_daily_life/article.md`: Where Social Anxiety Comes From
+- `fixtures/opus_4_6/social_anxiety_in_daily_life/article.md`: Why Social Situations Make Some People Anxious — and What Actually Helps
+- `fixtures/opus_4_6/stress_and_physical_symptoms/article.md`: Common Physical Symptoms of Stress
+- `fixtures/opus_4_6/stress_and_physical_symptoms/article.md`: Evidence-Based Ways to Reduce the Physical Impact of Stress
+- `fixtures/opus_4_6/stress_and_physical_symptoms/article.md`: The Science Behind Stress and the Body
+- `fixtures/opus_4_6/stress_and_physical_symptoms/article.md`: When Stress Gets Physical: How Your Mind Can Make Your Body Sick
+- `fixtures/opus_4_6/stress_and_physical_symptoms/article.md`: Why Chronic Stress Is Especially Dangerous
+- `fixtures/opus_4_6/why_couples_stop_communicating/article.md`: Common Mistakes Beyond the Horsemen
+- `fixtures/opus_4_6/why_couples_stop_communicating/article.md`: Starting the Conversation About Conversation
+- `fixtures/opus_4_6/why_couples_stop_communicating/article.md`: The Four Horsemen: Patterns That Predict Failure
+- `fixtures/opus_4_6/why_couples_stop_communicating/article.md`: The Slow Fade: Why Communication Erodes Over Time
+- `fixtures/opus_4_6/why_couples_stop_communicating/article.md`: What Actually Works: Evidence-Based Strategies
+- `fixtures/opus_4_6/why_couples_stop_communicating/article.md`: Why Couples Stop Talking: The Science Behind Communication Breakdown and How to Fix It
+- `fixtures/opus_4_6/why_friendships_fade/article.md`: Rebuilding What Was Lost
+- `fixtures/opus_4_6/why_friendships_fade/article.md`: The Quiet Loss: Why Modern Friendships Fade and How to Fight Back
+- `fixtures/opus_4_6/why_friendships_fade/article.md`: The Work That Matters Most
+- `fixtures/opus_4_6/why_people_lose_motivation_after_big_goals/article.md`: Staying in the Game: What Actually Works
+- `fixtures/opus_4_6/why_people_lose_motivation_after_big_goals/article.md`: The Dopamine Trap: Why Setting the Goal Feels Better Than Chasing It
+- `fixtures/opus_4_6/why_people_lose_motivation_after_big_goals/article.md`: The Emotional Arc: From Fire to Fog
+- `fixtures/opus_4_6/why_people_lose_motivation_after_big_goals/article.md`: The Hidden Causes: Why Willpower Is Not the Problem
+- `fixtures/opus_4_6/why_people_lose_motivation_after_big_goals/article.md`: The Real Goal Behind the Goal
+- `fixtures/opus_4_6/why_people_lose_motivation_after_big_goals/article.md`: Why Big Goals Kill Your Motivation — and How to Get It Back
+- `fixtures/opus_4_6/why_people_struggle_to_build_habits/article.md`: Strategies That Actually Work
+- `fixtures/opus_4_6/why_people_struggle_to_build_habits/article.md`: The Neuroscience of the Habit Loop
+- `fixtures/opus_4_6/why_people_struggle_to_build_habits/article.md`: Why Building Good Habits Is So Hard — and What Actually Works
+- `fixtures/opus_4_6/why_people_struggle_to_build_habits/article.md`: Why We Struggle: The Five Core Obstacles
+- `fixtures/opus_4_6/why_people_wake_up_tired/article.md`: How to Identify Your Problem
+- `fixtures/opus_4_6/why_people_wake_up_tired/article.md`: Sleep Quantity Is Not the Same as Sleep Quality
+- `fixtures/opus_4_6/why_people_wake_up_tired/article.md`: What to Do About It
+- `fixtures/opus_4_6/why_people_wake_up_tired/article.md`: Why You Wake Up Tired After a Full Night of Sleep — and What to Do About It
+- `fixtures/sonnet_4_6/adult_procrastination_causes_and_fixes/article.md`: How Procrastination Affects Daily Life
+- `fixtures/sonnet_4_6/adult_procrastination_causes_and_fixes/article.md`: Practical Ways to Overcome Procrastination
+- `fixtures/sonnet_4_6/adult_procrastination_causes_and_fixes/article.md`: The Real Reason We Procrastinate
+- `fixtures/sonnet_4_6/adult_procrastination_causes_and_fixes/article.md`: Why We Procrastinate — And How to Finally Stop
+- `fixtures/sonnet_4_6/how_burnout_develops_at_work/article.md`: Burned Out: How Exhaustion Becomes a Crisis — and How to Come Back
+- `fixtures/sonnet_4_6/how_burnout_develops_at_work/article.md`: How Burnout Takes Hold
+- `fixtures/sonnet_4_6/how_burnout_develops_at_work/article.md`: Recovery: What the Evidence Actually Supports
+- `fixtures/sonnet_4_6/how_burnout_develops_at_work/article.md`: The Long-Term Costs of Ignoring It
+- `fixtures/sonnet_4_6/how_burnout_develops_at_work/article.md`: The Warning Signs: What to Watch For
+- `fixtures/sonnet_4_6/screen_time_and_child_attention/article.md`: Is Screen Time Shortening Your Child's Attention Span? What the Science Says
+- `fixtures/sonnet_4_6/screen_time_and_child_attention/article.md`: Not All Screen Time Is the Same
+- `fixtures/sonnet_4_6/screen_time_and_child_attention/article.md`: The Mechanisms Behind the Harm
+- `fixtures/sonnet_4_6/screen_time_and_child_attention/article.md`: Warning Signs Parents Should Know
+- `fixtures/sonnet_4_6/screen_time_and_child_attention/article.md`: What Parents Can Do
+- `fixtures/sonnet_4_6/social_anxiety_in_daily_life/article.md`: How Social Anxiety Shows Up
+- `fixtures/sonnet_4_6/social_anxiety_in_daily_life/article.md`: Realistic Ways to Manage Social Anxiety
+- `fixtures/sonnet_4_6/social_anxiety_in_daily_life/article.md`: What Is Social Anxiety, and How Common Is It?
+- `fixtures/sonnet_4_6/social_anxiety_in_daily_life/article.md`: Why It Develops: The Causes of Social Anxiety
+- `fixtures/sonnet_4_6/social_anxiety_in_daily_life/article.md`: Why Some People Feel Anxious in Social Situations — and What Actually Helps
+- `fixtures/sonnet_4_6/stress_and_physical_symptoms/article.md`: A Body Under Siege: Common Physical Symptoms of Chronic Stress
+- `fixtures/sonnet_4_6/stress_and_physical_symptoms/article.md`: Breaking the Cycle: Evidence-Based Approaches
+- `fixtures/sonnet_4_6/stress_and_physical_symptoms/article.md`: The Body's Emergency System Gone Wrong
+- `fixtures/sonnet_4_6/stress_and_physical_symptoms/article.md`: When Worry Becomes Physical: How Stress Affects Your Body and What to Do About It
+- `fixtures/sonnet_4_6/why_couples_stop_communicating/article.md`: Common Mistakes That Accelerate the Breakdown
+- `fixtures/sonnet_4_6/why_couples_stop_communicating/article.md`: How Communication Erodes Over Time
+- `fixtures/sonnet_4_6/why_couples_stop_communicating/article.md`: The Four Warning Signs Research Identifies Most Clearly
+- `fixtures/sonnet_4_6/why_couples_stop_communicating/article.md`: The Slow Fade: Why Couples Stop Talking — and How to Start Again
+- `fixtures/sonnet_4_6/why_couples_stop_communicating/article.md`: What the Research Says Actually Works
+- `fixtures/sonnet_4_6/why_friendships_fade/article.md`: Rebuilding What Was Lost
+- `fixtures/sonnet_4_6/why_friendships_fade/article.md`: The Scaffolding We Lose
+- `fixtures/sonnet_4_6/why_friendships_fade/article.md`: The Slow Goodbye: Why Modern Friendships Fade and How to Get Them Back
+- `fixtures/sonnet_4_6/why_friendships_fade/article.md`: The Weight of What We Lose
+- `fixtures/sonnet_4_6/why_friendships_fade/article.md`: Why Adults Drift Apart
+- `fixtures/sonnet_4_6/why_people_lose_motivation_after_big_goals/article.md`: Practical Strategies for Staying Consistent
+- `fixtures/sonnet_4_6/why_people_lose_motivation_after_big_goals/article.md`: The Emotional Cycle of Change
+- `fixtures/sonnet_4_6/why_people_lose_motivation_after_big_goals/article.md`: The Neuroscience of Wanting vs. Doing
+- `fixtures/sonnet_4_6/why_people_lose_motivation_after_big_goals/article.md`: The Planning Fallacy and the Motivation–Habit Gap
+- `fixtures/sonnet_4_6/why_people_lose_motivation_after_big_goals/article.md`: When Doubt Becomes a Crisis
+- `fixtures/sonnet_4_6/why_people_lose_motivation_after_big_goals/article.md`: Why Big Goals Kill Motivation (And How to Fix It)
+- `fixtures/sonnet_4_6/why_people_struggle_to_build_habits/article.md`: The Brain Is Not Built for New Habits
+- `fixtures/sonnet_4_6/why_people_struggle_to_build_habits/article.md`: The Myths That Set You Up to Fail
+- `fixtures/sonnet_4_6/why_people_struggle_to_build_habits/article.md`: What This All Means
+- `fixtures/sonnet_4_6/why_people_struggle_to_build_habits/article.md`: Why Good Habits Are So Hard to Build — And What Actually Works
+- `fixtures/sonnet_4_6/why_people_struggle_to_build_habits/article.md`: Why Your Environment Matters More Than Your Motivation
+- `fixtures/sonnet_4_6/why_people_wake_up_tired/article.md`: Common Causes — and How to Recognize Them
+- `fixtures/sonnet_4_6/why_people_wake_up_tired/article.md`: How to Find Your Answer
+- `fixtures/sonnet_4_6/why_people_wake_up_tired/article.md`: The Difference Between Sleep Time and Sleep Quality
+- `fixtures/sonnet_4_6/why_people_wake_up_tired/article.md`: Why You Wake Up Tired Even After a Full Night's Sleep
+
+## smart-quotes
+
+- `fixtures/explainers/gpt_5_4_mini/burnout-at-work.md`: ’
+- `fixtures/explainers/gpt_5_4_mini/burnout-at-work.md`: “”
+- `fixtures/explainers/gpt_5_4_mini/burnout-at-work.md`: “”
+- `fixtures/explainers/gpt_5_4_mini/how-chronic-stress-affects-the-body.md`: ’
+- `fixtures/explainers/gpt_5_4_mini/how-chronic-stress-affects-the-body.md`: “”
+- `fixtures/explainers/gpt_5_4_mini/how-chronic-stress-affects-the-body.md`: ’
+- `fixtures/explainers/gpt_5_4_mini/how-chronic-stress-affects-the-body.md`: ’
+- `fixtures/explainers/gpt_5_4_mini/how-loneliness-affects-mental-and-physical-health.md`: “”
+- `fixtures/explainers/gpt_5_4_mini/how-loneliness-affects-mental-and-physical-health.md`: “”
+- `fixtures/explainers/gpt_5_4_mini/how-loneliness-affects-mental-and-physical-health.md`: “”
+- `fixtures/explainers/gpt_5_4_mini/why-children-have-tantrums.md`: ’
+- `fixtures/explainers/gpt_5_4_mini/why-children-have-tantrums.md`: “”“”
+- `fixtures/explainers/gpt_5_4_mini/why-children-have-tantrums.md`: ’
+- `fixtures/explainers/gpt_5_4_mini/why-children-have-tantrums.md`: ’
+- `fixtures/explainers/gpt_5_4_mini/why-children-have-tantrums.md`: “”
+- `fixtures/explainers/gpt_5_4_mini/why-children-have-tantrums.md`: “”
+- `fixtures/explainers/gpt_5_4_mini/why-children-have-tantrums.md`: “”
+- `fixtures/explainers/gpt_5_4_mini/why-children-have-tantrums.md`: “’”“”“”“’”“”
+- `fixtures/explainers/gpt_5_4_mini/why-children-have-tantrums.md`: “”“”
+- `fixtures/explainers/gpt_5_4_mini/why-children-have-tantrums.md`: ’
+- `fixtures/explainers/gpt_5_4_mini/why-couples-stop-communicating-well.md`: ’
+- `fixtures/explainers/gpt_5_4_mini/why-couples-stop-communicating-well.md`: ’
+- `fixtures/explainers/gpt_5_4_mini/why-couples-stop-communicating-well.md`: ’
+- `fixtures/explainers/gpt_5_4_mini/why-couples-stop-communicating-well.md`: “”
+- `fixtures/explainers/gpt_5_4_mini/why-couples-stop-communicating-well.md`: “”
+- `fixtures/explainers/gpt_5_4_mini/why-couples-stop-communicating-well.md`: “”
+- `fixtures/explainers/gpt_5_4_mini/why-couples-stop-communicating-well.md`: “”
+- `fixtures/explainers/gpt_5_4_mini/why-modern-friendships-fade-over-time.md`: “”
+- `fixtures/explainers/gpt_5_4_mini/why-modern-friendships-fade-over-time.md`: ’
+- `fixtures/explainers/gpt_5_4_mini/why-modern-friendships-fade-over-time.md`: ’
+- `fixtures/explainers/gpt_5_4_mini/why-modern-friendships-fade-over-time.md`: “”
+- `fixtures/explainers/gpt_5_4_mini/why-modern-friendships-fade-over-time.md`: “”
+- `fixtures/explainers/gpt_5_4_mini/why-modern-friendships-fade-over-time.md`: “”
+- `fixtures/explainers/gpt_5_4_mini/why-modern-friendships-fade-over-time.md`: “”
+- `fixtures/explainers/gpt_5_4_mini/why-people-procrastinate.md`: ’
+- `fixtures/explainers/gpt_5_4_mini/why-people-procrastinate.md`: “”
+- `fixtures/explainers/gpt_5_4_mini/why-people-procrastinate.md`: “”
+- `fixtures/explainers/gpt_5_4_mini/why-people-procrastinate.md`: ’
+- `fixtures/explainers/gpt_5_4_mini/why-people-procrastinate.md`: “”
+- `fixtures/explainers/gpt_5_4_mini/why-people-procrastinate.md`: “”
+- `fixtures/explainers/gpt_5_4_mini/why-people-procrastinate.md`: “”
+- `fixtures/explainers/gpt_5_4_mini/why-people-procrastinate.md`: “”“”
+- `fixtures/explainers/gpt_5_4_mini/why-people-struggle-to-build-habits.md`: ’
+- `fixtures/explainers/gpt_5_4_mini/why-people-struggle-to-build-habits.md`: ’
+- `fixtures/explainers/gpt_5_4_mini/why-people-struggle-to-build-habits.md`: “”
+- `fixtures/explainers/gpt_5_4_mini/why-people-struggle-to-build-habits.md`: “”
+- `fixtures/explainers/gpt_5_4_mini/why-people-struggle-to-build-habits.md`: “”
+- `fixtures/gpt_5_2_chat/adult_procrastination_causes_and_fixes/article.md`: “”
+- `fixtures/gpt_5_2_chat/adult_procrastination_causes_and_fixes/article.md`: “”
+- `fixtures/gpt_5_2_chat/adult_procrastination_causes_and_fixes/article.md`: “”
+- `fixtures/gpt_5_2_chat/adult_procrastination_causes_and_fixes/article.md`: “”
+- `fixtures/gpt_5_2_chat/adult_procrastination_causes_and_fixes/article.md`: “’”
+- `fixtures/gpt_5_2_chat/adult_procrastination_causes_and_fixes/article.md`: “’”
+- `fixtures/gpt_5_2_chat/adult_procrastination_causes_and_fixes/article.md`: “”
+- `fixtures/gpt_5_2_chat/adult_procrastination_causes_and_fixes/article.md`: “”
+- `fixtures/gpt_5_2_chat/adult_procrastination_causes_and_fixes/article.md`: “’”
+- `fixtures/gpt_5_2_chat/adult_procrastination_causes_and_fixes/article.md`: “’”
+- `fixtures/gpt_5_2_chat/adult_procrastination_causes_and_fixes/article.md`: “”
+- `fixtures/gpt_5_2_chat/adult_procrastination_causes_and_fixes/article.md`: “”
+- `fixtures/gpt_5_2_chat/adult_procrastination_causes_and_fixes/article.md`: “”“”
+- `fixtures/gpt_5_2_chat/adult_procrastination_causes_and_fixes/article.md`: “”
+- `fixtures/gpt_5_2_chat/adult_procrastination_causes_and_fixes/article.md`: “”
+- `fixtures/gpt_5_2_chat/adult_procrastination_causes_and_fixes/article.md`: “’”
+- `fixtures/gpt_5_2_chat/adult_procrastination_causes_and_fixes/article.md`: “”
+- `fixtures/gpt_5_2_chat/adult_procrastination_causes_and_fixes/article.md`: “”“”
+- `fixtures/gpt_5_2_chat/adult_procrastination_causes_and_fixes/article.md`: “”“”“”
+- `fixtures/gpt_5_2_chat/adult_procrastination_causes_and_fixes/article.md`: “”
+- `fixtures/gpt_5_2_chat/adult_procrastination_causes_and_fixes/article.md`: “”
+- `fixtures/gpt_5_2_chat/how_burnout_develops_at_work/article.md`: “”
+- `fixtures/gpt_5_2_chat/how_burnout_develops_at_work/article.md`: “’”
+- `fixtures/gpt_5_2_chat/how_burnout_develops_at_work/article.md`: “”
+- `fixtures/gpt_5_2_chat/how_burnout_develops_at_work/article.md`: “”
+- `fixtures/gpt_5_2_chat/how_burnout_develops_at_work/article.md`: “”
+- `fixtures/gpt_5_2_chat/social_anxiety_in_daily_life/article.md`: “”
+- `fixtures/gpt_5_2_chat/social_anxiety_in_daily_life/article.md`: ’
+- `fixtures/gpt_5_2_chat/social_anxiety_in_daily_life/article.md`: “”
+- `fixtures/gpt_5_2_chat/social_anxiety_in_daily_life/article.md`: “”
+- `fixtures/gpt_5_2_chat/social_anxiety_in_daily_life/article.md`: “’”
+- `fixtures/gpt_5_2_chat/social_anxiety_in_daily_life/article.md`: ’“”
+- `fixtures/gpt_5_2_chat/social_anxiety_in_daily_life/article.md`: “”
+- `fixtures/gpt_5_2_chat/social_anxiety_in_daily_life/article.md`: “”
+- `fixtures/gpt_5_2_chat/social_anxiety_in_daily_life/article.md`: “”“”
+- `fixtures/gpt_5_2_chat/social_anxiety_in_daily_life/article.md`: “”
+- `fixtures/gpt_5_2_chat/social_anxiety_in_daily_life/article.md`: “”“’”“’”
+- `fixtures/gpt_5_2_chat/social_anxiety_in_daily_life/article.md`: “”
+- `fixtures/gpt_5_2_chat/social_anxiety_in_daily_life/article.md`: “”
+- `fixtures/gpt_5_2_chat/social_anxiety_in_daily_life/article.md`: “”
+- `fixtures/gpt_5_2_chat/social_anxiety_in_daily_life/article.md`: “”“”“”
+- `fixtures/gpt_5_2_chat/social_anxiety_in_daily_life/article.md`: “”
+- `fixtures/gpt_5_2_chat/social_anxiety_in_daily_life/article.md`: “”
+- `fixtures/gpt_5_2_chat/social_anxiety_in_daily_life/article.md`: “”
+- `fixtures/gpt_5_2_chat/social_anxiety_in_daily_life/article.md`: “”
+- `fixtures/gpt_5_2_chat/social_anxiety_in_daily_life/article.md`: “”
+- `fixtures/gpt_5_2_chat/stress_and_physical_symptoms/article.md`: ’
+- `fixtures/gpt_5_2_chat/stress_and_physical_symptoms/article.md`: “”
+- `fixtures/gpt_5_2_chat/stress_and_physical_symptoms/article.md`: “”
+- `fixtures/gpt_5_2_chat/stress_and_physical_symptoms/article.md`: “”
+- `fixtures/gpt_5_2_chat/stress_and_physical_symptoms/article.md`: “”
+- `fixtures/gpt_5_2_chat/stress_and_physical_symptoms/article.md`: “”
+- `fixtures/gpt_5_2_chat/stress_and_physical_symptoms/article.md`: “”
+- `fixtures/gpt_5_2_chat/stress_and_physical_symptoms/article.md`: “”
+- `fixtures/gpt_5_2_chat/stress_and_physical_symptoms/article.md`: “”
+- `fixtures/gpt_5_2_chat/stress_and_physical_symptoms/article.md`: “”
+- `fixtures/gpt_5_2_chat/stress_and_physical_symptoms/article.md`: “”
+- `fixtures/gpt_5_2_chat/why_couples_stop_communicating/article.md`: ’
+- `fixtures/gpt_5_2_chat/why_couples_stop_communicating/article.md`: ’
+- `fixtures/gpt_5_2_chat/why_couples_stop_communicating/article.md`: ’
+- `fixtures/gpt_5_2_chat/why_couples_stop_communicating/article.md`: ’
+- `fixtures/gpt_5_2_chat/why_couples_stop_communicating/article.md`: ’
+- `fixtures/gpt_5_2_chat/why_couples_stop_communicating/article.md`: ’
+- `fixtures/gpt_5_2_chat/why_couples_stop_communicating/article.md`: ’’
+- `fixtures/gpt_5_2_chat/why_couples_stop_communicating/article.md`: ’’
+- `fixtures/gpt_5_2_chat/why_friendships_fade/article.md`: “’”“”
+- `fixtures/gpt_5_2_chat/why_friendships_fade/article.md`: “”
+- `fixtures/gpt_5_2_chat/why_friendships_fade/article.md`: ’
+- `fixtures/gpt_5_2_chat/why_friendships_fade/article.md`: “”
+- `fixtures/gpt_5_2_chat/why_friendships_fade/article.md`: “”“”
+- `fixtures/gpt_5_2_chat/why_friendships_fade/article.md`: “’”
+- `fixtures/gpt_5_2_chat/why_friendships_fade/article.md`: ’
+- `fixtures/gpt_5_2_chat/why_friendships_fade/article.md`: “”
+- `fixtures/gpt_5_2_chat/why_friendships_fade/article.md`: “”
+- `fixtures/gpt_5_2_chat/why_friendships_fade/article.md`: “’”“”
+- `fixtures/gpt_5_2_chat/why_friendships_fade/article.md`: “”
+- `fixtures/gpt_5_2_chat/why_friendships_fade/article.md`: “”
+- `fixtures/gpt_5_2_chat/why_friendships_fade/article.md`: “”
+- `fixtures/gpt_5_2_chat/why_friendships_fade/article.md`: “’”
+- `fixtures/gpt_5_2_chat/why_friendships_fade/article.md`: “”
+- `fixtures/gpt_5_2_chat/why_friendships_fade/article.md`: “”
+- `fixtures/gpt_5_2_chat/why_friendships_fade/article.md`: “”
+- `fixtures/gpt_5_2_chat/why_friendships_fade/article.md`: “
+- `fixtures/gpt_5_2_chat/why_friendships_fade/article.md`: ”
+- `fixtures/gpt_5_2_chat/why_friendships_fade/article.md`: “”
+- `fixtures/gpt_5_2_chat/why_people_struggle_to_build_habits/article.md`: “”
+- `fixtures/gpt_5_2_chat/why_people_struggle_to_build_habits/article.md`: “”
+- `fixtures/gpt_5_2_chat/why_people_struggle_to_build_habits/article.md`: “”“”
+- `fixtures/gpt_5_2_chat/why_people_struggle_to_build_habits/article.md`: “”
+- `fixtures/gpt_5_2_chat/why_people_struggle_to_build_habits/article.md`: “’”
+- `fixtures/gpt_5_2_chat/why_people_struggle_to_build_habits/article.md`: “”
+- `fixtures/gpt_5_2_chat/why_people_struggle_to_build_habits/article.md`: “’”“”
+- `fixtures/gpt_5_2_chat/why_people_struggle_to_build_habits/article.md`: “’”
+- `fixtures/gpt_5_2_chat/why_people_struggle_to_build_habits/article.md`: “”
+- `fixtures/gpt_5_2_chat/why_people_struggle_to_build_habits/article.md`: “”
+- `fixtures/gpt_5_2_chat/why_people_struggle_to_build_habits/article.md`: “”
+- `fixtures/gpt_5_2_chat/why_people_struggle_to_build_habits/article.md`: “’”
+- `fixtures/gpt_5_2_chat/why_people_struggle_to_build_habits/article.md`: “”
+- `fixtures/gpt_5_2_chat/why_people_struggle_to_build_habits/article.md`: “”
+- `fixtures/gpt_5_2_chat/why_people_struggle_to_build_habits/article.md`: “”
+- `fixtures/gpt_5_2_chat/why_people_struggle_to_build_habits/article.md`: “”
+- `fixtures/gpt_5_2_chat/why_people_struggle_to_build_habits/article.md`: ’
+- `fixtures/gpt_5_2_chat/why_people_struggle_to_build_habits/article.md`: “”
+- `fixtures/gpt_5_2_chat/why_people_wake_up_tired/article.md`: “”
+- `fixtures/gpt_5_2_chat/why_people_wake_up_tired/article.md`: “”
+- `fixtures/gpt_5_2_chat/why_people_wake_up_tired/article.md`: “”“”
+- `fixtures/gpt_5_2_chat/why_people_wake_up_tired/article.md`: “’”
+- `fixtures/gpt_5_2_chat/why_people_wake_up_tired/article.md`: “’”
+- `fixtures/gpt_5_2_chat/why_people_wake_up_tired/article.md`: “”
+- `fixtures/gpt_5_2_chat/why_people_wake_up_tired/article.md`: “”
+- `fixtures/gpt_5_2_chat/why_people_wake_up_tired/article.md`: “”
+- `fixtures/gpt_5_2_chat/why_people_wake_up_tired/article.md`: “”
+- `fixtures/gpt_5_4/adult_procrastination_causes_and_fixes/article.md`: ’
+- `fixtures/gpt_5_4/adult_procrastination_causes_and_fixes/article.md`: ’
+- `fixtures/gpt_5_4/adult_procrastination_causes_and_fixes/article.md`: ’
+- `fixtures/gpt_5_4/how_burnout_develops_at_work/article.md`: “”
+- `fixtures/gpt_5_4/how_burnout_develops_at_work/article.md`: “”
+- `fixtures/gpt_5_4/how_burnout_develops_at_work/article.md`: “”
+- `fixtures/gpt_5_4/how_burnout_develops_at_work/article.md`: ’
+- `fixtures/gpt_5_4/how_burnout_develops_at_work/article.md`: ’
+- `fixtures/gpt_5_4/screen_time_and_child_attention/article.md`: “”
+- `fixtures/gpt_5_4/screen_time_and_child_attention/article.md`: “”
+- `fixtures/gpt_5_4/screen_time_and_child_attention/article.md`: “”“”
+- `fixtures/gpt_5_4/screen_time_and_child_attention/article.md`: “”
+- `fixtures/gpt_5_4/social_anxiety_in_daily_life/article.md`: “”
+- `fixtures/gpt_5_4/social_anxiety_in_daily_life/article.md`: “”
+- `fixtures/gpt_5_4/stress_and_physical_symptoms/article.md`: ’
+- `fixtures/gpt_5_4/stress_and_physical_symptoms/article.md`: “”
+- `fixtures/gpt_5_4/stress_and_physical_symptoms/article.md`: ’
+- `fixtures/gpt_5_4/stress_and_physical_symptoms/article.md`: “”“”
+- `fixtures/gpt_5_4/why_couples_stop_communicating/article.md`: ’
+- `fixtures/gpt_5_4/why_couples_stop_communicating/article.md`: “”
+- `fixtures/gpt_5_4/why_couples_stop_communicating/article.md`: ’
+- `fixtures/gpt_5_4/why_couples_stop_communicating/article.md`: “”
+- `fixtures/gpt_5_4/why_couples_stop_communicating/article.md`: “”
+- `fixtures/gpt_5_4/why_couples_stop_communicating/article.md`: “”“”
+- `fixtures/gpt_5_4/why_friendships_fade/article.md`: ’
+- `fixtures/gpt_5_4/why_friendships_fade/article.md`: “”
+- `fixtures/gpt_5_4/why_friendships_fade/article.md`: “”
+- `fixtures/gpt_5_4/why_people_struggle_to_build_habits/article.md`: “”
+- `fixtures/gpt_5_4/why_people_struggle_to_build_habits/article.md`: “’”
+- `fixtures/gpt_5_4/why_people_struggle_to_build_habits/article.md`: “’”
+- `fixtures/gpt_5_4/why_people_struggle_to_build_habits/article.md`: “”
+- `fixtures/gpt_5_4/why_people_wake_up_tired/article.md`: ’
+- `fixtures/gpt_5_4/why_people_wake_up_tired/article.md`: “”
+- `fixtures/gpt_5_4/why_people_wake_up_tired/article.md`: “”
+- `fixtures/gpt_5_4/why_people_wake_up_tired/article.md`: “”
+- `fixtures/gpt_5_4_mini/adult_procrastination_causes_and_fixes/article.md`: “”“”
+- `fixtures/gpt_5_4_mini/adult_procrastination_causes_and_fixes/article.md`: “’”
+- `fixtures/gpt_5_4_mini/adult_procrastination_causes_and_fixes/article.md`: “”
+- `fixtures/gpt_5_4_mini/adult_procrastination_causes_and_fixes/article.md`: “’”
+- `fixtures/gpt_5_4_mini/adult_procrastination_causes_and_fixes/article.md`: “”
+- `fixtures/gpt_5_4_mini/how_burnout_develops_at_work/article.md`: “”
+- `fixtures/gpt_5_4_mini/how_burnout_develops_at_work/article.md`: ’
+- `fixtures/gpt_5_4_mini/how_burnout_develops_at_work/article.md`: ’
+- `fixtures/gpt_5_4_mini/how_burnout_develops_at_work/article.md`: “”
+- `fixtures/gpt_5_4_mini/how_burnout_develops_at_work/article.md`: “”
+- `fixtures/gpt_5_4_mini/how_burnout_develops_at_work/article.md`: “”
+- `fixtures/gpt_5_4_mini/screen_time_and_child_attention/article.md`: ’
+- `fixtures/gpt_5_4_mini/screen_time_and_child_attention/article.md`: ’
+- `fixtures/gpt_5_4_mini/screen_time_and_child_attention/article.md`: “”
+- `fixtures/gpt_5_4_mini/screen_time_and_child_attention/article.md`: “”
+- `fixtures/gpt_5_4_mini/screen_time_and_child_attention/article.md`: “”
+- `fixtures/gpt_5_4_mini/screen_time_and_child_attention/article.md`: “”
+- `fixtures/gpt_5_4_mini/screen_time_and_child_attention/article.md`: “”
+- `fixtures/gpt_5_4_mini/screen_time_and_child_attention/article.md`: “”
+- `fixtures/gpt_5_4_mini/screen_time_and_child_attention/article.md`: ’’’
+- `fixtures/gpt_5_4_mini/screen_time_and_child_attention/article.md`: “”
+- `fixtures/gpt_5_4_mini/screen_time_and_child_attention/article.md`: ’
+- `fixtures/gpt_5_4_mini/screen_time_and_child_attention/article.md`: “”
+- `fixtures/gpt_5_4_mini/screen_time_and_child_attention/article.md`: ’
+- `fixtures/gpt_5_4_mini/screen_time_and_child_attention/article.md`: “”
+- `fixtures/gpt_5_4_mini/screen_time_and_child_attention/article.md`: “”
+- `fixtures/gpt_5_4_mini/screen_time_and_child_attention/article.md`: “”“”
+- `fixtures/gpt_5_4_mini/social_anxiety_in_daily_life/article.md`: ’
+- `fixtures/gpt_5_4_mini/social_anxiety_in_daily_life/article.md`: ’
+- `fixtures/gpt_5_4_mini/social_anxiety_in_daily_life/article.md`: “”
+- `fixtures/gpt_5_4_mini/stress_and_physical_symptoms/article.md`: ’
+- `fixtures/gpt_5_4_mini/stress_and_physical_symptoms/article.md`: ’
+- `fixtures/gpt_5_4_mini/why_couples_stop_communicating/article.md`: ’
+- `fixtures/gpt_5_4_mini/why_couples_stop_communicating/article.md`: ’
+- `fixtures/gpt_5_4_mini/why_couples_stop_communicating/article.md`: “”
+- `fixtures/gpt_5_4_mini/why_couples_stop_communicating/article.md`: “”
+- `fixtures/gpt_5_4_mini/why_couples_stop_communicating/article.md`: ’
+- `fixtures/gpt_5_4_mini/why_couples_stop_communicating/article.md`: “”
+- `fixtures/gpt_5_4_mini/why_couples_stop_communicating/article.md`: “’”
+- `fixtures/gpt_5_4_mini/why_couples_stop_communicating/article.md`: “’”
+- `fixtures/gpt_5_4_mini/why_couples_stop_communicating/article.md`: ’
+- `fixtures/gpt_5_4_mini/why_couples_stop_communicating/article.md`: “”“”“’”“’”
+- `fixtures/gpt_5_4_mini/why_couples_stop_communicating/article.md`: “”
+- `fixtures/gpt_5_4_mini/why_couples_stop_communicating/article.md`: “’”“”
+- `fixtures/gpt_5_4_mini/why_couples_stop_communicating/article.md`: “”“”“”
+- `fixtures/gpt_5_4_mini/why_friendships_fade/article.md`: “”
+- `fixtures/gpt_5_4_mini/why_friendships_fade/article.md`: “”
+- `fixtures/gpt_5_4_mini/why_friendships_fade/article.md`: ’
+- `fixtures/gpt_5_4_mini/why_friendships_fade/article.md`: ’
+- `fixtures/gpt_5_4_mini/why_friendships_fade/article.md`: ’
+- `fixtures/gpt_5_4_mini/why_friendships_fade/article.md`: “”
+- `fixtures/gpt_5_4_mini/why_friendships_fade/article.md`: “
+- `fixtures/gpt_5_4_mini/why_friendships_fade/article.md`: ”
+- `fixtures/gpt_5_4_mini/why_people_lose_motivation_after_big_goals/article.md`: “”“”“”
+- `fixtures/gpt_5_4_mini/why_people_lose_motivation_after_big_goals/article.md`: ’
+- `fixtures/gpt_5_4_mini/why_people_lose_motivation_after_big_goals/article.md`: ’
+- `fixtures/gpt_5_4_mini/why_people_lose_motivation_after_big_goals/article.md`: “”
+- `fixtures/gpt_5_4_mini/why_people_lose_motivation_after_big_goals/article.md`: “”
+- `fixtures/gpt_5_4_mini/why_people_lose_motivation_after_big_goals/article.md`: “”
+- `fixtures/gpt_5_4_mini/why_people_struggle_to_build_habits/article.md`: ’
+- `fixtures/gpt_5_4_mini/why_people_struggle_to_build_habits/article.md`: “”“”
+- `fixtures/gpt_5_4_mini/why_people_struggle_to_build_habits/article.md`: ’
+- `fixtures/gpt_5_4_mini/why_people_struggle_to_build_habits/article.md`: “”
+- `fixtures/gpt_5_4_mini/why_people_struggle_to_build_habits/article.md`: “”
+- `fixtures/gpt_5_4_mini/why_people_wake_up_tired/article.md`: “”
+- `fixtures/gpt_5_4_mini/why_people_wake_up_tired/article.md`: “”
+- `fixtures/instagram/gpt_5_4/what-stress-does-to-the-body-and-how-to-slow-it-down.md`: “”
+- `fixtures/instagram/gpt_5_4/why-adults-procrastinate-and-what-to-do-instead.md`: “”
+- `fixtures/instagram/gpt_5_4/why-adults-procrastinate-and-what-to-do-instead.md`: “”
+- `fixtures/instagram/gpt_5_4/why-adults-procrastinate-and-what-to-do-instead.md`: “”
+- `fixtures/instagram/gpt_5_4/why-adults-procrastinate-and-what-to-do-instead.md`: “”
+- `fixtures/instagram/gpt_5_4/why-adults-procrastinate-and-what-to-do-instead.md`: “”
+- `fixtures/instagram/gpt_5_4/why-children-have-tantrums-and-how-to-respond-calmly.md`: “’”
+- `fixtures/instagram/gpt_5_4/why-children-have-tantrums-and-how-to-respond-calmly.md`: “”
+- `fixtures/instagram/gpt_5_4/why-children-have-tantrums-and-how-to-respond-calmly.md`: “’”
+- `fixtures/instagram/gpt_5_4/why-children-have-tantrums-and-how-to-respond-calmly.md`: “”
+- `fixtures/instagram/gpt_5_4/why-children-have-tantrums-and-how-to-respond-calmly.md`: “”
+- `fixtures/instagram/gpt_5_4/why-children-have-tantrums-and-how-to-respond-calmly.md`: “”
+- `fixtures/instagram/gpt_5_4/why-children-have-tantrums-and-how-to-respond-calmly.md`: “”
+- `fixtures/instagram/gpt_5_4/why-loneliness-shows-up-in-busy-lives.md`: “”“”
+- `fixtures/instagram/gpt_5_4/why-rest-is-not-the-same-as-recovery.md`: “”
+- `fixtures/instagram/gpt_5_4_mini/why-adults-procrastinate-and-what-to-do-instead.md`: “”
+- `fixtures/instagram/gpt_5_4_mini/why-adults-procrastinate-and-what-to-do-instead.md`: “”
+- `fixtures/instagram/gpt_5_4_mini/why-adults-procrastinate-and-what-to-do-instead.md`: “”
+- `fixtures/instagram/gpt_5_4_mini/why-adults-procrastinate-and-what-to-do-instead.md`: “”
+- `fixtures/instagram/gpt_5_4_mini/why-children-have-tantrums-and-how-to-respond-calmly.md`: “”“’”“”“”
+- `fixtures/instagram/gpt_5_4_mini/why-habits-fail-when-you-rely-on-willpower.md`: “”
+- `fixtures/instagram/gpt_5_4_mini/why-school-drop-off-is-hard.md`: “”
+- `fixtures/instagram/gpt_5_4_mini/why-school-drop-off-is-hard.md`: “”
+- `fixtures/linkedin/gpt_5_4/what-people-get-wrong-about-habit-building.md`: ’
+- `fixtures/linkedin/gpt_5_4/why-most-people-misunderstand-leadership.md`: “’”
+- `fixtures/linkedin/gpt_5_4/why-most-people-misunderstand-leadership.md`: “”
+- `fixtures/linkedin/gpt_5_4_mini/what-people-get-wrong-about-habit-building.md`: ’
+- `fixtures/linkedin/gpt_5_4_mini/why-modern-work-makes-people-feel-constantly-behind.md`: “”
+- `fixtures/linkedin/gpt_5_4_mini/why-smart-people-overcomplicate-simple-problems.md`: “”
+- `fixtures/medicaloutline/how-can-i-help-my-child-with-adhd-without-medication.md`: ’
+- `fixtures/medicaloutline/how-can-i-help-my-child-with-adhd-without-medication.md`: ’
+- `fixtures/medicaloutline/what-are-90-of-all-cancers.md`: ’
+- `fixtures/medicaloutline/what-are-90-of-all-cancers.md`: ’
+- `fixtures/medicaloutline/what-are-90-of-all-cancers.md`: ’
+- `fixtures/medicaloutline/what-are-90-of-all-cancers.md`: ’
+- `fixtures/medicaloutline/what-are-90-of-all-cancers.md`: ’
+- `fixtures/medicaloutline/what-are-the-10-most-common-skin-disorders.md`: ’
+- `fixtures/medicaloutline/what-are-the-10-worst-cancers.md`: ’
+- `fixtures/medicaloutline/what-cancers-cannot-be-cured.md`: ’
+- `fixtures/medicaloutline/what-cancers-cannot-be-cured.md`: ’
+- `fixtures/medicaloutline/what-cancers-cannot-be-cured.md`: ’
+- `fixtures/medicaloutline/what-food-is-not-good-for-eczema.md`: ’’’
+- `fixtures/medicaloutline/what-food-is-not-good-for-eczema.md`: ’
+- `fixtures/medicaloutline/what-food-is-not-good-for-eczema.md`: ’
+- `fixtures/medicaloutline/what-food-is-not-good-for-eczema.md`: ’
+- `fixtures/medicaloutline/what-food-should-psoriasis-patients-avoid.md`: ’
+- `fixtures/medicaloutline/what-food-should-psoriasis-patients-avoid.md`: ’
+- `fixtures/medicaloutline/what-foods-should-adhd-children-avoid.md`: ’
+- `fixtures/medicaloutline/what-foods-should-adhd-children-avoid.md`: ’
+- `fixtures/medicaloutline/what-is-end-stage-bipolar.md`: ’
+- `fixtures/medicaloutline/what-is-end-stage-bipolar.md`: “”
+- `fixtures/medicaloutline/what-is-end-stage-bipolar.md`: “”
+- `fixtures/medicaloutline/what-is-end-stage-bipolar.md`: ’
+- `fixtures/medicaloutline/what-is-end-stage-bipolar.md`: ’
+- `fixtures/twitter/gpt_5_4/what-people-misunderstand-about-anxiety.md`: “”
+- `fixtures/twitter/gpt_5_4/why-adults-procrastinate-and-what-helps.md`: “”
+- `fixtures/twitter/gpt_5_4/why-adults-procrastinate-and-what-helps.md`: “”
+- `fixtures/twitter/gpt_5_4/why-children-have-tantrums.md`: ’
+- `fixtures/twitter/gpt_5_4/why-children-have-tantrums.md`: “’”“’”“”
+- `fixtures/twitter/gpt_5_4/why-children-have-tantrums.md`: “”
+- `fixtures/twitter/gpt_5_4/why-children-have-tantrums.md`: “”
+- `fixtures/twitter/gpt_5_4/why-children-have-tantrums.md`: “”
+- `fixtures/twitter/gpt_5_4_mini/what-stress-does-to-the-body.md`: ’
+- `fixtures/twitter/gpt_5_4_mini/why-adults-procrastinate-and-what-helps.md`: “”
+- `fixtures/twitter/gpt_5_4_mini/why-adults-procrastinate-and-what-helps.md`: “”
+- `fixtures/twitter/gpt_5_4_mini/why-adults-procrastinate-and-what-helps.md`: “”
+- `fixtures/twitter/gpt_5_4_mini/why-adults-procrastinate-and-what-helps.md`: “
+- `fixtures/twitter/gpt_5_4_mini/why-adults-procrastinate-and-what-helps.md`: ”
+- `fixtures/twitter/gpt_5_4_mini/why-burnout-happens-gradually.md`: “”
+- `fixtures/twitter/gpt_5_4_mini/why-people-wake-up-tired-even-after-enough-sleep.md`: “”
+- `fixtures/twitter/gpt_5_4_mini/why-people-wake-up-tired-even-after-enough-sleep.md`: “”
+- `fixtures/why_do_we_dream.md`: ’
+- `fixtures/why_do_we_dream.md`: ’
+- `fixtures/why_do_we_dream.md`: ’
+- `fixtures/why_do_we_dream.md`: ’’
+- `fixtures/why_do_we_dream.md`: ’
+- `fixtures/why_do_we_dream.md`: ’’’
+- `fixtures/why_do_we_dream.md`: ’’
+- `fixtures/why_do_we_dream.md`: ’
+- `fixtures/why_do_we_dream.md`: ’’
+- `fixtures/why_do_we_dream.md`: ’
+- `fixtures/why_do_we_dream.md`: ’
+- `fixtures/why_do_we_dream.md`: ’
+
