@@ -1,0 +1,13 @@
+id = "orthography-family"
+tool = "textlint"
+command = ["textlint", "--rulesdir", "../../../packages/textlint-rules/dist/families/orthography", "--rule", "em-dashes", "family.md"]
+family = "orthography"
+
+valid_prerequisites = [
+  "textlint_package_built",
+  "markdown_fixture_present"
+]
+
+intentionally_invalid = [
+  "closed_em_dash"
+]

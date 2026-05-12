@@ -16,3 +16,7 @@ Thumbs.db
 .env
 .env.*
 !.env.example
+
+# Node
+node_modules/
+dist/
