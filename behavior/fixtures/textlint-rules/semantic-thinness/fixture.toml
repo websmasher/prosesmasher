@@ -1,0 +1,10 @@
+id = "semantic-thinness-family"
+tool = "textlint"
+family = "semantic-thinness"
+
+valid_prerequisites = [
+  "textlint_package_built",
+  "markdown_fixture_present"
+]
+
+intentionally_invalid = []

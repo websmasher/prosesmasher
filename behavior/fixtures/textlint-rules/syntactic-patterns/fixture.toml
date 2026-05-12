@@ -1,0 +1,14 @@
+id = "syntactic-patterns-family"
+tool = "textlint"
+family = "syntactic-patterns"
+
+valid_prerequisites = [
+  "textlint_package_built",
+  "markdown_fixture_present"
+]
+
+intentionally_invalid = [
+  "the goal is not x then the goal is y",
+  "you do not need x then you need y",
+  "comma not contrast"
+]

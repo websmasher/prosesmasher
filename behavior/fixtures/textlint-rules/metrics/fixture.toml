@@ -1,0 +1,10 @@
+id = "metrics-family"
+tool = "textlint"
+family = "metrics"
+
+valid_prerequisites = [
+  "textlint_package_built",
+  "markdown_fixture_present"
+]
+
+intentionally_invalid = []

@@ -1,0 +1,10 @@
+id = "term-policy-family"
+tool = "textlint"
+family = "term-policy"
+
+valid_prerequisites = [
+  "textlint_package_built",
+  "markdown_fixture_present"
+]
+
+intentionally_invalid = []

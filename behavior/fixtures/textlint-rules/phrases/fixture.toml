@@ -1,0 +1,13 @@
+id = "phrases-family"
+tool = "textlint"
+family = "phrases"
+
+valid_prerequisites = [
+  "textlint_package_built",
+  "markdown_fixture_present"
+]
+
+intentionally_invalid = [
+  "in today's fast-paced world",
+  "let's dive in"
+]

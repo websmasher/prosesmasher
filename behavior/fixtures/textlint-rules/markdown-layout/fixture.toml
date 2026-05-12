@@ -1,0 +1,10 @@
+id = "markdown-layout-family"
+tool = "textlint"
+family = "markdown-layout"
+
+valid_prerequisites = [
+  "textlint_package_built",
+  "markdown_fixture_present"
+]
+
+intentionally_invalid = []

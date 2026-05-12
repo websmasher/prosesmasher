@@ -1,0 +1,14 @@
+id = "words-family"
+tool = "textlint"
+family = "words"
+
+valid_prerequisites = [
+  "textlint_package_built",
+  "markdown_fixture_present"
+]
+
+intentionally_invalid = [
+  "leverage",
+  "robust",
+  "seamless"
+]
