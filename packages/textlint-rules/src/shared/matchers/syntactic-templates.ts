@@ -1,93 +1,26 @@
-import { findPhraseMatches } from "./phrases.js";
-import { normalizeForMatch } from "../text/normalize.js";
+import {
+  DO_NEGATIONS,
+  EXPLICIT_DO_AUXILIARIES,
+  PASSIVE_DEFINITION_VERBS,
+  PRONOUN_REFRAME_STARTS,
+  findCopularNegation,
+  findNegationIndex,
+  hasCommaBeforeNegation,
+  isCompleteSentence,
+  skipOptionalAdverbs,
+  startsWithAny,
+  startsWithWords,
+  validSubject,
+  words
+} from "./negation-reframe-parts.js";
 import { splitSentences, type SplitSentence } from "../text/sentences.js";
 import { wordTokens, type Token } from "../text/tokens.js";
-
-const NEGATION_WORDS = new Set([
-  "not",
-  "isn't",
-  "aren't",
-  "wasn't",
-  "weren't",
-  "don't",
-  "doesn't",
-  "didn't",
-  "can't",
-  "cannot",
-  "won't",
-  "wouldn't",
-  "shouldn't",
-  "couldn't"
-]);
-
-const DO_AUXILIARIES = new Set(["do", "does", "did"]);
 
 export type NegationReframeMatch = {
   readonly end: number;
   readonly start: number;
   readonly text: string;
 };
-
-function findNegationIndex(tokens: readonly Token[]): number | undefined {
-  for (let index = 0; index < tokens.length; index += 1) {
-    const token = tokens[index];
-
-    if (token !== undefined && NEGATION_WORDS.has(token.normalized)) {
-      return index;
-    }
-  }
-
-  return undefined;
-}
-
-function positivePrefixBeforeNegation(
-  tokens: readonly Token[],
-  negationIndex: number
-): readonly string[] {
-  const prefix = tokens
-    .slice(0, negationIndex)
-    .map((token) => token.normalized);
-  const last = prefix.at(-1);
-
-  if (last !== undefined && DO_AUXILIARIES.has(last)) {
-    return prefix.slice(0, -1);
-  }
-
-  return prefix;
-}
-
-function startsWithWords(
-  tokens: readonly Token[],
-  words: readonly string[]
-): boolean {
-  if (words.length === 0 || tokens.length < words.length) {
-    return false;
-  }
-
-  for (let index = 0; index < words.length; index += 1) {
-    if (tokens[index]?.normalized !== words[index]) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
-function hasCommaBeforeNegation(text: string, negationStart: number): boolean {
-  for (let index = negationStart - 1; index >= 0; index -= 1) {
-    const char = text[index];
-
-    if (char === ",") {
-      return true;
-    }
-
-    if (char !== undefined && char.trim() !== "") {
-      return false;
-    }
-  }
-
-  return false;
-}
 
 function inlineNegationContrast(
   sentence: SplitSentence
@@ -102,7 +35,7 @@ function inlineNegationContrast(
   const negation = tokens[negationIndex];
 
   if (
-    negation === undefined ||
+    negation?.normalized !== "not" ||
     !hasCommaBeforeNegation(sentence.text, negation.start)
   ) {
     return undefined;
@@ -115,35 +48,241 @@ function inlineNegationContrast(
   };
 }
 
+function sameSubjectCopularReframe(
+  aTokens: readonly Token[],
+  bTokens: readonly Token[]
+): boolean {
+  const negation = findCopularNegation(aTokens);
+
+  if (negation === undefined || !validSubject(negation.subject)) {
+    return false;
+  }
+
+  return startsWithWords(bTokens, [
+    ...negation.subject,
+    negation.affirmativeAux
+  ]);
+}
+
+function pronounCopularReframe(
+  aTokens: readonly Token[],
+  bTokens: readonly Token[]
+): boolean {
+  const negation = findCopularNegation(aTokens);
+
+  return (
+    negation !== undefined &&
+    validSubject(negation.subject) &&
+    !looksLikePassiveDefinition(aTokens, bTokens) &&
+    startsWithAny(bTokens, PRONOUN_REFRAME_STARTS)
+  );
+}
+
+function progressiveVerbMirror(
+  aTokens: readonly Token[],
+  bTokens: readonly Token[]
+): boolean {
+  const negation = findCopularNegation(aTokens);
+
+  if (negation === undefined || !validSubject(negation.subject)) {
+    return false;
+  }
+
+  const tokenWords = words(aTokens);
+  const predicateIndex = skipOptionalAdverbs(
+    tokenWords,
+    negation.negatedPredicateStart
+  );
+  const verb = tokenWords[predicateIndex];
+
+  return (
+    verb !== undefined &&
+    verb.endsWith("ing") &&
+    startsWithWords(bTokens, [
+      ...negation.subject,
+      negation.affirmativeAux,
+      verb
+    ])
+  );
+}
+
+function meaningReframe(
+  aTokens: readonly Token[],
+  bTokens: readonly Token[]
+): boolean {
+  const tokenWords = words(aTokens);
+
+  for (let index = 0; index < tokenWords.length; index += 1) {
+    const current = tokenWords[index];
+    const next = tokenWords[index + 1];
+    const subject = tokenWords.slice(0, index);
+
+    if (!validSubject(subject)) {
+      continue;
+    }
+
+    if (DO_NEGATIONS.has(current ?? "")) {
+      const meaningIndex = skipOptionalAdverbs(tokenWords, index + 1);
+
+      if (tokenWords[meaningIndex] === "mean") {
+        return startsWithMeaningAffirmative(bTokens, subject);
+      }
+    }
+
+    if (EXPLICIT_DO_AUXILIARIES.has(current ?? "") && next === "not") {
+      const meaningIndex = skipOptionalAdverbs(tokenWords, index + 2);
+
+      if (tokenWords[meaningIndex] === "mean") {
+        return startsWithMeaningAffirmative(bTokens, subject);
+      }
+    }
+  }
+
+  return false;
+}
+
+function startsWithMeaningAffirmative(
+  bTokens: readonly Token[],
+  subject: readonly string[]
+): boolean {
+  return (
+    startsWithWords(bTokens, [...subject, "means"]) ||
+    startsWithWords(bTokens, [...subject, "mean"]) ||
+    startsWithWords(bTokens, [...subject, "does", "mean"]) ||
+    startsWithWords(bTokens, [...subject, "do", "mean"]) ||
+    startsWithWords(bTokens, ["it", "means"]) ||
+    startsWithWords(bTokens, ["this", "means"]) ||
+    startsWithWords(bTokens, ["that", "means"])
+  );
+}
+
+function needReframe(
+  aTokens: readonly Token[],
+  bTokens: readonly Token[]
+): boolean {
+  const tokenWords = words(aTokens);
+
+  for (let index = 0; index < tokenWords.length; index += 1) {
+    const current = tokenWords[index];
+    const next = tokenWords[index + 1];
+    const subject = tokenWords.slice(0, index);
+
+    if (!validSubject(subject)) {
+      continue;
+    }
+
+    if (DO_NEGATIONS.has(current ?? "") && tokenWords[index + 1] === "need") {
+      return startsWithNeedAffirmative(bTokens, subject);
+    }
+
+    if (
+      EXPLICIT_DO_AUXILIARIES.has(current ?? "") &&
+      next === "not" &&
+      tokenWords[index + 2] === "need"
+    ) {
+      return startsWithNeedAffirmative(bTokens, subject);
+    }
+  }
+
+  return false;
+}
+
+function startsWithNeedAffirmative(
+  bTokens: readonly Token[],
+  subject: readonly string[]
+): boolean {
+  return (
+    startsWithWords(bTokens, [...subject, "need"]) ||
+    startsWithWords(bTokens, [...subject, "needs"]) ||
+    startsWithWords(bTokens, ["they", "need"]) ||
+    startsWithWords(bTokens, ["you", "need"]) ||
+    startsWithWords(bTokens, ["we", "need"])
+  );
+}
+
+function actionVerbMirror(
+  aTokens: readonly Token[],
+  bTokens: readonly Token[]
+): boolean {
+  const tokenWords = words(aTokens);
+
+  for (let index = 0; index < tokenWords.length; index += 1) {
+    const current = tokenWords[index];
+    const next = tokenWords[index + 1];
+    const subject = tokenWords.slice(0, index);
+
+    if (!validSubject(subject)) {
+      continue;
+    }
+
+    if (DO_NEGATIONS.has(current ?? "")) {
+      const verbIndex = skipOptionalAdverbs(tokenWords, index + 1);
+      const verb = tokenWords[verbIndex];
+
+      if (verb !== undefined && startsWithWords(bTokens, [...subject, verb])) {
+        return true;
+      }
+    }
+
+    if (EXPLICIT_DO_AUXILIARIES.has(current ?? "") && next === "not") {
+      const verbIndex = skipOptionalAdverbs(tokenWords, index + 2);
+      const verb = tokenWords[verbIndex];
+
+      if (verb !== undefined && startsWithWords(bTokens, [...subject, verb])) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+function looksLikePassiveDefinition(
+  aTokens: readonly Token[],
+  bTokens: readonly Token[]
+): boolean {
+  const aWords = words(aTokens);
+  const bWords = words(bTokens);
+
+  for (let index = 0; index < aWords.length - 2; index += 1) {
+    const current = aWords[index];
+
+    if (
+      (current === "has" || current === "have" || current === "had") &&
+      aWords[index + 1] === "not" &&
+      aWords[index + 2] === "been" &&
+      startsWithWords(bTokens, ["it", "is"]) &&
+      PASSIVE_DEFINITION_VERBS.has(bWords[2] ?? "")
+    ) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 function sentencePairReframe(
   a: SplitSentence,
   b: SplitSentence
 ): NegationReframeMatch | undefined {
   const aTokens = wordTokens(a.text);
   const bTokens = wordTokens(b.text);
-  const negationIndex = findNegationIndex(aTokens);
 
-  if (negationIndex === undefined) {
+  if (
+    !isCompleteSentence(a) ||
+    !isCompleteSentence(b) ||
+    findNegationIndex(aTokens) === undefined
+  ) {
     return undefined;
   }
 
-  const positivePrefix = positivePrefixBeforeNegation(aTokens, negationIndex);
-
-  if (startsWithWords(bTokens, positivePrefix)) {
-    return {
-      end: b.end,
-      start: a.start,
-      text: `${a.text} ${b.text}`
-    };
-  }
-
-  const bStart = bTokens
-    .slice(0, 2)
-    .map((token) => token.normalized)
-    .join(" ");
-
   if (
-    ["it is", "it means", "they are", "they need", "you need"].includes(bStart)
+    sameSubjectCopularReframe(aTokens, bTokens) ||
+    pronounCopularReframe(aTokens, bTokens) ||
+    progressiveVerbMirror(aTokens, bTokens) ||
+    meaningReframe(aTokens, bTokens) ||
+    needReframe(aTokens, bTokens) ||
+    actionVerbMirror(aTokens, bTokens)
   ) {
     return {
       end: b.end,
@@ -180,12 +319,6 @@ export function findNegationReframes(text: string): NegationReframeMatch[] {
     if (pairMatch !== undefined) {
       matches.push(pairMatch);
     }
-  }
-
-  for (const match of findPhraseMatches(normalizeForMatch(text), [
-    "not just"
-  ])) {
-    matches.push(match);
   }
 
   return matches;

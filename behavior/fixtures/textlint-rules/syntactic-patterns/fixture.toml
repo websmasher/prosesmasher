@@ -12,3 +12,7 @@ intentionally_invalid = [
   "you do not need x then you need y",
   "comma not contrast"
 ]
+
+intentionally_valid = [
+  "subordinate clause before contracted negated verb"
+]
