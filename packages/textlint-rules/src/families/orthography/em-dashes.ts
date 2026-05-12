@@ -18,7 +18,7 @@ const rule: TextlintRuleModule = (context) => {
   const { Syntax, RuleError, getSource, locator, report } = context;
 
   return {
-    [Syntax.Str](node) {
+    [Syntax.Str](node): void {
       const text = getSource(node);
 
       for (let index = 0; index < text.length; index += 1) {
@@ -28,9 +28,12 @@ const rule: TextlintRuleModule = (context) => {
 
         report(
           node,
-          new RuleError("Closed em dash found. Replace it with a comma, colon, parenthesis, or spaced dash.", {
-            padding: locator.range([index, index + CLOSED_EM_DASH.length])
-          })
+          new RuleError(
+            "Closed em dash found. Replace it with a comma, colon, parenthesis, or spaced dash.",
+            {
+              padding: locator.range([index, index + CLOSED_EM_DASH.length])
+            }
+          )
         );
       }
     }

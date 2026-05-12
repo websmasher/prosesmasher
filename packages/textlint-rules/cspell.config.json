@@ -1,0 +1,17 @@
+{
+  "version": "0.2",
+  "language": "en",
+  "words": [
+    "cmark",
+    "fdescribe",
+    "g3ts",
+    "mischeck",
+    "prosesmasher",
+    "rhythmed",
+    "setstate",
+    "sonarjs",
+    "textlint",
+    "typecov"
+  ],
+  "ignorePaths": ["dist", "node_modules", "package-lock.json"]
+}
