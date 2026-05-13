@@ -13,12 +13,14 @@ export const everything = {
     "jargon-faker": true,
     "llm-openers": true,
     "negation-reframe": true,
+    "paragraph-length": true,
     "prohibited-phrases": true,
     "prohibited-words": true,
     "sentence-case": true,
     simplicity: true,
     "smart-quotes": true,
     "summative-closer": true,
-    "triple-repeat": true
+    "triple-repeat": true,
+    "word-repetition": true
   }
 };

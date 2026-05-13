@@ -7,4 +7,13 @@ valid_prerequisites = [
   "markdown_fixture_present"
 ]
 
-intentionally_invalid = []
+intentionally_invalid = [
+  "paragraph with seven sentences",
+  "paragraph-local repeated word over threshold"
+]
+
+intentionally_valid = [
+  "paragraph with six sentences",
+  "short excluded word repeated many times",
+  "component-like paragraph ignored"
+]

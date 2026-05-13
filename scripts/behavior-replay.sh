@@ -17,6 +17,7 @@ fi
 
 "$TEXTLINT" \
   --no-textlintrc \
+  --rulesdir "$ROOT/packages/textlint-rules/dist/families/metrics" \
   --rulesdir "$ROOT/packages/textlint-rules/dist/families/orthography" \
   --rulesdir "$ROOT/packages/textlint-rules/dist/families/words" \
   --rulesdir "$ROOT/packages/textlint-rules/dist/families/phrases" \

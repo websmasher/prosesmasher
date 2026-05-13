@@ -15,12 +15,42 @@ export type SectionSentence = {
   readonly source: SourceText;
 };
 
+export type SectionParagraph = {
+  readonly paragraph: TxtParagraphNode;
+  readonly source: SourceText;
+  readonly text: string;
+};
+
 function isParagraphNode(node: AnyTxtNode): node is TxtParagraphNode {
   return node.type === "Paragraph";
 }
 
 function isParentNode(node: AnyTxtNode): node is TxtParentNode {
   return "children" in node;
+}
+
+type NodeWithValue = AnyTxtNode & {
+  readonly value: string;
+};
+
+function hasStringValue(node: AnyTxtNode): node is NodeWithValue {
+  return "value" in node && typeof node.value === "string";
+}
+
+function plainText(node: AnyTxtNode): string {
+  if (hasStringValue(node)) {
+    return node.value;
+  }
+
+  if (node.type === "Break") {
+    return " ";
+  }
+
+  if (!isParentNode(node)) {
+    return "";
+  }
+
+  return node.children.map((child) => plainText(child)).join("");
 }
 
 function collectParagraphs(
@@ -96,6 +126,22 @@ export function allParagraphSentences(
   }
 
   return sentences;
+}
+
+export function allParagraphs(document: TxtDocumentNode): SectionParagraph[] {
+  const paragraphs: SectionParagraph[] = [];
+
+  for (const section of documentSections(document)) {
+    for (const paragraph of sectionParagraphs(section)) {
+      paragraphs.push({
+        paragraph,
+        source: sourceText(paragraph),
+        text: plainText(paragraph)
+      });
+    }
+  }
+
+  return paragraphs;
 }
 
 export function sectionFirstSentences(

@@ -15,6 +15,8 @@
   },
   "exports": {
     ".": "./dist/index.js",
+    "./families/metrics/paragraph-length": "./dist/families/metrics/paragraph-length.js",
+    "./families/metrics/word-repetition": "./dist/families/metrics/word-repetition.js",
     "./families/orthography/colon-dramatic": "./dist/families/orthography/colon-dramatic.js",
     "./families/orthography/em-dashes": "./dist/families/orthography/em-dashes.js",
     "./families/orthography/exclamation-density": "./dist/families/orthography/exclamation-density.js",
