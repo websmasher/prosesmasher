@@ -4,7 +4,10 @@ import { sectionLastSentences } from "../../../shared/text/sections.js";
 
 const FALSE_QUESTION_PATTERNS = [
   "isn't that what we all",
-  "isn't that the point"
+  "isn't that the point",
+  "isn't that the goal",
+  "isn't that what matters",
+  "isn't that why"
 ];
 
 const rule: TextlintRuleModule = (context) => {

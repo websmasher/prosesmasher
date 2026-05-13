@@ -19,6 +19,7 @@ intentionally_invalid = [
   "generalized evaluative lead-in",
   "apostrophe contraction signpost",
   "boilerplate framing preview",
+  "generalized boilerplate reason frame",
   "lesson framing wrapper",
   "observer guidance bridge",
   "response wrapper",

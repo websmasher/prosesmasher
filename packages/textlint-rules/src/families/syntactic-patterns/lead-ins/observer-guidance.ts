@@ -3,6 +3,7 @@ import type { TextlintRuleModule } from "@textlint/types";
 import {
   cleanSentence,
   startsWithAnyText,
+  tokens,
   trimTerminalPunctuation,
   type SentenceMatch
 } from "../../../shared/matchers/llm-slop.js";
@@ -24,6 +25,17 @@ const WHERE_BRIDGE_PATTERNS = [
   "that is where the real progress lives",
   "that is where a lot of the misunderstanding begins",
   "that is where culture becomes visible"
+];
+const WHERE_SUBJECTS = ["people", "parents", "kids", "children", "couples"];
+const WHERE_VERBS = ["get", "go", "miss", "overreach", "stumble"];
+const WHERE_COMPLEMENTS = ["stuck", "wrong", "it", "there"];
+const SEE_PATTERNS = [
+  "you see this when",
+  "you see it when",
+  "you see this in",
+  "you see it in",
+  "you can see this when",
+  "you can see it when"
 ];
 
 function exactStart(
@@ -54,9 +66,34 @@ function matchObserverGuidance(sentence: string): SentenceMatch | undefined {
   }
 
   const bridge = exactStart(trimmed, WHERE_BRIDGE_PATTERNS);
-  return bridge === undefined
-    ? undefined
-    : { kind: "where-bridge", signal: bridge };
+  if (bridge !== undefined) {
+    return { kind: "where-bridge", signal: bridge };
+  }
+
+  const see = startsWithAnyText(stripped, SEE_PATTERNS);
+  if (see !== undefined) {
+    return { kind: "observer-frame", signal: see };
+  }
+
+  const words = tokens(trimmed);
+  const [first, second, third, fourth, fifth, sixth] = words;
+  if (
+    (first === "this" || first === "that") &&
+    second === "is" &&
+    third === "where" &&
+    fourth !== undefined &&
+    fifth !== undefined &&
+    WHERE_SUBJECTS.includes(fourth) &&
+    WHERE_VERBS.includes(fifth) &&
+    (sixth === undefined || WHERE_COMPLEMENTS.includes(sixth))
+  ) {
+    return {
+      kind: "where-bridge",
+      signal: `${first}-is-where-${fourth}-${fifth}`
+    };
+  }
+
+  return undefined;
 }
 
 const rule: TextlintRuleModule = (context) => {

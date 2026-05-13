@@ -8,7 +8,16 @@ import {
 import { allParagraphSentences } from "../../../shared/text/sections.js";
 
 const PREFIXES = ["however, ", "but ", "and ", "so ", "that being said, "];
-const VAGUE_INTROS = ["some", "common", "certain", "several", "following"];
+const VAGUE_INTROS = [
+  "some",
+  "common",
+  "certain",
+  "several",
+  "following",
+  "many",
+  "key",
+  "main"
+];
 const CATEGORY_WORDS = [
   "examples",
   "types",
@@ -19,7 +28,9 @@ const CATEGORY_WORDS = [
   "ways",
   "steps",
   "sections",
-  "parts"
+  "parts",
+  "points",
+  "things"
 ];
 const PREVIEW_OBJECTS = [
   "sections",
@@ -30,6 +41,8 @@ const PREVIEW_OBJECTS = [
   "page"
 ];
 const PREVIEW_VERBS = ["explore", "discuss", "examine", "cover"];
+const REASON_STARTERS = ["reason", "factor", "point", "thing"];
+const ORDINAL_STARTERS = ["one", "another"];
 
 function matchEnumerationPreface(words: readonly string[]): string | undefined {
   if (
@@ -38,6 +51,22 @@ function matchEnumerationPreface(words: readonly string[]): string | undefined {
     words.some((word) => word === "include" || word === "includes")
   ) {
     return "vague-category-include";
+  }
+
+  return undefined;
+}
+
+function matchStarterFrame(words: readonly string[]): string | undefined {
+  const [first, second, third] = words;
+
+  if (
+    first !== undefined &&
+    second !== undefined &&
+    third === "is" &&
+    ORDINAL_STARTERS.includes(first) &&
+    REASON_STARTERS.includes(second)
+  ) {
+    return `${first}-${second}-is`;
   }
 
   return undefined;
@@ -70,6 +99,11 @@ function matchBoilerplateFraming(sentence: string): string[] {
   const enumeration = matchEnumerationPreface(words);
   if (enumeration !== undefined) {
     matches.push(enumeration);
+  }
+
+  const starter = matchStarterFrame(words);
+  if (starter !== undefined) {
+    matches.push(starter);
   }
 
   return matches;

@@ -3,6 +3,7 @@ import type { TextlintRuleModule } from "@textlint/types";
 import {
   cleanSentence,
   startsWithAnyText,
+  tokens,
   type SentenceMatch
 } from "../../../shared/matchers/llm-slop.js";
 import { allParagraphSentences } from "../../../shared/text/sections.js";
@@ -16,9 +17,39 @@ const LESSON_SUMMARY_PATTERNS = [
 const FIX_CUES = [
   "plain",
   "boring",
+  "simple",
+  "small",
+  "smaller",
   "not heroic",
+  "not dramatic",
   "usually smaller than people want"
 ];
+const SUMMARY_SUBJECTS = [
+  "answer",
+  "fix",
+  "lesson",
+  "move",
+  "strategy",
+  "trick"
+];
+
+function matchSummaryFrame(text: string): string | undefined {
+  const words = tokens(text);
+  const [first, second, third, fourth] = words;
+
+  if (
+    first === "the" &&
+    second !== undefined &&
+    third === "is" &&
+    fourth !== undefined &&
+    SUMMARY_SUBJECTS.includes(second) &&
+    FIX_CUES.includes(fourth)
+  ) {
+    return `the-${second}-is-${fourth}`;
+  }
+
+  return undefined;
+}
 
 function matchLessonFraming(sentence: string): SentenceMatch | undefined {
   const stripped = cleanSentence(sentence, PREFIXES);
@@ -28,11 +59,18 @@ function matchLessonFraming(sentence: string): SentenceMatch | undefined {
     return { kind: "lesson-summary", signal: lesson };
   }
 
+  const summary = matchSummaryFrame(stripped);
+  if (summary !== undefined) {
+    return { kind: "summary-frame", signal: summary };
+  }
+
   if (!stripped.startsWith("the fix is ")) {
     return undefined;
   }
 
-  const cue = FIX_CUES.find((item) => stripped.includes(item));
+  const cue = FIX_CUES.find((item) =>
+    stripped.startsWith(`the fix is ${item}`)
+  );
   return cue === undefined ? undefined : { kind: "fix-wrapper", signal: cue };
 }
 

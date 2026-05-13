@@ -2,7 +2,16 @@ import type { TxtDocumentNode } from "@textlint/ast-node-types";
 import type { TextlintRuleModule } from "@textlint/types";
 import { sectionLastSentences } from "../../../shared/text/sections.js";
 
-const SUMMATIVE_PATTERNS = ["and that's what makes", "that's why this"];
+const SUMMATIVE_PATTERNS = [
+  "and that's what makes",
+  "that's why this",
+  "that's why it works",
+  "that is why it works",
+  "that's why it matters",
+  "that is why it matters",
+  "that's why this matters",
+  "that is why this matters"
+];
 
 const rule: TextlintRuleModule = (context) => {
   const { Syntax, RuleError, locator, report } = context;

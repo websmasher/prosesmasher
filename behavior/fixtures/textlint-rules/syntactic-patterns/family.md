@@ -36,6 +36,8 @@ It's important to note that this sentence is only a signpost.
 
 The following sections explore the common reasons parents feel stuck.
 
+One reason is simple: the wrapper delays the point.
+
 The practical lesson was simple. Stop adding a ceremonial wrapper.
 
 This is where people get stuck.
