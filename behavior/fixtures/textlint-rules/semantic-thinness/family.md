@@ -1,3 +1,3 @@
 # Semantic thinness fixture
 
-This fixture is present so the family has a golden replay document before semantic-thinness rules are ported.
+This fixture is a plain control document. Semantic thinness rules are not active yet.

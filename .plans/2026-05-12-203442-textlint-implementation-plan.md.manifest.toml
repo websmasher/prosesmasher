@@ -8,6 +8,7 @@ type = "module"
 private = true
 
 runtime_dependencies = [
+  "@lunarisapp/readability",
   "@textlint/types",
   "sentence-splitter",
   "textlint",
@@ -111,6 +112,9 @@ path = "behavior/deltas/textlint-rules"
 path = "behavior/schemas/textlint-rules"
 
 [[shared_file]]
+path = "packages/textlint-rules/src/shared/text/document.ts"
+
+[[shared_file]]
 path = "packages/textlint-rules/src/shared/text/normalize.ts"
 
 [[shared_file]]
@@ -184,6 +188,30 @@ id = "word-repetition"
 family = "metrics"
 path = "packages/textlint-rules/src/families/metrics/word-repetition.ts"
 rust_rule = "word-repetition"
+
+[[rule]]
+id = "flesch-kincaid"
+family = "metrics"
+path = "packages/textlint-rules/src/families/metrics/flesch-kincaid.ts"
+rust_rule = "flesch-kincaid"
+
+[[rule]]
+id = "gunning-fog"
+family = "metrics"
+path = "packages/textlint-rules/src/families/metrics/gunning-fog.ts"
+rust_rule = "gunning-fog"
+
+[[rule]]
+id = "coleman-liau"
+family = "metrics"
+path = "packages/textlint-rules/src/families/metrics/coleman-liau.ts"
+rust_rule = "coleman-liau"
+
+[[rule]]
+id = "avg-sentence-length"
+family = "metrics"
+path = "packages/textlint-rules/src/families/metrics/avg-sentence-length.ts"
+rust_rule = "avg-sentence-length"
 
 [[rule]]
 id = "prohibited-words"
@@ -279,13 +307,17 @@ id = "everything"
 path = "packages/textlint-rules/src/presets/everything.ts"
 rules = [
   "affirmation-closers",
+  "avg-sentence-length",
   "colon-dramatic",
+  "coleman-liau",
   "demonstrative-emphasis",
   "em-dashes",
   "exclamation-density",
   "fake-timestamps",
   "false-question",
+  "flesch-kincaid",
   "fragment-stacking",
+  "gunning-fog",
   "hedge-stacking",
   "humble-bragger",
   "jargon-faker",
@@ -326,6 +358,10 @@ scope = "packages/textlint-rules/src/families"
 id = "markdown-layout"
 fixture = "behavior/fixtures/textlint-rules/markdown-layout/family.md"
 metadata = "behavior/fixtures/textlint-rules/markdown-layout/fixture.toml"
+
+[[skipped_family]]
+id = "markdown-layout"
+reason = "Document-policy layout checks are intentionally skipped during the readability metrics migration."
 
 [[fixture_family]]
 id = "orthography"

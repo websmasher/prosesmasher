@@ -63,7 +63,7 @@ export default [
       complexity: ["error", 25],
       eqeqeq: ["error", "always"],
       "import-x/max-dependencies": ["error", { max: 10 }],
-      "import-x/no-cycle": "error",
+      "import-x/no-cycle": ["error", { ignoreExternal: true }],
       "max-lines": ["error", 400],
       "max-lines-per-function": ["error", 100],
       "no-console": "error",

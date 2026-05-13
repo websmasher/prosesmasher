@@ -15,6 +15,10 @@
   },
   "exports": {
     ".": "./dist/index.js",
+    "./families/metrics/avg-sentence-length": "./dist/families/metrics/avg-sentence-length.js",
+    "./families/metrics/coleman-liau": "./dist/families/metrics/coleman-liau.js",
+    "./families/metrics/flesch-kincaid": "./dist/families/metrics/flesch-kincaid.js",
+    "./families/metrics/gunning-fog": "./dist/families/metrics/gunning-fog.js",
     "./families/metrics/paragraph-length": "./dist/families/metrics/paragraph-length.js",
     "./families/metrics/word-repetition": "./dist/families/metrics/word-repetition.js",
     "./families/orthography/colon-dramatic": "./dist/families/orthography/colon-dramatic.js",
@@ -39,6 +43,7 @@
     "./families/words/prohibited-words": "./dist/families/words/prohibited-words.js"
   },
   "dependencies": {
+    "@lunarisapp/readability": "^1.1.0",
     "@textlint/types": "15.6.1",
     "sentence-splitter": "5.0.1",
     "textlint": "15.6.1",

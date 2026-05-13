@@ -1,5 +1,7 @@
 # Phrases fixture
 
+The cat slept near the door after lunch. A small dog ran across the yard. Birds moved through the trees before rain. People made tea and talked softly. The room stayed warm until evening.
+
 In today's fast-paced world, teams often say let's dive in before they have a point.
 
 In my experience, the advice gets worse when the author keeps auditioning for authority.

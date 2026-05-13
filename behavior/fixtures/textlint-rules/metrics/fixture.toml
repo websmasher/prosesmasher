@@ -8,6 +8,10 @@ valid_prerequisites = [
 ]
 
 intentionally_invalid = [
+  "average sentence length above threshold",
+  "coleman liau above threshold",
+  "flesch reading ease below threshold",
+  "gunning fog above threshold",
   "paragraph with seven sentences",
   "paragraph-local repeated word over threshold"
 ]

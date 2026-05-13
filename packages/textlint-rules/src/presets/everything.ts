@@ -1,13 +1,17 @@
 export const everything = {
   rules: {
     "affirmation-closers": true,
+    "avg-sentence-length": true,
     "colon-dramatic": true,
+    "coleman-liau": true,
     "demonstrative-emphasis": true,
     "em-dashes": true,
     "exclamation-density": true,
     "fake-timestamps": true,
     "false-question": true,
+    "flesch-kincaid": true,
     "fragment-stacking": true,
+    "gunning-fog": true,
     "hedge-stacking": true,
     "humble-bragger": true,
     "jargon-faker": true,

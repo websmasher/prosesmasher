@@ -1,3 +1,3 @@
 # Markdown layout fixture
 
-This fixture is present so the family has a golden replay document before any markdown-layout rules are ported.
+This fixture is a plain control document. Layout rules are skipped for now.
