@@ -3,6 +3,7 @@
   "language": "en",
   "words": [
     "cmark",
+    "ation",
     "fdescribe",
     "flesch",
     "g3ts",
@@ -10,11 +11,13 @@
     "liau",
     "lunarisapp",
     "mischeck",
+    "ment",
     "prosesmasher",
     "rhythmed",
     "setstate",
     "sonarjs",
     "textlint",
+    "tion",
     "typecov"
   ],
   "ignorePaths": ["dist", "node_modules", "package-lock.json"]

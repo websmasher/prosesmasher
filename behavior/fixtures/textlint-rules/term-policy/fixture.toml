@@ -7,4 +7,13 @@ valid_prerequisites = [
   "markdown_fixture_present"
 ]
 
-intentionally_invalid = []
+intentionally_invalid = [
+  "missing required term",
+  "recommended term pool below minimum"
+]
+
+intentionally_valid = [
+  "one required term is present",
+  "three recommended pool terms are present",
+  "inflected recommended term matches rough stem"
+]

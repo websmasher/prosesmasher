@@ -243,6 +243,18 @@ rust_match_subset = "multi-token"
 data_path = "packages/textlint-rules/src/families/phrases/data/prohibited-phrases.json"
 
 [[rule]]
+id = "required-terms"
+family = "term-policy"
+path = "packages/textlint-rules/src/families/term-policy/required-terms.ts"
+rust_rule = "required-terms"
+
+[[rule]]
+id = "recommended-terms"
+family = "term-policy"
+path = "packages/textlint-rules/src/families/term-policy/recommended-terms.ts"
+rust_rule = "recommended-terms"
+
+[[rule]]
 id = "humble-bragger"
 family = "phrases"
 path = "packages/textlint-rules/src/families/phrases/humble-bragger.ts"
@@ -325,7 +337,9 @@ rules = [
   "paragraph-length",
   "prohibited-words",
   "prohibited-phrases",
+  "recommended-terms",
   "negation-reframe",
+  "required-terms",
   "sentence-case",
   "simplicity",
   "smart-quotes",

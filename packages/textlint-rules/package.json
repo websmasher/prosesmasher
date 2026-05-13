@@ -30,6 +30,8 @@
     "./families/phrases/humble-bragger": "./dist/families/phrases/humble-bragger.js",
     "./families/phrases/jargon-faker": "./dist/families/phrases/jargon-faker.js",
     "./families/phrases/prohibited-phrases": "./dist/families/phrases/prohibited-phrases.js",
+    "./families/term-policy/recommended-terms": "./dist/families/term-policy/recommended-terms.js",
+    "./families/term-policy/required-terms": "./dist/families/term-policy/required-terms.js",
     "./families/syntactic-patterns/closers/affirmation-closers": "./dist/families/syntactic-patterns/closers/affirmation-closers.js",
     "./families/syntactic-patterns/closers/false-question": "./dist/families/syntactic-patterns/closers/false-question.js",
     "./families/syntactic-patterns/closers/summative-closer": "./dist/families/syntactic-patterns/closers/summative-closer.js",

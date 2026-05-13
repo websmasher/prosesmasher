@@ -3,6 +3,7 @@ import { metricRules } from "./registries/metrics.js";
 import { orthographyRules } from "./registries/orthography.js";
 import { phraseRules } from "./registries/phrases.js";
 import { syntacticPatternRules } from "./registries/syntactic-patterns.js";
+import { termPolicyRules } from "./registries/term-policy.js";
 import { wordRules } from "./registries/words.js";
 
 export const rules = {
@@ -10,6 +11,7 @@ export const rules = {
   ...orthographyRules,
   ...phraseRules,
   ...syntacticPatternRules,
+  ...termPolicyRules,
   ...wordRules
 };
 

@@ -15,15 +15,29 @@ else
   FILES=("$@")
 fi
 
+CONFIG_ARGS=(--no-textlintrc)
+RULE_ARGS=(
+  --rulesdir "$ROOT/packages/textlint-rules/dist/families/metrics"
+  --rulesdir "$ROOT/packages/textlint-rules/dist/families/orthography"
+  --rulesdir "$ROOT/packages/textlint-rules/dist/families/words"
+  --rulesdir "$ROOT/packages/textlint-rules/dist/families/phrases"
+  --rulesdir "$ROOT/packages/textlint-rules/dist/families/term-policy"
+  --rulesdir "$ROOT/packages/textlint-rules/dist/families/syntactic-patterns/closers"
+  --rulesdir "$ROOT/packages/textlint-rules/dist/families/syntactic-patterns/contrast"
+  --rulesdir "$ROOT/packages/textlint-rules/dist/families/syntactic-patterns/lead-ins"
+  --rulesdir "$ROOT/packages/textlint-rules/dist/families/syntactic-patterns/repetition"
+)
+if [ "$#" -eq 1 ]; then
+  FIXTURE_CONFIG="$(dirname "$1")/.textlintrc.json"
+  if [ -f "$FIXTURE_CONFIG" ]; then
+    FAMILY="$(basename "$(dirname "$1")")"
+    CONFIG_ARGS=(--config "$FIXTURE_CONFIG" --rules-base-directory "$ROOT/packages/textlint-rules/dist/families/$FAMILY")
+    RULE_ARGS=()
+  fi
+fi
+
 "$TEXTLINT" \
-  --no-textlintrc \
-  --rulesdir "$ROOT/packages/textlint-rules/dist/families/metrics" \
-  --rulesdir "$ROOT/packages/textlint-rules/dist/families/orthography" \
-  --rulesdir "$ROOT/packages/textlint-rules/dist/families/words" \
-  --rulesdir "$ROOT/packages/textlint-rules/dist/families/phrases" \
-  --rulesdir "$ROOT/packages/textlint-rules/dist/families/syntactic-patterns/closers" \
-  --rulesdir "$ROOT/packages/textlint-rules/dist/families/syntactic-patterns/contrast" \
-  --rulesdir "$ROOT/packages/textlint-rules/dist/families/syntactic-patterns/lead-ins" \
-  --rulesdir "$ROOT/packages/textlint-rules/dist/families/syntactic-patterns/repetition" \
+  "${CONFIG_ARGS[@]}" \
+  "${RULE_ARGS[@]}" \
   --format json \
   "${FILES[@]}"

@@ -20,6 +20,8 @@ export const everything = {
     "paragraph-length": true,
     "prohibited-phrases": true,
     "prohibited-words": true,
+    "recommended-terms": true,
+    "required-terms": true,
     "sentence-case": true,
     simplicity: true,
     "smart-quotes": true,
