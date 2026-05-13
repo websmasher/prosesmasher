@@ -8,9 +8,11 @@ import {
 } from "../../../shared/matchers/llm-slop.js";
 import { allParagraphSentences } from "../../../shared/text/sections.js";
 
-const MODAL_PATTERNS = [" may ", " might ", " could "];
+const MODAL_PATTERNS = [" could ", " may ", " might "];
 const QUALIFIER_PATTERNS = [
+  " broadly ",
   " generally ",
+  " largely ",
   " typically ",
   " commonly ",
   " potentially ",
@@ -32,18 +34,30 @@ const REPORTING_PATTERNS = [
   "is believed",
   "are believed",
   "generally considered",
+  "is often seen",
+  "are often seen",
+  "is often treated",
+  "are often treated",
   "has been reported",
   "have been reported",
+  "it is thought",
+  "it is believed",
   "research suggests",
   "studies suggest",
   "studies have suggested",
   "more research is needed"
 ];
-const QUANTIFIER_LEADS = ["some", "certain", "various", "many"];
+const QUANTIFIER_LEADS = ["many", "most", "some", "certain", "various"];
 const QUANTIFIER_TARGETS = [
+  "adults",
+  "children",
+  "couples",
+  "families",
   "people",
   "individuals",
-  "children",
+  "kids",
+  "moms",
+  "parents",
   "experts",
   "research",
   "studies",
@@ -51,7 +65,10 @@ const QUANTIFIER_TARGETS = [
   "factors",
   "types",
   "cases",
-  "patients"
+  "patients",
+  "patterns",
+  "problems",
+  "ways"
 ];
 
 function findQuantifierPair(text: string): string | undefined {

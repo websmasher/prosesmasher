@@ -20,8 +20,13 @@ const SUBJECT_PATTERNS = [
   ["everyone"],
   ["everybody"],
   ["we", "all"],
+  ["many", "people"],
+  ["many", "of", "us"],
   ["most", "people"],
   ["most", "of", "us"],
+  ["most", "parents"],
+  ["most", "families"],
+  ["most", "kids"],
   ["for", "most", "people"],
   ["no", "one"],
   ["nobody"]
@@ -36,7 +41,13 @@ const DESIRE_VERBS = [
   "deserve",
   "deserves",
   "crave",
-  "craves"
+  "craves",
+  "look",
+  "looks",
+  "reach",
+  "reaches",
+  "try",
+  "tries"
 ];
 const CERTAINTY_VERBS = ["know", "knows"];
 const HUMAN_GROUP_SUBJECTS = [
@@ -52,20 +63,30 @@ const HUMAN_GROUP_SUBJECTS = [
   "students",
   "teachers"
 ];
-const GROUP_BEHAVIOR_GERUNDS = ["reaching", "trying", "waiting", "hoping"];
+const GROUP_BEHAVIOR_GERUNDS = [
+  "asking",
+  "looking",
+  "reaching",
+  "trying",
+  "waiting",
+  "hoping",
+  "wondering"
+];
+const BROAD_GROUP_LEADS = ["many", "most"];
 
 function matchGroupBehavior(words: readonly string[]): string | undefined {
   const [first, subject, third, gerund] = words;
 
   if (
-    first === "most" &&
+    first !== undefined &&
     subject !== undefined &&
     third === "keep" &&
     gerund !== undefined &&
+    BROAD_GROUP_LEADS.includes(first) &&
     HUMAN_GROUP_SUBJECTS.includes(subject) &&
     GROUP_BEHAVIOR_GERUNDS.includes(gerund)
   ) {
-    return `most ${subject} keep ${gerund}`;
+    return `${first} ${subject} keep ${gerund}`;
   }
 
   return undefined;

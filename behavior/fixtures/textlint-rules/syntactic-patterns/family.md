@@ -30,6 +30,8 @@ The interesting part is that nobody noticed.
 
 The useful question is whether the advice says anything specific.
 
+The basic answer is boring in a useful way.
+
 It's important to note that this sentence is only a signpost.
 
 The following sections explore the common reasons parents feel stuck.
@@ -42,9 +44,15 @@ I can provide general information about school refusal, but the paragraph still 
 
 Some people may generally feel uncertain in some cases.
 
+Many adults usually delay the obvious repair.
+
 Most parents keep reaching for a louder script.
 
 The evidence points toward a smaller claim.
+
+The science is clear: repeat the tiny behavior.
+
+Many people try to fix the habit with shame.
 
 Daily life is enough for this. Daily life is the curriculum.
 
@@ -61,6 +69,8 @@ We worked hard and that's the key.
 Sixty seconds. That's the whole repair.
 
 The basic rule is simple.
+
+That is the point.
 
 ## Summative closer
 

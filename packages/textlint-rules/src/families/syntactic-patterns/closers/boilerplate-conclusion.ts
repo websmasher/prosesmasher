@@ -3,6 +3,7 @@ import type { TextlintRuleModule } from "@textlint/types";
 import {
   cleanSentence,
   containsAny,
+  tokens,
   type SentenceMatch
 } from "../../../shared/matchers/llm-slop.js";
 import {
@@ -38,6 +39,21 @@ const COMPRESSION_CLOSE_PATTERNS = [
   "the core fact",
   "the rest is detail"
 ];
+const FORMULA_SUBJECTS = ["that", "this", "it"];
+const FORMULA_NOUNS = [
+  "answer",
+  "fact",
+  "frame",
+  "game",
+  "idea",
+  "lesson",
+  "move",
+  "point",
+  "rule",
+  "test",
+  "thing",
+  "trick"
+];
 
 function matchInsightClose(text: string): string | undefined {
   if (
@@ -63,6 +79,28 @@ function matchResponseClose(text: string): string | undefined {
     : undefined;
 }
 
+function matchFormulaClose(text: string): string | undefined {
+  const words = tokens(text);
+
+  if (words.length > 8) {
+    return undefined;
+  }
+
+  const [first, second, third, fourth] = words;
+  if (
+    first !== undefined &&
+    FORMULA_SUBJECTS.includes(first) &&
+    second === "is" &&
+    third === "the" &&
+    fourth !== undefined &&
+    FORMULA_NOUNS.includes(fourth)
+  ) {
+    return `${first}-is-the-${fourth}`;
+  }
+
+  return undefined;
+}
+
 function matchConclusion(
   sentence: string,
   isTail: boolean
@@ -70,6 +108,11 @@ function matchConclusion(
   const stripped = cleanSentence(sentence, PREFIXES);
 
   if (isTail) {
+    const formula = matchFormulaClose(stripped);
+    if (formula !== undefined) {
+      return { kind: "formula-close", signal: formula };
+    }
+
     const insight = matchInsightClose(stripped);
     if (insight !== undefined) {
       return { kind: "insight-close", signal: insight };

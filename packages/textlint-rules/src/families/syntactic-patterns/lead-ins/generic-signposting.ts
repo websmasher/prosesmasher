@@ -65,16 +65,61 @@ const POINT_ABSTRACT_VERBS = [
 ];
 const WHAT_FRAME_TAIL_STARTERS = [
   "boring",
+  "clear",
+  "consistent",
+  "easy",
+  "hard",
   "less",
   "making",
   "more",
   "never",
   "not",
+  "plain",
   "rarely",
   "small",
   "smaller",
+  "simple",
+  "straightforward",
+  "true",
   "usually"
 ];
+const FRAME_ADJECTIVES = [
+  "basic",
+  "best",
+  "better",
+  "biggest",
+  "bigger",
+  "central",
+  "core",
+  "honest",
+  "main",
+  "practical",
+  "real",
+  "simple",
+  "useful"
+];
+const FRAME_NOUNS = [
+  "answer",
+  "challenge",
+  "conclusion",
+  "fact",
+  "frame",
+  "idea",
+  "lesson",
+  "move",
+  "point",
+  "problem",
+  "question",
+  "result",
+  "rule",
+  "test",
+  "thing",
+  "version",
+  "way",
+  "win"
+];
+const ABSTRACT_FRAME_VERBS = ["is", "are", "was"];
+const POINT_NOUNS = ["key", "point", "trick"];
 
 function matchModifiedAbstractFrame(
   words: readonly string[]
@@ -107,18 +152,37 @@ function matchModifiedAbstractFrame(
   return matches.get(key);
 }
 
+function matchEvaluativeFrame(words: readonly string[]): string | undefined {
+  const [first, second, third, fourth] = words;
+
+  if (
+    first === "the" &&
+    second !== undefined &&
+    third !== undefined &&
+    fourth !== undefined &&
+    FRAME_ADJECTIVES.includes(second) &&
+    FRAME_NOUNS.includes(third) &&
+    ABSTRACT_FRAME_VERBS.includes(fourth)
+  ) {
+    return `the-${second}-${third}-${fourth}`;
+  }
+
+  return undefined;
+}
+
 function matchPointIsToFrame(words: readonly string[]): string | undefined {
   const [first, second, third, fourth, fifth] = words;
 
   if (
     first === "the" &&
-    second === "point" &&
+    POINT_NOUNS.includes(second ?? "") &&
     third === "is" &&
     fourth === "to" &&
-    fifth !== undefined &&
-    POINT_ABSTRACT_VERBS.includes(fifth)
+    fifth !== undefined
   ) {
-    return "the-point-is-to";
+    return POINT_ABSTRACT_VERBS.includes(fifth)
+      ? "the-point-is-to"
+      : `the-${second ?? "point"}-is-to`;
   }
 
   return undefined;
@@ -129,7 +193,10 @@ function matchWhatFrame(words: readonly string[]): string | undefined {
 
   if (
     first === "what" &&
-    (second === "helps" || second === "matters") &&
+    (second === "helps" ||
+      second === "matters" ||
+      second === "works" ||
+      second === "changes") &&
     third === "is" &&
     fourth !== undefined &&
     WHAT_FRAME_TAIL_STARTERS.includes(fourth)
@@ -148,6 +215,7 @@ function matchAbstractFrame(text: string): string | undefined {
   const words = tokens(text);
   return (
     matchModifiedAbstractFrame(words) ??
+    matchEvaluativeFrame(words) ??
     matchPointIsToFrame(words) ??
     matchWhatFrame(words)
   );
