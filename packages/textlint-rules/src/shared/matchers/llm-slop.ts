@@ -55,7 +55,7 @@ export function stripQuotedSegments(text: string): string {
 }
 
 function isQuoteStart(character: string): boolean {
-  return character === '"' || character === "'" || character === "\u201C";
+  return character === '"' || character === "\u201C";
 }
 
 function isMatchingQuote(open: string, close: string): boolean {

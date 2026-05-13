@@ -32,6 +32,7 @@ const ACCEPTANCE_CLOSE_PATTERNS = [
   "is not a luxury"
 ];
 const RESPONSE_CLOSE_PATTERNS = ["the practical response is plain"];
+const BASIC_RULE_SIMPLE_PATTERN = "the basic rule is simple";
 const COMPRESSION_CLOSE_PATTERNS = [
   "the whole trick",
   "the core fact",
@@ -47,6 +48,19 @@ function matchInsightClose(text: string): string | undefined {
   }
 
   return undefined;
+}
+
+function matchResponseClose(text: string): string | undefined {
+  const response = containsAny(text, RESPONSE_CLOSE_PATTERNS);
+  if (response !== undefined) {
+    return response;
+  }
+
+  const tail = text.slice(BASIC_RULE_SIMPLE_PATTERN.length).trim();
+  return text.startsWith(BASIC_RULE_SIMPLE_PATTERN) &&
+    (tail.length === 0 || tail === ".")
+    ? BASIC_RULE_SIMPLE_PATTERN
+    : undefined;
 }
 
 function matchConclusion(
@@ -72,7 +86,7 @@ function matchConclusion(
     }
   }
 
-  const response = containsAny(stripped, RESPONSE_CLOSE_PATTERNS);
+  const response = matchResponseClose(stripped);
   if (response !== undefined) {
     return { kind: "response-close", signal: response };
   }

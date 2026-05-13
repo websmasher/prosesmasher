@@ -30,6 +30,8 @@ The interesting part is that nobody noticed.
 
 The useful question is whether the advice says anything specific.
 
+It's important to note that this sentence is only a signpost.
+
 The following sections explore the common reasons parents feel stuck.
 
 The practical lesson was simple. Stop adding a ceremonial wrapper.
@@ -57,6 +59,8 @@ We worked hard and that's the key.
 ## Formula closer
 
 Sixty seconds. That's the whole repair.
+
+The basic rule is simple.
 
 ## Summative closer
 
