@@ -9,6 +9,11 @@ valid_prerequisites = [
 
 intentionally_invalid = [
   "leverage",
+  "delve",
+  "vibrant",
+  "landscape",
+  "intricate",
+  "tapestry",
   "robust",
   "seamless",
   "two hedges in one sentence",

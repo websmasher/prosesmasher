@@ -15,9 +15,21 @@ intentionally_invalid = [
   "triple repeat opener",
   "demonstrative emphasis over document threshold",
   "llm opener at section start",
+  "generic signposting frame",
+  "boilerplate framing preview",
+  "lesson framing wrapper",
+  "observer guidance bridge",
+  "response wrapper",
+  "softening language stack",
+  "universalizing claim",
+  "authority padding",
+  "contrastive aphorism pair",
+  "empty emphasis line",
+  "blame reframe",
   "affirmation closer at section end",
   "short formula affirmation anywhere",
   "summative closer at section end",
+  "boilerplate conclusion",
   "false question at section end"
 ]
 

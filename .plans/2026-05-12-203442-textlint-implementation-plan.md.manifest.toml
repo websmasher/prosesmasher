@@ -141,6 +141,9 @@ path = "packages/textlint-rules/src/shared/matchers/phrases.ts"
 [[shared_file]]
 path = "packages/textlint-rules/src/shared/matchers/syntactic-templates.ts"
 
+[[shared_file]]
+path = "packages/textlint-rules/src/shared/matchers/llm-slop.ts"
+
 [[rule]]
 id = "em-dashes"
 family = "orthography"
@@ -228,6 +231,12 @@ path = "packages/textlint-rules/src/families/words/hedge-stacking.ts"
 rust_rule = "hedge-stacking"
 
 [[rule]]
+id = "llm-vocabulary"
+family = "words"
+path = "packages/textlint-rules/src/families/words/llm-vocabulary.ts"
+rust_rule = "llm-vocabulary"
+
+[[rule]]
 id = "simplicity"
 family = "words"
 path = "packages/textlint-rules/src/families/words/simplicity.ts"
@@ -241,6 +250,12 @@ path = "packages/textlint-rules/src/families/phrases/prohibited-phrases.ts"
 rust_rule = "prohibited-terms"
 rust_match_subset = "multi-token"
 data_path = "packages/textlint-rules/src/families/phrases/data/prohibited-phrases.json"
+
+[[rule]]
+id = "llm-disclaimer"
+family = "phrases"
+path = "packages/textlint-rules/src/families/phrases/llm-disclaimer.ts"
+rust_rule = "llm-disclaimer"
 
 [[rule]]
 id = "required-terms"
@@ -267,16 +282,64 @@ path = "packages/textlint-rules/src/families/phrases/jargon-faker.ts"
 rust_rule = "jargon-faker"
 
 [[rule]]
+id = "response-wrapper"
+family = "syntactic-patterns/llm-artifacts"
+path = "packages/textlint-rules/src/families/syntactic-patterns/llm-artifacts/response-wrapper.ts"
+rust_rule = "response-wrapper"
+
+[[rule]]
+id = "generic-signposting"
+family = "syntactic-patterns/lead-ins"
+path = "packages/textlint-rules/src/families/syntactic-patterns/lead-ins/generic-signposting.ts"
+rust_rule = "generic-signposting"
+
+[[rule]]
+id = "boilerplate-framing"
+family = "syntactic-patterns/lead-ins"
+path = "packages/textlint-rules/src/families/syntactic-patterns/lead-ins/boilerplate-framing.ts"
+rust_rule = "boilerplate-framing"
+
+[[rule]]
+id = "lesson-framing"
+family = "syntactic-patterns/lead-ins"
+path = "packages/textlint-rules/src/families/syntactic-patterns/lead-ins/lesson-framing.ts"
+rust_rule = "lesson-framing"
+
+[[rule]]
+id = "observer-guidance"
+family = "syntactic-patterns/lead-ins"
+path = "packages/textlint-rules/src/families/syntactic-patterns/lead-ins/observer-guidance.ts"
+rust_rule = "observer-guidance"
+
+[[rule]]
 id = "negation-reframe"
 family = "syntactic-patterns/contrast"
 path = "packages/textlint-rules/src/families/syntactic-patterns/contrast/negation-reframe.ts"
 rust_rule = "negation-reframe"
 
 [[rule]]
+id = "contrastive-aphorism"
+family = "syntactic-patterns/contrast"
+path = "packages/textlint-rules/src/families/syntactic-patterns/contrast/contrastive-aphorism.ts"
+rust_rule = "contrastive-aphorism"
+
+[[rule]]
+id = "blame-reframe"
+family = "syntactic-patterns/contrast"
+path = "packages/textlint-rules/src/families/syntactic-patterns/contrast/blame-reframe.ts"
+rust_rule = "blame-reframe"
+
+[[rule]]
 id = "fragment-stacking"
 family = "syntactic-patterns/repetition"
 path = "packages/textlint-rules/src/families/syntactic-patterns/repetition/fragment-stacking.ts"
 rust_rule = "fragment-stacking"
+
+[[rule]]
+id = "empty-emphasis"
+family = "syntactic-patterns/repetition"
+path = "packages/textlint-rules/src/families/syntactic-patterns/repetition/empty-emphasis.ts"
+rust_rule = "empty-emphasis"
 
 [[rule]]
 id = "triple-repeat"
@@ -314,37 +377,75 @@ family = "syntactic-patterns/closers"
 path = "packages/textlint-rules/src/families/syntactic-patterns/closers/false-question.ts"
 rust_rule = "false-question"
 
+[[rule]]
+id = "boilerplate-conclusion"
+family = "syntactic-patterns/closers"
+path = "packages/textlint-rules/src/families/syntactic-patterns/closers/boilerplate-conclusion.ts"
+rust_rule = "boilerplate-conclusion"
+
+[[rule]]
+id = "authority-padding"
+family = "syntactic-patterns/authority"
+path = "packages/textlint-rules/src/families/syntactic-patterns/authority/authority-padding.ts"
+rust_rule = "authority-padding"
+
+[[rule]]
+id = "softening-language"
+family = "syntactic-patterns/generalization"
+path = "packages/textlint-rules/src/families/syntactic-patterns/generalization/softening-language.ts"
+rust_rule = "softening-language"
+
+[[rule]]
+id = "universalizing-claims"
+family = "syntactic-patterns/generalization"
+path = "packages/textlint-rules/src/families/syntactic-patterns/generalization/universalizing-claims.ts"
+rust_rule = "universalizing-claims"
+
 [[preset]]
 id = "everything"
 path = "packages/textlint-rules/src/presets/everything.ts"
 rules = [
   "affirmation-closers",
+  "authority-padding",
   "avg-sentence-length",
+  "blame-reframe",
+  "boilerplate-conclusion",
+  "boilerplate-framing",
   "colon-dramatic",
   "coleman-liau",
+  "contrastive-aphorism",
   "demonstrative-emphasis",
   "em-dashes",
+  "empty-emphasis",
   "exclamation-density",
   "fake-timestamps",
   "false-question",
   "flesch-kincaid",
   "fragment-stacking",
+  "generic-signposting",
   "gunning-fog",
   "hedge-stacking",
   "humble-bragger",
   "jargon-faker",
+  "lesson-framing",
+  "llm-disclaimer",
   "llm-openers",
+  "llm-vocabulary",
+  "observer-guidance",
   "paragraph-length",
   "prohibited-words",
   "prohibited-phrases",
   "recommended-terms",
   "negation-reframe",
+  "response-wrapper",
   "required-terms",
   "sentence-case",
   "simplicity",
+  "softening-language",
   "smart-quotes",
   "summative-closer",
   "triple-repeat",
+  "universalizing-claims",
   "word-repetition",
 ]
 

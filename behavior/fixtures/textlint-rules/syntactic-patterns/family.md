@@ -28,6 +28,28 @@ The control sentence says the test did not run because the command was missing.
 
 The interesting part is that nobody noticed.
 
+The useful question is whether the advice says anything specific.
+
+The following sections explore the common reasons parents feel stuck.
+
+The practical lesson was simple. Stop adding a ceremonial wrapper.
+
+This is where people get stuck.
+
+I can provide general information about school refusal, but the paragraph still needs an actual point.
+
+Some people may generally feel uncertain in some cases.
+
+Most parents keep reaching for a louder script.
+
+The evidence points toward a smaller claim.
+
+Daily life is enough for this. Daily life is the curriculum.
+
+That last part matters.
+
+It usually comes from development, not malice.
+
 ## Affirmation closer
 
 We worked hard and that's the key.
@@ -39,6 +61,8 @@ Sixty seconds. That's the whole repair.
 ## Summative closer
 
 And that's what makes this approach so powerful.
+
+The core fact is that nothing here needed a grand finale.
 
 ## False question
 

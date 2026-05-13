@@ -22,9 +22,12 @@ RULE_ARGS=(
   --rulesdir "$ROOT/packages/textlint-rules/dist/families/words"
   --rulesdir "$ROOT/packages/textlint-rules/dist/families/phrases"
   --rulesdir "$ROOT/packages/textlint-rules/dist/families/term-policy"
+  --rulesdir "$ROOT/packages/textlint-rules/dist/families/syntactic-patterns/authority"
   --rulesdir "$ROOT/packages/textlint-rules/dist/families/syntactic-patterns/closers"
   --rulesdir "$ROOT/packages/textlint-rules/dist/families/syntactic-patterns/contrast"
+  --rulesdir "$ROOT/packages/textlint-rules/dist/families/syntactic-patterns/generalization"
   --rulesdir "$ROOT/packages/textlint-rules/dist/families/syntactic-patterns/lead-ins"
+  --rulesdir "$ROOT/packages/textlint-rules/dist/families/syntactic-patterns/llm-artifacts"
   --rulesdir "$ROOT/packages/textlint-rules/dist/families/syntactic-patterns/repetition"
 )
 if [ "$#" -eq 1 ]; then

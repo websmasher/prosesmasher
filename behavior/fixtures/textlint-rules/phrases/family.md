@@ -17,3 +17,5 @@ The clean control sentence describes a normal editorial decision.
 The engineer can debug your build script after lunch.
 
 The team is optimizing for latency in the parser.
+
+As a language model, I do not have access to real-time information.

@@ -8,6 +8,7 @@ valid_prerequisites = [
 ]
 
 intentionally_invalid = [
+  "as a language model",
   "in today's fast-paced world",
   "let's dive in",
   "in my experience",
